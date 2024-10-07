@@ -8,11 +8,13 @@ module com.example.demojavafx {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
+    // requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.sql;
 
     opens com.n19.ltmproject to javafx.fxml;
-    exports com.n19.ltmproject;
-    exports com.n19.ltmproject.controller;
-    opens com.n19.ltmproject.controller to javafx.fxml;
+    exports com.n19.ltmproject.client.controller;
+    opens com.n19.ltmproject.client.controller to javafx.fxml;
+    exports com.n19.ltmproject.client;
+    opens com.n19.ltmproject.client to javafx.fxml;
 }

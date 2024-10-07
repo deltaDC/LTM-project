@@ -1,4 +1,4 @@
-package com.n19.ltmproject.controller;
+package com.n19.ltmproject.client.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
