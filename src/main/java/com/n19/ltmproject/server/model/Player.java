@@ -20,6 +20,7 @@ public class Player {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.status = PlayerStatus.OFFLINE;
     }
 
     public Player(int id, String username, String password, String email, int totalPoints, int totalGames, int wins, int losses, PlayerStatus status) {
