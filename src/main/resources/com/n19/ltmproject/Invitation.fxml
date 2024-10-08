@@ -12,12 +12,12 @@
    <children>
       <ImageView fitHeight="220.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../Pictures/Saved%20Pictures/pic1.png" />
+            <Image url="@/images/pic2.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="380.0" fitWidth="600.0" layoutY="220.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../Pictures/Saved%20Pictures/pic2.png" />
+            <Image url="@/images/pic1.png" />
          </image>
       </ImageView>
       <AnchorPane layoutX="59.0" layoutY="220.0" prefHeight="372.0" prefWidth="519.0" styleClass="pane1" stylesheets="@application.css">
@@ -50,7 +50,7 @@
                   <Circle fill="#221e1f" layoutX="336.0" layoutY="75.0" radius="31.0" stroke="BLACK" strokeType="INSIDE" />
                   <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="315.0" layoutY="55.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../Pictures/Saved%20Pictures/pic4.png" />
+                        <Image url="@/images/pic4.png" />
                      </image>
                   </ImageView>
                   <Button layoutX="287.0" layoutY="298.0" mnemonicParsing="false" onAction="#ClickRefuse" prefHeight="43.0" prefWidth="186.0" styleClass="painstart" stylesheets="@application.css" text="REFUSE" textFill="WHITE">
@@ -60,7 +60,7 @@
                   </Button>
                   <ImageView fitHeight="167.0" fitWidth="200.0" layoutX="34.0" layoutY="105.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../Pictures/Saved%20Pictures/pic8.png" />
+                        <Image url="@/images/pic8.png" />
                      </image>
                   </ImageView>
                   <Button layoutX="487.0" mnemonicParsing="false" onAction="#ClickInviteX" text="X" textFill="RED">

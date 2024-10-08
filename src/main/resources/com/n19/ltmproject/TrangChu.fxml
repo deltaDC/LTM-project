@@ -67,7 +67,7 @@
                   <Circle fill="#221e1f" layoutX="336.0" layoutY="75.0" radius="31.0" stroke="BLACK" strokeType="INSIDE" />
                   <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="315.0" layoutY="55.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../Pictures/Saved%20Pictures/pic4.png" />
+                        <Image url="@/images/pic4.png" />
                      </image>
                   </ImageView>
                   <TableView fx:id="table" layoutX="12.0" layoutY="55.0" prefHeight="220.0" prefWidth="242.0" stylesheets="@application.css">
