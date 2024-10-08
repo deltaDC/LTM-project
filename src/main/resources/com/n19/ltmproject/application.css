@@ -103,7 +103,31 @@
 
 /*END CSS WAITINGROOM */
 
-
+/* CSS THANH TUU* #21282F*/
+.thanhtuu-pane{
+    -fx-border-color: #8D7639; /* Màu viền */
+    -fx-border-width: 1;   /* Độ dày viền */
+    -fx-border-style: solid; /* Kiểu viền */
+}
+.thanhtuu-pane2{
+    -fx-background-radius: 0 0 20 20; /* Bo tròn góc trái dưới và phải dưới */
+    -fx-border-radius: 0 0 20 20;
+    -fx-background-color: #333333;
+}
+.thanhtuu-field {
+    -fx-background-color: #F0E68C; /* Màu nền cho TextField */
+    -fx-text-fill: #000000; /* Màu chữ trong TextField */
+    -fx-border-color: #FFD700; /* Màu viền */
+    -fx-border-width: 2; /* Độ dày viền */
+    -fx-border-radius: 5; /* Bo tròn các góc của viền */
+     /* Khoảng cách giữa viền và nội dung bên trong */
+}
+.thanhtuu-pane3{
+    -fx-border-color: gray; /* Màu viền */
+    -fx-border-width: 1;   /* Độ dày viền */
+    -fx-border-style: solid; /* Kiểu viền */
+    -fx-background-color: #333333;
+}
 
 
 

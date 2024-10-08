@@ -119,6 +119,20 @@ public class TrangChuController implements Initializable {
         Scene scene = new Scene(loginViewParent);
         stage.setScene(scene);
     }
+    public void ClickThanhtuu(ActionEvent e) throws IOException {
+//        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/ThanhTuu.fxml"));
+
+        Parent ThanhTuuViewParent = loader.load();
+        Scene scene = new Scene(ThanhTuuViewParent);
+
+        // Truyền lại serverConnection về TrangChuController
+        ThanhTuuController thanhtuuController = loader.getController();
+        thanhtuuController.setServerConnection(serverConnection,primaryStage);
+
+        primaryStage.setScene(scene);
+    }
 
     // Xử lý sự kiện mời người chơi
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
