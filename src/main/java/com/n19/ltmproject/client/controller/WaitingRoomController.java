@@ -33,12 +33,17 @@ public class WaitingRoomController {
     }
 
     public void ClickStart(ActionEvent e) throws IOException {
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
 
-        Parent gameplayViewParent = loader.load();
-        Scene scene = new Scene(gameplayViewParent);
-        stage.setScene(scene);
+        Parent gameViewParent = loader.load();
+        Scene scene = new Scene(gameViewParent);
+
+        // Truyền lại serverConnection về TrangChuController
+        GamePlayController gameController = loader.getController();
+        gameController.setServerConnection(serverConnection,primaryStage);
+
+        primaryStage.setScene(scene);
     }
 }
+
