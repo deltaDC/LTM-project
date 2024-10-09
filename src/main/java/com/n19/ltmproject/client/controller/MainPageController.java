@@ -149,6 +149,7 @@ public class MainPageController implements Initializable {
             new Player("user4", "1", "chinh@gmail.com"),
             new Player("user5", "1", "chinh@gmail.com"),
             new Player("user6", "1", "chinh@gmail.com")
+
         );
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -156,7 +157,11 @@ public class MainPageController implements Initializable {
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         table.setItems(playerList);
-        table.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.SINGLE);
+        table.setFocusTraversable(false);
+        table.getSelectionModel().clearSelection();
+
+
+//        table.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.SINGLE);
 
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {

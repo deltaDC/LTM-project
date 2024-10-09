@@ -59,7 +59,7 @@
          <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="315.0" layoutY="55.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/iconrecycle2.png" />
          </ImageView>
-         <TableView fx:id="table" layoutX="12.0" layoutY="55.0" prefHeight="220.0" prefWidth="242.0" stylesheets="@css/application.css">
+         <TableView fx:id="table" focusTraversable="false" layoutX="12.0" layoutY="55.0" prefHeight="220.0" prefWidth="242.0" stylesheets="@css/application.css">
             <columns>
                <TableColumn fx:id="nameColumn" prefWidth="92.0" text="Name" />
                <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="80.79998779296875" text="Status" />
