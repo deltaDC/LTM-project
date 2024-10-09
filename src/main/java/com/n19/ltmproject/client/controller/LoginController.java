@@ -24,7 +24,7 @@ public class LoginController {
         serverConnection.sendMessage(userText.getText());
 
         String response = serverConnection.receiveMessage();
-        System.out.println("Phản hồi từ server: " + response);
+        System.out.println("Response from server: " + response);
 
         //TODO change hard code to enum
         if (response.contains("Login successful")) {
@@ -32,8 +32,8 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
-            Parent trangChuViewParent = loader.load();
-            Scene scene = new Scene(trangChuViewParent);
+            Parent MainPageViewParent = loader.load();
+            Scene scene = new Scene(MainPageViewParent);
 
             MainPageController mainPageController = loader.getController();
             mainPageController.setServerConnection(serverConnection,stage);

@@ -116,15 +116,15 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(loginViewParent);
         stage.setScene(scene);
     }
-    public void ClickThanhtuu(ActionEvent e) throws IOException {
+    public void ClickAchievement(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
 
-        Parent ThanhTuuViewParent = loader.load();
-        Scene scene = new Scene(ThanhTuuViewParent);
+        Parent AchievementViewParent = loader.load();
+        Scene scene = new Scene(AchievementViewParent);
 
-        AchievementController thanhtuuController = loader.getController();
-        thanhtuuController.setServerConnection(serverConnection,primaryStage);
+        AchievementController achievementController = loader.getController();
+        achievementController.setServerConnection(serverConnection,primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -136,7 +136,7 @@ public class MainPageController implements Initializable {
 
             moveToWaitingRoom();
         } else {
-            System.out.println("Vui lòng chọn người chơi để mời!");
+            System.out.println("Please choose a player to invite!");
         }
     }
 
@@ -160,7 +160,7 @@ public class MainPageController implements Initializable {
 
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                System.out.println("Hàng đã được chọn: " + newSelection.getUsername());
+                System.out.println("Selected items: " + newSelection.getUsername());
             }
         });
     }

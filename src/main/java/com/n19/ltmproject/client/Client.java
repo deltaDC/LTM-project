@@ -21,7 +21,7 @@ public class Client extends Application {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/Login.fxml")));
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/application.css")).toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/css/application.css")).toExternalForm());
 
             primaryStage.setScene(scene);
             primaryStage.show();

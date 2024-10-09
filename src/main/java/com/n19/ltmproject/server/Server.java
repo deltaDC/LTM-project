@@ -61,11 +61,8 @@ public class Server {
 
     public static void invitePlayer(String invitedPlayerName, String message) {
         System.out.println("Inviting player: " + invitedPlayerName);
-        System.out.println("Current number of clients: " + clients.size());
-
         for (ClientHandler client : clients) {
-            System.out.println("Client username: " + client.getUsername()); // Kiểm tra tên người dùng
-            if (client.getUsername().trim().equals(invitedPlayerName.trim())) { // So sánh kỹ hơn
+            if (client.getUsername().trim().equals(invitedPlayerName.trim())) {
                 client.sendMessage(message + " Invite You Game");
                 System.out.println("Invite sent to " + invitedPlayerName);
                 break;

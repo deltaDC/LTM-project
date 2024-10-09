@@ -22,8 +22,8 @@ public class AchievementController {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
-        Parent trangChuViewParent = loader.load();
-        Scene scene = new Scene(trangChuViewParent);
+        Parent MainPageViewParent = loader.load();
+        Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
         mainPageController.setServerConnection(serverConnection,primaryStage);

@@ -13,7 +13,7 @@
             prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.n19.ltmproject.client.controller.LoginController">
    <ImageView fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@images/login.png"/>
+      <Image url="@images/backgroundlogin.png"/>
    </ImageView>
    <AnchorPane layoutX="91.0" layoutY="91.0" prefHeight="400.0" prefWidth="400.0"
                style="-fx-background-color: white; -fx-border-radius: 5px;">
