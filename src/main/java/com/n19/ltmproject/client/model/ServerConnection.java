@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class ServerConnection {
+
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;

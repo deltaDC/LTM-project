@@ -8,159 +8,147 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.WaitingRoomController">
-   <children>
-      <ImageView fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/images/Slice 3.png" />
-         </image>
-      </ImageView>
-      <Label layoutX="147.0" layoutY="33.0" prefHeight="75.0" prefWidth="299.0" styleClass="waitidphong" stylesheets="@application.css" text="ID WAITING ROOM 13041" textFill="WHITE">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.n19.ltmproject.client.controller.WaitingRoomController">
+   <ImageView fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@images/Slice 3.png"/>
+   </ImageView>
+   <Label layoutX="147.0" layoutY="33.0" prefHeight="75.0" prefWidth="299.0" styleClass="waitidphong"
+          stylesheets="@application.css" text="ID WAITING ROOM 13041" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="24.0"/>
+      </font>
+   </Label>
+   <Button layoutY="1.0" mnemonicParsing="false" onAction="#ClickExit" styleClass="painstart"
+           stylesheets="@application.css" text="EXIT"/>
+   <AnchorPane layoutX="79.0" layoutY="135.0" prefHeight="382.0" prefWidth="367.0" styleClass="panewait"
+               stylesheets="@application.css">
+      <Line endX="-122.0" endY="-102.00001525878906" layoutX="191.0" layoutY="102.0" startX="-122.0" startY="191.5"/>
+      <Line endX="264.0" endY="-1.52587890625E-5" layoutX="101.0" layoutY="58.0" startX="-100.0"/>
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="62.0" text="Rank" textFill="#3e08ef">
          <font>
-            <Font name="System Bold" size="24.0" />
+            <Font name="System Bold" size="20.0"/>
          </font>
       </Label>
-      <Button layoutY="1.0" mnemonicParsing="false" onAction="#ClickExit" styleClass="painstart" stylesheets="@application.css" text="EXIT" />
-      <AnchorPane layoutX="79.0" layoutY="135.0" prefHeight="382.0" prefWidth="367.0" styleClass="panewait" stylesheets="@application.css">
-         <children>
-            <Line endX="-122.0" endY="-102.00001525878906" layoutX="191.0" layoutY="102.0" startX="-122.0" startY="191.5" />
-            <Line endX="264.0" endY="-1.52587890625E-5" layoutX="101.0" layoutY="58.0" startX="-100.0" />
-            <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="62.0" text="Rank" textFill="#3e08ef">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-            </Label>
-            <Line endX="260.0" layoutX="101.0" layoutY="293.0" startX="-100.0" />
-            <Line endX="87.19998168945312" layoutX="102.0" layoutY="170.0" startX="-100.0" />
-            <Label layoutX="184.0" layoutY="142.0" prefHeight="51.0" prefWidth="81.0" text="VS" textFill="#1305d1">
-               <font>
-                  <Font name="System Bold Italic" size="36.0" />
-               </font>
-            </Label>
-            <Line endX="3.5999755859375" endY="-1.199981689453125" layoutX="363.0" layoutY="171.0" startX="-131.39999389648438" startY="-1.199981689453125" />
-            <Button layoutX="122.0" layoutY="312.0" mnemonicParsing="false" onAction="#ClickStart" prefHeight="43.0" prefWidth="153.0" styleClass="painstart" stylesheets="@application.css" text="START" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-            </Button>
-            <Label layoutX="17.0" layoutY="103.0" text="Label" />
-            <Label layoutX="17.0" layoutY="230.0" text="Label" />
-            <ImageView fitHeight="63.0" fitWidth="74.0" layoutX="173.0" layoutY="67.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/images/pic6.png" />
-               </image>
-            </ImageView>
-            <Label layoutX="191.0" layoutY="121.0" text="User">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <ImageView fitHeight="63.0" fitWidth="74.0" layoutX="173.0" layoutY="191.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/images/pic6.png" />
-               </image>
-            </ImageView>
-            <Label layoutX="191.0" layoutY="248.0" text="User">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-         </children>
+      <Line endX="260.0" layoutX="101.0" layoutY="293.0" startX="-100.0"/>
+      <Line endX="87.19998168945312" layoutX="102.0" layoutY="170.0" startX="-100.0"/>
+      <Label layoutX="184.0" layoutY="142.0" prefHeight="51.0" prefWidth="81.0" text="VS" textFill="#1305d1">
+         <font>
+            <Font name="System Bold Italic" size="36.0"/>
+         </font>
+      </Label>
+      <Line endX="3.5999755859375" endY="-1.199981689453125" layoutX="363.0" layoutY="171.0"
+            startX="-131.39999389648438" startY="-1.199981689453125"/>
+      <Button layoutX="122.0" layoutY="312.0" mnemonicParsing="false" onAction="#ClickStart" prefHeight="43.0"
+              prefWidth="153.0" styleClass="painstart" stylesheets="@application.css" text="START" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0"/>
+         </font>
+      </Button>
+      <Label layoutX="17.0" layoutY="103.0" text="Label"/>
+      <Label layoutX="17.0" layoutY="230.0" text="Label"/>
+      <ImageView fitHeight="63.0" fitWidth="74.0" layoutX="173.0" layoutY="67.0" pickOnBounds="true"
+                 preserveRatio="true">
+         <Image url="@images/pic6.png"/>
+      </ImageView>
+      <Label layoutX="191.0" layoutY="121.0" text="User">
+         <font>
+            <Font name="System Bold" size="18.0"/>
+         </font>
+      </Label>
+      <ImageView fitHeight="63.0" fitWidth="74.0" layoutX="173.0" layoutY="191.0" pickOnBounds="true"
+                 preserveRatio="true">
+         <Image url="@images/pic6.png"/>
+      </ImageView>
+      <Label layoutX="191.0" layoutY="248.0" text="User">
+         <font>
+            <Font name="System Bold" size="18.0"/>
+         </font>
+      </Label>
+   </AnchorPane>
+   <AnchorPane layoutX="447.0" layoutY="135.0" prefHeight="382.0" prefWidth="102.0" styleClass="wait2"
+               stylesheets="@application.css">
+      <Label layoutX="38.0" layoutY="29.0" prefHeight="30.0" prefWidth="62.0" text="Online">
+         <font>
+            <Font name="System Bold" size="20.0"/>
+         </font>
+      </Label>
+      <ImageView fitHeight="43.0" fitWidth="49.0" layoutX="110.0" layoutY="14.0" pickOnBounds="true"
+                 preserveRatio="true">
+         <Image url="@images/pic5.png"/>
+      </ImageView>
+      <AnchorPane layoutX="-1.0" layoutY="76.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3"
+                  stylesheets="@application.css">
+         <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true"
+                    preserveRatio="true">
+            <Image url="@images/pic6.png"/>
+         </ImageView>
+         <Label layoutX="63.0" layoutY="1.0" text="User">
+            <font>
+               <Font name="System Bold" size="16.0"/>
+            </font>
+         </Label>
+         <Label layoutX="60.0" layoutY="25.0" text="Đã mời" textFill="#2e09d1">
+            <font>
+               <Font name="System Bold" size="12.0"/>
+            </font>
+         </Label>
       </AnchorPane>
-      <AnchorPane layoutX="447.0" layoutY="135.0" prefHeight="382.0" prefWidth="102.0" styleClass="wait2" stylesheets="@application.css">
-         <children>
-            <Label layoutX="38.0" layoutY="29.0" prefHeight="30.0" prefWidth="62.0" text="Online">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-            </Label>
-            <ImageView fitHeight="43.0" fitWidth="49.0" layoutX="110.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/images/pic5.png" />
-               </image>
-            </ImageView>
-            <AnchorPane layoutX="-1.0" layoutY="76.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3" stylesheets="@application.css">
-               <children>
-                  <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@/images/pic6.png" />
-                     </image>
-                  </ImageView>
-                  <Label layoutX="63.0" layoutY="1.0" text="User">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="60.0" layoutY="25.0" text="Đã mời" textFill="#2e09d1">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-            <AnchorPane layoutX="-1.0" layoutY="133.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3" stylesheets="@application.css">
-               <children>
-                  <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@/images/pic6.png" />
-                     </image>
-                  </ImageView>
-                  <Label layoutX="63.0" layoutY="6.0" text="User">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="57.0" layoutY="34.0" text="Online" textFill="#2e09d1">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-            <AnchorPane layoutX="-1.0" layoutY="193.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3" stylesheets="@application.css">
-               <children>
-                  <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@/images/pic6.png" />
-                     </image>
-                  </ImageView>
-                  <Label layoutX="63.0" layoutY="6.0" text="User">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="57.0" layoutY="34.0" text="Online" textFill="#2e09d1">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-            <AnchorPane layoutX="-1.0" layoutY="253.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3" stylesheets="@application.css">
-               <children>
-                  <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@/images/pic6.png" />
-                     </image>
-                  </ImageView>
-                  <Label layoutX="63.0" layoutY="6.0" text="User">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="57.0" layoutY="34.0" text="Online" textFill="#2e09d1">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-            <ImageView fitHeight="54.0" fitWidth="136.0" layoutX="53.0" layoutY="314.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@/images/pic7.png" />
-               </image>
-            </ImageView>
-         </children>
+      <AnchorPane layoutX="-1.0" layoutY="133.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3"
+                  stylesheets="@application.css">
+         <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true"
+                    preserveRatio="true">
+            <Image url="@images/pic6.png"/>
+         </ImageView>
+         <Label layoutX="63.0" layoutY="6.0" text="User">
+            <font>
+               <Font name="System Bold" size="16.0"/>
+            </font>
+         </Label>
+         <Label layoutX="57.0" layoutY="34.0" text="Online" textFill="#2e09d1">
+            <font>
+               <Font name="System Bold" size="12.0"/>
+            </font>
+         </Label>
       </AnchorPane>
-   </children>
+      <AnchorPane layoutX="-1.0" layoutY="193.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3"
+                  stylesheets="@application.css">
+         <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true"
+                    preserveRatio="true">
+            <Image url="@images/pic6.png"/>
+         </ImageView>
+         <Label layoutX="63.0" layoutY="6.0" text="User">
+            <font>
+               <Font name="System Bold" size="16.0"/>
+            </font>
+         </Label>
+         <Label layoutX="57.0" layoutY="34.0" text="Online" textFill="#2e09d1">
+            <font>
+               <Font name="System Bold" size="12.0"/>
+            </font>
+         </Label>
+      </AnchorPane>
+      <AnchorPane layoutX="-1.0" layoutY="253.0" prefHeight="48.0" prefWidth="154.0" styleClass="wait3"
+                  stylesheets="@application.css">
+         <ImageView fitHeight="30.0" fitWidth="51.0" layoutX="4.0" layoutY="4.0" pickOnBounds="true"
+                    preserveRatio="true">
+            <Image url="@images/pic6.png"/>
+         </ImageView>
+         <Label layoutX="63.0" layoutY="6.0" text="User">
+            <font>
+               <Font name="System Bold" size="16.0"/>
+            </font>
+         </Label>
+         <Label layoutX="57.0" layoutY="34.0" text="Online" textFill="#2e09d1">
+            <font>
+               <Font name="System Bold" size="12.0"/>
+            </font>
+         </Label>
+      </AnchorPane>
+      <ImageView fitHeight="54.0" fitWidth="136.0" layoutX="53.0" layoutY="314.0" pickOnBounds="true"
+                 preserveRatio="true">
+         <Image url="@images/pic7.png"/>
+      </ImageView>
+   </AnchorPane>
 </AnchorPane>

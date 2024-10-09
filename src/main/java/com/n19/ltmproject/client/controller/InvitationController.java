@@ -9,52 +9,50 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class InvitationController {
-	private ServerConnection serverConnection; // Thêm thuộc tính này để nhận serverConnection
+
+	private ServerConnection serverConnection;
 	private Stage primaryStage;
-    // Phương thức để set serverConnection từ TrangChuController
+
 	public void setServerConnection(ServerConnection serverConnection, Stage stage) {
         this.serverConnection = serverConnection;
         this.primaryStage = stage; 
 	}
+
 	public void ClickAccept(ActionEvent e) throws IOException {
-//		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
 
         Parent WaitingRoomParent = loader.load();
         Scene scene = new Scene(WaitingRoomParent);
 
-        // Lấy controller và thiết lập kết nối server
         WaitingRoomController WaitingRoomParentController = loader.getController();
         WaitingRoomParentController.setServerConnection(serverConnection,primaryStage);
         
         primaryStage.setScene(scene);
     }
+
 	public void ClickRefuse(ActionEvent e) throws IOException {
-//		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/TrangChu.fxml"));
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
         Parent trangChuViewParent = loader.load();
         Scene scene = new Scene(trangChuViewParent);
 
-        // Lấy controller và thiết lập kết nối server
-        TrangChuController trangChuController = loader.getController();
-        trangChuController.setServerConnection(serverConnection,primaryStage);
+        MainPageController mainPageController = loader.getController();
+        mainPageController.setServerConnection(serverConnection,primaryStage);
         
         primaryStage.setScene(scene);
     }
+
 	public void ClickInviteX(ActionEvent e) throws IOException {
-//		Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/TrangChu.fxml"));
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
         Parent trangChuViewParent = loader.load();
         Scene scene = new Scene(trangChuViewParent);
 
-        // Lấy controller và thiết lập kết nối server
-        TrangChuController trangChuController = loader.getController();
-        trangChuController.setServerConnection(serverConnection,primaryStage);
+        MainPageController mainPageController = loader.getController();
+        mainPageController.setServerConnection(serverConnection,primaryStage);
         
         primaryStage.setScene(scene);
     }
