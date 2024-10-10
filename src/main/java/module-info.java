@@ -17,4 +17,5 @@ module com.example.demojavafx {
     opens com.n19.ltmproject.client.controller to javafx.fxml;
     exports com.n19.ltmproject.client;
     opens com.n19.ltmproject.client to javafx.fxml;
+    opens com.n19.ltmproject.server.model to javafx.base;
 }
