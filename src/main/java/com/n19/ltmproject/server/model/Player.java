@@ -11,6 +11,7 @@ public class Player {
     private int totalPoints;
     private int totalGames;
     private int wins;
+    private int draws;
     private int losses;
     private PlayerStatus status;
 
@@ -23,7 +24,7 @@ public class Player {
         this.status = PlayerStatus.OFFLINE;
     }
 
-    public Player(int id, String username, String password, String email, int totalPoints, int totalGames, int wins, int losses, PlayerStatus status) {
+    public Player(int id, String username, String password, String email, int totalPoints, int totalGames, int wins, int draws,int losses, PlayerStatus status) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -31,6 +32,7 @@ public class Player {
         this.totalPoints = totalPoints;
         this.totalGames = totalGames;
         this.wins = wins;
+        this.draws = draws;
         this.losses = losses;
         this.status = status;
     }
@@ -90,6 +92,16 @@ public class Player {
     public void setWins(int wins) {
         this.wins = wins;
     }
+
+
+    public int getDraws() {
+        return draws;
+    }
+
+    public void setDrawss(int draws) {
+        this.draws = draws;
+    }
+
 
     public int getLosses() {
         return losses;
