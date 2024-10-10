@@ -1,6 +1,6 @@
 package com.n19.ltmproject.client.controller;
 
-import com.n19.ltmproject.client.model.ServerConnection;
+import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,11 +10,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class AchievementController {
-    private ServerConnection serverConnection;
+    private ServerHandler serverHandler;
     private Stage primaryStage;
 
-    public void setServerConnection(ServerConnection serverConnection, Stage stage) {
-        this.serverConnection = serverConnection;
+    public void setServerConnection(ServerHandler serverHandler, Stage stage) {
+        this.serverHandler = serverHandler;
         this.primaryStage = stage;
     }
 
@@ -26,7 +26,7 @@ public class AchievementController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverConnection,primaryStage);
+        mainPageController.setServerConnection(serverHandler,primaryStage);
 
         primaryStage.setScene(scene);
     }

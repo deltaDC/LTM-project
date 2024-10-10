@@ -1,7 +1,7 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import com.n19.ltmproject.client.model.ServerConnection;
+import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,11 +10,11 @@ import javafx.stage.Stage;
 
 public class InvitationController {
 
-	private ServerConnection serverConnection;
+	private ServerHandler serverHandler;
 	private Stage primaryStage;
 
-	public void setServerConnection(ServerConnection serverConnection, Stage stage) {
-        this.serverConnection = serverConnection;
+	public void setServerConnection(ServerHandler serverHandler, Stage stage) {
+        this.serverHandler = serverHandler;
         this.primaryStage = stage; 
 	}
 
@@ -26,7 +26,7 @@ public class InvitationController {
         Scene scene = new Scene(WaitingRoomParent);
 
         WaitingRoomController WaitingRoomParentController = loader.getController();
-        WaitingRoomParentController.setServerConnection(serverConnection,primaryStage);
+        WaitingRoomParentController.setServerConnection(serverHandler,primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -39,7 +39,7 @@ public class InvitationController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverConnection,primaryStage);
+        mainPageController.setServerConnection(serverHandler,primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -52,7 +52,7 @@ public class InvitationController {
         Scene scene = new Scene(trangChuViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverConnection,primaryStage);
+        mainPageController.setServerConnection(serverHandler,primaryStage);
         
         primaryStage.setScene(scene);
     }

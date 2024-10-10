@@ -1,7 +1,7 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import com.n19.ltmproject.client.model.ServerConnection;
+import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,12 +18,15 @@ public class LoginController {
     TextField userText,passText;
 
     public void ClickLogin(ActionEvent e) throws IOException {
-        ServerConnection serverConnection = new ServerConnection();
-        serverConnection.connect("localhost", 1234);
+        ServerHandler serverHandler = new ServerHandler();
+        serverHandler.connect("localhost", 1234);
 
-        serverConnection.sendMessage(userText.getText());
+        String username = userText.getText();
+        String password = passText.getText();
 
-        String response = serverConnection.receiveMessage();
+        serverHandler.sendMessage(username + " " + password);
+
+        String response = serverHandler.receiveMessage();
         System.out.println("Response from server: " + response);
 
         //TODO change hard code to enum
@@ -36,7 +39,7 @@ public class LoginController {
             Scene scene = new Scene(MainPageViewParent);
 
             MainPageController mainPageController = loader.getController();
-            mainPageController.setServerConnection(serverConnection,stage);
+            mainPageController.setServerConnection(serverHandler,stage);
             
             stage.setScene(scene);
         } else {

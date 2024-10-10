@@ -6,15 +6,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import com.n19.ltmproject.client.model.ServerConnection;
+import com.n19.ltmproject.client.handler.ServerHandler;
 
 public class WaitingRoomController {
 
-    private ServerConnection serverConnection;
+    private ServerHandler serverHandler;
     private Stage primaryStage;
 
-    public void setServerConnection(ServerConnection serverConnection, Stage stage) {
-        this.serverConnection = serverConnection;
+    public void setServerConnection(ServerHandler serverHandler, Stage stage) {
+        this.serverHandler = serverHandler;
         this.primaryStage = stage; 
     }
 
@@ -26,7 +26,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverConnection,primaryStage);
+        mainPageController.setServerConnection(serverHandler,primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -39,7 +39,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(GamePlayViewParent);
 
         GamePlayController gameController = loader.getController();
-        gameController.setServerConnection(serverConnection,primaryStage);
+        gameController.setServerConnection(serverHandler,primaryStage);
 
         primaryStage.setScene(scene);
     }

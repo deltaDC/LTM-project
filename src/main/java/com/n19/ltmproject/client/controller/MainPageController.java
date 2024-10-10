@@ -3,7 +3,7 @@ package com.n19.ltmproject.client.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import com.n19.ltmproject.client.model.ServerConnection;
+import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.server.model.enums.PlayerStatus;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -36,14 +36,14 @@ public class MainPageController implements Initializable {
     private TableColumn<Player, PlayerStatus> statusColumn;
 
     private ObservableList<Player> playerList;
-    private ServerConnection serverConnection;
+    private ServerHandler serverHandler;
     private Stage primaryStage;
 
     private boolean isListening = false;
 
 
-    public void setServerConnection(ServerConnection serverConnection, Stage stage) {
-        this.serverConnection = serverConnection;
+    public void setServerConnection(ServerHandler serverHandler, Stage stage) {
+        this.serverHandler = serverHandler;
         this.primaryStage = stage;
 
         if (!isListening) {
@@ -57,7 +57,7 @@ public class MainPageController implements Initializable {
         new Thread(() -> {
             try {
                 while (true) {
-                    String serverMessage = serverConnection.receiveMessage();
+                    String serverMessage = serverHandler.receiveMessage();
                     if (serverMessage != null) {
                         System.out.println("Received from server: " + serverMessage);
                         if (serverMessage.contains("Invite You Game")) {
@@ -80,7 +80,7 @@ public class MainPageController implements Initializable {
                 Parent waitViewParent = loader.load();
 
                 WaitingRoomController waitingRoomController = loader.getController();
-                waitingRoomController.setServerConnection(serverConnection,primaryStage);
+                waitingRoomController.setServerConnection(serverHandler,primaryStage);
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -98,7 +98,7 @@ public class MainPageController implements Initializable {
                 Parent invitationParent = loader.load();
 
                 InvitationController inviteController = loader.getController();
-                inviteController.setServerConnection(serverConnection,primaryStage);
+                inviteController.setServerConnection(serverHandler,primaryStage);
 
                 Scene scene = new Scene(invitationParent);
                 primaryStage.setScene(scene);
@@ -124,7 +124,7 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(AchievementViewParent);
 
         AchievementController achievementController = loader.getController();
-        achievementController.setServerConnection(serverConnection,primaryStage);
+        achievementController.setServerConnection(serverHandler,primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -132,7 +132,7 @@ public class MainPageController implements Initializable {
     public void ClickInvitePlayer(ActionEvent event) {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
         if (selectedPlayer != null) {
-            serverConnection.sendMessage("Invite:" + selectedPlayer.getUsername());
+            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
 
             moveToWaitingRoom();
         } else {
