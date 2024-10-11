@@ -5,6 +5,9 @@ import com.n19.ltmproject.server.handler.ClientHandler;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+* This class is responsible for managing the clients that are connected to the server.
+*/
 public class ClientManager {
 
     private final List<ClientHandler> clients = new ArrayList<>();
