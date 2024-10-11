@@ -68,12 +68,17 @@
          </TableView>
       </AnchorPane>
    </AnchorPane>
-   <Button layoutX="494.0" layoutY="6.0" mnemonicParsing="false" onAction="#ClickLogout" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #0DBC4A;" text="Log out" textFill="WHITE">
+   <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#ClickLogout" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #0DBC4A;" text="Log out" textFill="WHITE">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
    </Button>
    <Button layoutX="494.0" layoutY="46.0" mnemonicParsing="false" onAction="#ClickAchievement" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #0DBC4A;" text="Achievement" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font>
+   </Button>
+   <Button layoutX="494.0" layoutY="14.0" mnemonicParsing="false" onAction="#ClickLeaderBoard" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #0DBC4A;" text="LeaderBoard" textFill="WHITE">
       <font>
          <Font name="System Bold" size="12.0" />
       </font>
