@@ -26,8 +26,8 @@
       </Label>
       <Line endX="641.0" endY="-0.8000030517578125" layoutX="-41.0" layoutY="105.0" startX="41.0000114440918" startY="-0.8000030517578125" stroke="GREY" strokeWidth="5.0" />
    </AnchorPane>
-   <AnchorPane layoutX="13.0" layoutY="119.0" prefHeight="466.0" prefWidth="577.0" styleClass="thanhtuu-pane">
-      <AnchorPane layoutX="8.0" layoutY="1.0" prefHeight="373.0" prefWidth="143.0" styleClass="thanhtuu-pane2">
+   <AnchorPane layoutX="13.0" layoutY="119.0" prefHeight="466.0" prefWidth="577.0" styleClass="achievement-pane-yellow">
+      <AnchorPane layoutX="8.0" layoutY="1.0" prefHeight="373.0" prefWidth="143.0" styleClass="achievement-pane-user">
          <ImageView fitHeight="97.0" fitWidth="140.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/useravartar3.png" />
          </ImageView>
@@ -47,9 +47,9 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <TextField focusTraversable="false" layoutX="181.0" layoutY="56.0" prefHeight="28.0" prefWidth="110.0" text="Search" />
+      <TextField focusTraversable="false" layoutX="181.0" layoutY="56.0" prefHeight="28.0" prefWidth="110.0" styleClass="thanhtuu-field" text="Search" />
       <CheckBox layoutX="303.0" layoutY="61.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="143.0" selected="true" text="Not currently owned" textFill="#dddddd" />
-      <AnchorPane layoutX="181.0" layoutY="106.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="181.0" layoutY="106.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="28.0" layoutY="31.0" prefHeight="28.0" prefWidth="53.0" text="No title" textFill="#dddddd">
             <font>
                <Font size="16.0" />
@@ -61,42 +61,42 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <AnchorPane layoutX="181.0" layoutY="240.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="181.0" layoutY="240.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="7.0" layoutY="31.0" prefHeight="28.0" prefWidth="110.0" text="Ocean Cleaner" textFill="#dddddd">
             <font>
                <Font size="16.0" />
             </font>
          </Label>
       </AnchorPane>
-      <AnchorPane layoutX="313.0" layoutY="240.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="313.0" layoutY="240.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="7.0" layoutY="31.0" prefHeight="28.0" prefWidth="110.0" text="Green Recycle" textFill="#dddddd">
             <font>
                <Font size="16.0" />
             </font>
          </Label>
       </AnchorPane>
-      <AnchorPane layoutX="445.0" layoutY="240.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="445.0" layoutY="240.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="7.0" layoutY="31.0" prefHeight="28.0" prefWidth="110.0" text="Environmental" textFill="#dddddd">
             <font>
                <Font size="16.0" />
             </font>
          </Label>
       </AnchorPane>
-      <AnchorPane layoutX="181.0" layoutY="344.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="181.0" layoutY="344.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="7.0" layoutY="31.0" prefHeight="28.0" prefWidth="110.0" text="Eco Champion" textFill="#dddddd">
             <font>
                <Font size="16.0" />
             </font>
          </Label>
       </AnchorPane>
-      <AnchorPane layoutX="313.0" layoutY="344.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="313.0" layoutY="344.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="7.0" layoutY="31.0" prefHeight="28.0" prefWidth="110.0" text="Sorting Master" textFill="#dddddd">
             <font>
                <Font size="16.0" />
             </font>
          </Label>
       </AnchorPane>
-      <AnchorPane layoutX="445.0" layoutY="344.0" prefHeight="90.0" prefWidth="122.0" styleClass="thanhtuu-pane3">
+      <AnchorPane layoutX="445.0" layoutY="344.0" prefHeight="90.0" prefWidth="122.0" styleClass="achievement-pane-child">
          <Label layoutX="7.0" layoutY="31.0" prefHeight="28.0" prefWidth="110.0" text="Paper Hunter" textFill="#dddddd">
             <font>
                <Font size="16.0" />

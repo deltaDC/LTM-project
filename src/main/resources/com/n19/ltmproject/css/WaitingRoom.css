@@ -1,0 +1,25 @@
+/*START WAITINGROOM CSS */
+.acthorpane-waiting-main{
+    -fx-border-radius: 10px;      /* Độ bo tròn của viền */
+    -fx-background-color: #E7DCC1;   /* Màu nền */
+    -fx-background-radius: 10px;
+}
+.button-waiting-start{
+    -fx-background-color:  #3B8E26;
+    -fx-border-radius: 15;
+    -fx-background-radius: 30;
+}
+.label-waiting-idphong{
+    -fx-background-color: #3B8E26;
+    -fx-alignment: center;
+}
+.acthorpane-waiting-online{
+    -fx-border-radius: 10px;      /* Độ bo tròn của viền */
+    -fx-background-color: #F5F5F5;   /* Màu nền */
+    -fx-background-radius: 10px;
+}
+.acthorpane-waiting-child{
+    -fx-background-color: #D9D9D9;
+}
+
+/*END CSS WAITINGROOM */
