@@ -1,9 +1,9 @@
 /*START Trang Chu CSS  */
 .acthorpanemain{
 
-    -fx-border-radius: 10px;      /* Độ bo tròn của viền */
+    -fx-border-radius: 0 0 10px 10px;;      /* Độ bo tròn của viền */
     -fx-background-color: #E7DCC1;   /* Màu nền */
-    -fx-background-radius: 10px;
+    -fx-background-radius: 0 0 10px 10px;
 }
 .acthorpanechild {
     -fx-border-color: gray;      /* Màu sắc của viền */
