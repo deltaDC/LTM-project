@@ -136,7 +136,7 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(LeaderBoardViewParent);
 
         LeaderBoardController boardController = loader.getController();
-        boardController.setServerConnection(serverHandler,primaryStage);
+        boardController.setServerConnection(serverHandler, primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -171,9 +171,6 @@ public class MainPageController implements Initializable {
         table.setItems(playerList);
         table.setFocusTraversable(false);
         table.getSelectionModel().clearSelection();
-
-
-//        table.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.SINGLE);
 
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {

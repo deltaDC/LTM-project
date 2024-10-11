@@ -26,10 +26,13 @@ public class LeaderBoardController implements Initializable {
 
     @FXML
     private TableView<Player> rankboard;
+
     @FXML
     private TableColumn<Player, String> nameColumn;
+
     @FXML
     private TableColumn<Player, String> matchColumn;
+
     @FXML
     private TableColumn<Player, Integer> rankColumn;
 
@@ -38,8 +41,10 @@ public class LeaderBoardController implements Initializable {
 
     @FXML
     private TableColumn<Player, Integer> drawColumn;
+
     @FXML
     private TableColumn<Player, Integer> lossColumn;
+
     @FXML
     private TableColumn<Player, Integer> pointColumn;
 
@@ -68,6 +73,7 @@ public class LeaderBoardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //TODO fetch from server
         playerList = FXCollections.observableArrayList(
                 new Player(1,"user1", "1", "chinh@gmail.com",49,20,15,4,1,PlayerStatus.OFFLINE),
                 new Player(2,"user2", "1", "chinh@gmail.com",45,20,14,3,3,PlayerStatus.OFFLINE),
@@ -75,6 +81,7 @@ public class LeaderBoardController implements Initializable {
                 new Player(4,"user4", "1", "chinh@gmail.com",36,20,10,6,4,PlayerStatus.OFFLINE),
                 new Player(5,"user5", "1", "chinh@gmail.com",32,20,9,5,6,PlayerStatus.OFFLINE)
         );
+
         rankColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         matchColumn.setCellValueFactory(new PropertyValueFactory<>("totalGames"));
@@ -85,14 +92,5 @@ public class LeaderBoardController implements Initializable {
         rankboard.setItems(playerList);
         rankboard.setFocusTraversable(false);
         rankboard.getSelectionModel().clearSelection();
-
-
-//        table.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.SINGLE);
-
-//        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-//            if (newSelection != null) {
-//                System.out.println("Selected items: " + newSelection.getUsername());
-//            }
-//        });
     }
 }
