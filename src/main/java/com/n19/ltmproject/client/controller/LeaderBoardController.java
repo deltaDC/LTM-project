@@ -75,11 +75,11 @@ public class LeaderBoardController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         //TODO fetch from server
         playerList = FXCollections.observableArrayList(
-                new Player(1,"user1", "1", "chinh@gmail.com",49,20,15,4,1,PlayerStatus.OFFLINE),
-                new Player(2,"user2", "1", "chinh@gmail.com",45,20,14,3,3,PlayerStatus.OFFLINE),
-                new Player(3,"user3", "1", "chinh@gmail.com",41,20,12,5,3,PlayerStatus.OFFLINE),
-                new Player(4,"user4", "1", "chinh@gmail.com",36,20,10,6,4,PlayerStatus.OFFLINE),
-                new Player(5,"user5", "1", "chinh@gmail.com",32,20,9,5,6,PlayerStatus.OFFLINE)
+//                new Player(1,"user1", "1", "chinh@gmail.com",49,20,15,4,1,PlayerStatus.OFFLINE),
+//                new Player(2,"user2", "1", "chinh@gmail.com",45,20,14,3,3,PlayerStatus.OFFLINE),
+//                new Player(3,"user3", "1", "chinh@gmail.com",41,20,12,5,3,PlayerStatus.OFFLINE),
+//                new Player(4,"user4", "1", "chinh@gmail.com",36,20,10,6,4,PlayerStatus.OFFLINE),
+//                new Player(5,"user5", "1", "chinh@gmail.com",32,20,9,5,6,PlayerStatus.OFFLINE)
         );
 
         rankColumn.setCellValueFactory(new PropertyValueFactory<>("id"));

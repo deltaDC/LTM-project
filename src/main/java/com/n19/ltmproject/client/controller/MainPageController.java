@@ -155,12 +155,12 @@ public class MainPageController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         playerList = FXCollections.observableArrayList(
-            new Player("user1", "1", "chinh@gmail.com"),
-            new Player("user2", "1", "chinh@gmail.com"),
-            new Player("user3", "1", "chinh@gmail.com"),
-            new Player("user4", "1", "chinh@gmail.com"),
-            new Player("user5", "1", "chinh@gmail.com"),
-            new Player("user6", "1", "chinh@gmail.com")
+//            new Player("user1", "1", "chinh@gmail.com"),
+//            new Player("user2", "1", "chinh@gmail.com"),
+//            new Player("user3", "1", "chinh@gmail.com"),
+//            new Player("user4", "1", "chinh@gmail.com"),
+//            new Player("user5", "1", "chinh@gmail.com"),
+//            new Player("user6", "1", "chinh@gmail.com")
 
         );
 
