@@ -1,16 +1,16 @@
 /*START Trang Chu CSS  */
 .acthorpanemain-invitation{
 
-    -fx-border-radius: 10px;      /* Độ bo tròn của viền */
-    -fx-background-color: #E7DCC1;   /* Màu nền */
-    -fx-background-radius: 10px;
+    -fx-border-radius: 0 0 10px 10px;;      /* Độ bo tròn của viền */
+    -fx-background-color: #F5E7C0;   /* Màu nền */
+    -fx-background-radius: 0 0 10px 10px;
 }
 .acthorpanechild-invitation{
     -fx-border-color: gray;      /* Màu sắc của viền */
     -fx-border-width: 1px;        /* Độ dày của viền */
     -fx-border-style: solid;       /* Kiểu viền (solid, dashed, dotted, v.v.) */
     -fx-border-radius: 10px;      /* Độ bo tròn của viền */
-    -fx-background-color: #E7DCC1;   /* Màu nền */
+    -fx-background-color: #F5E7C0;   /* Màu nền */
     -fx-background-radius: 10px;   /* Độ bo tròn cho nền */
 }
 
@@ -26,26 +26,29 @@
     -fx-font-family: "Arial";
     -fx-font-size: 14px;
 }
-
-.button-acthorpane-invitation:hover {
-    -fx-background-color: #e9e0c9;
+.acthorpanechild-invitation-inviteyou{
+    -fx-background-color: #F5E7C0;
+}
+.button-acthorpane-invitation-inviteyou{
+    -fx-background-color: #F5E7C0;
+    -fx-border-color: #01B861;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 5 15;
+    -fx-text-fill: #01B861;
+    -fx-font-family: "Arial";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
 }
 
-.button-acthorpane-invitation:pressed {
-    -fx-background-color: #d8c9a9;
+.buttonaccept-invitation{
+    -fx-background-color:  #01B861;
+    -fx-border-radius: 15;
+    -fx-background-radius: 30;
 }
-
-.button-acthorpane-invitation .dot {
-    -fx-background-color: #3B8E26;
-    -fx-background-radius: 50%;
-    -fx-min-width: 10px;
-    -fx-min-height: 10px;
-    -fx-max-width: 10px;
-    -fx-max-height: 10px;
-    -fx-margin-right: 10px;
-}
-.buttonacceptandrefuse-invitation{
-    -fx-background-color:  #3B8E26;
+.buttonrefuse-invitation{
+    -fx-background-color:  #F85A37;
     -fx-border-radius: 15;
     -fx-background-radius: 30;
 }

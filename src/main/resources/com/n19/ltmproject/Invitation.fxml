@@ -9,54 +9,58 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" stylesheets="@css/Invitation.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.InvitationController">
-   <ImageView fitHeight="220.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="240.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@images/backgroundhomepage2.png" />
    </ImageView>
-   <ImageView fitHeight="380.0" fitWidth="600.0" layoutY="220.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="360.0" fitWidth="600.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@images/backgroundhomepage1.png" />
    </ImageView>
-   <AnchorPane layoutX="59.0" layoutY="220.0" prefHeight="372.0" prefWidth="519.0" styleClass="acthorpanemain-invitation">
-      <AnchorPane fx:id="pane2" layoutX="3.0" layoutY="-1.0" prefHeight="366.0" prefWidth="514.0" styleClass="acthorpanechild-invitation">
-         <Label layoutX="33.0" layoutY="59.0" text="USER1 INVITE YOU" textFill="#0e0dba">
+   <AnchorPane layoutX="24.0" layoutY="237.0" prefHeight="353.0" prefWidth="558.0" styleClass="acthorpanemain-invitation">
+      <AnchorPane fx:id="pane2" layoutX="2.0" layoutY="2.0" prefHeight="346.0" prefWidth="553.0" styleClass="acthorpanechild-invitation">
+         <Label layoutX="427.0" layoutY="16.0" prefHeight="54.0" prefWidth="94.0" text="PROFILE" textFill="#01b861">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>
          </Label>
-         <Button layoutX="41.0" layoutY="298.0" mnemonicParsing="false" onAction="#ClickAccept" prefHeight="43.0" prefWidth="186.0" styleClass="buttonacceptandrefuse-invitation" stylesheets="@css/Invitation.css" text="ACCEPT" textFill="WHITE">
-            <font>
-               <Font name="System Bold" size="20.0" />
-            </font>
-         </Button>
-         <Label layoutX="380.0" layoutY="29.0" prefHeight="54.0" prefWidth="94.0" text="PROFILE" textFill="#0e0dba">
+         <Label layoutX="434.0" layoutY="54.0" prefHeight="44.0" prefWidth="79.0" text="USER1" textFill="#01b861">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>
          </Label>
-         <Label layoutX="380.0" layoutY="61.0" prefHeight="44.0" prefWidth="79.0" text="USER1" textFill="#0e0dba">
-            <font>
-               <Font name="System Bold" size="20.0" />
-            </font>
-         </Label>
-         <Button layoutX="312.0" layoutY="137.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="ONLINE" />
-         <Button layoutX="312.0" layoutY="183.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="STORE: " />
-         <Button layoutX="312.0" layoutY="229.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="RANK:" />
-         <Circle fill="#221e1f" layoutX="336.0" layoutY="75.0" radius="31.0" stroke="BLACK" strokeType="INSIDE" />
-         <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="315.0" layoutY="55.0" pickOnBounds="true" preserveRatio="true">
+         <Button layoutX="345.0" layoutY="126.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="POINT:" />
+         <Button layoutX="346.0" layoutY="249.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="LOSS:" />
+         <Button layoutX="346.0" layoutY="290.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="RANK:" />
+         <Circle fill="#221e1f" layoutX="383.0" layoutY="55.0" radius="40.0" stroke="BLACK" strokeType="INSIDE" />
+         <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="361.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/iconrecycle2.png" />
          </ImageView>
-         <Button layoutX="287.0" layoutY="298.0" mnemonicParsing="false" onAction="#ClickRefuse" prefHeight="43.0" prefWidth="186.0" styleClass="buttonacceptandrefuse-invitation" text="REFUSE" textFill="WHITE">
-            <font>
-               <Font name="System Bold" size="20.0" />
-            </font>
-         </Button>
-         <ImageView fitHeight="167.0" fitWidth="200.0" layoutX="34.0" layoutY="105.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@images/invitation.png" />
-         </ImageView>
-         <Button layoutX="487.0" mnemonicParsing="false" onAction="#ClickInviteX" text="X" textFill="RED">
+         <Button layoutX="524.0" mnemonicParsing="false" onAction="#ClickInviteX" style="-fx-background-color: #fdf2db;" text="X" textFill="#f85a37">
             <font>
                <Font name="System Bold" size="15.0" />
             </font>
          </Button>
+         <ImageView fitHeight="338.0" fitWidth="285.0" layoutX="18.0" layoutY="2.0" pickOnBounds="true">
+            <image>
+               <Image url="@images/invitation-image.png" />
+            </image>
+         </ImageView>
+         <Button layoutX="345.0" layoutY="208.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="DRAW:" />
+         <Button layoutX="346.0" layoutY="167.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="WIN:" />
+         <Button layoutX="27.0" layoutY="188.0" mnemonicParsing="false" onAction="#ClickAccept" prefHeight="50.0" prefWidth="144.0" styleClass="buttonaccept-invitation" stylesheets="@css/Invitation.css" text="ACCEPT" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="24.0" />
+            </font>
+         </Button>
+         <Button layoutX="27.0" layoutY="276.0" mnemonicParsing="false" onAction="#ClickRefuse" prefHeight="50.0" prefWidth="144.0" styleClass="buttonrefuse-invitation" stylesheets="@css/Invitation.css" text="REFUSE" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="24.0" />
+            </font>
+         </Button>
+         <AnchorPane layoutX="18.0" layoutY="88.0" prefHeight="88.0" prefWidth="278.0" styleClass="acthorpanechild-invitation-inviteyou">
+            <children>
+               <Button layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
+            </children>
+         </AnchorPane>
       </AnchorPane>
    </AnchorPane>
 </AnchorPane>

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.server.model.enums.PlayerStatus;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +19,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import com.n19.ltmproject.server.model.Player;
+import com.n19.ltmproject.client.model.Player;
 
 public class LeaderBoardController implements Initializable {
 

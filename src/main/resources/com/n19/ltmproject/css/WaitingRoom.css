@@ -5,13 +5,22 @@
     -fx-background-radius: 10px;
 }
 .button-waiting-start{
-    -fx-background-color:  #3B8E26;
+    -fx-background-color:  #2ECC57;
     -fx-border-radius: 15;
     -fx-background-radius: 30;
 }
-.label-waiting-idphong{
-    -fx-background-color: #3B8E26;
-    -fx-alignment: center;
+.button-waiting-ready{
+    -fx-background-color:  #91CF24;
+    -fx-border-radius: 15;
+    -fx-background-radius: 30;
+}
+.button-waiting-ready2{
+    -fx-background-color:  #2BC9FC;
+    -fx-border-radius: 15;
+    -fx-background-radius: 30;
+}
+.button-waiting-exit{
+    -fx-background-color:  #2ECC57;
 }
 .acthorpane-waiting-online{
     -fx-border-radius: 10px;      /* Độ bo tròn của viền */
