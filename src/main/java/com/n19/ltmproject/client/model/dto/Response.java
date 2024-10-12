@@ -1,4 +1,4 @@
-package com.n19.ltmproject.server.model.dto;
+package com.n19.ltmproject.client.model.dto;
 
 import lombok.Builder;
 import lombok.Data;

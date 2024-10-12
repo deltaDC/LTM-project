@@ -11,14 +11,10 @@ public class LoginCommand implements Command {
         //TODO implement login command
 
         System.out.println("LoginCommand.execute() called");
-        System.out.println("Action: " + request.getAction());
-        System.out.println("Data: " + request.getData());
 
-        Response response = new Response();
-        response.setStatus("OK");
-        response.setMessage("Login successful");
-        response.setData(null);
-
-        return response;
+        return Response.builder()
+                .status("OK")
+                .message("Login successful")
+                .build();
     }
 }

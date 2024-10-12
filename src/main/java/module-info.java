@@ -27,4 +27,7 @@ module com.example.demojavafx {
     opens com.n19.ltmproject.server.model.dto;
     exports com.n19.ltmproject.server.model.dto;
     exports com.n19.ltmproject.server.model;
+    exports com.n19.ltmproject.client.test_request.game;
+    opens com.n19.ltmproject.client.test_request.game to javafx.fxml;
+    opens com.n19.ltmproject.client.model.dto to com.google.gson;
 }

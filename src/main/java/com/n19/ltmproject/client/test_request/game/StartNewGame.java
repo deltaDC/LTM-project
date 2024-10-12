@@ -1,20 +1,17 @@
-package com.n19.ltmproject.client;
+package com.n19.ltmproject.client.test_request.game;
 
 import com.google.gson.Gson;
-import com.n19.ltmproject.server.model.dto.Request;
-import com.n19.ltmproject.server.model.dto.Response;
+import com.n19.ltmproject.client.model.dto.Request;
+import com.n19.ltmproject.client.model.dto.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Map;
 
-
-/**
- * A simple client that connects to the server and sends a test request.
- */
-public class TestClient {
+public class StartNewGame {
 
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 1234;
@@ -27,11 +24,14 @@ public class TestClient {
 
             // Create a test request
             Request request = new Request();
-            request.setAction("getAllGameData");
-            request.setData(null);
+            request.setAction("startNewGame");
+            Map<String, Object> params = Map.of("player1Id", 1L, "player2Id", 2L);
+            request.setParams(params);
+
+            String toJson = gson.toJson(request);
 
             // Send the request to the server
-            output.println(gson.toJson(request));
+            output.println(toJson);
 
             // Read the response from the server
             String jsonResponse = input.readLine();
