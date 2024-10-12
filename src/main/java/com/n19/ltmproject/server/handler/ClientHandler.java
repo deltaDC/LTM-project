@@ -1,6 +1,11 @@
 package com.n19.ltmproject.server.handler;
 
+import com.google.gson.Gson;
+import com.n19.ltmproject.server.command.Command;
+import com.n19.ltmproject.server.command.CommandFactory;
 import com.n19.ltmproject.server.manager.ClientManager;
+import com.n19.ltmproject.server.model.dto.Request;
+import com.n19.ltmproject.server.model.dto.Response;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,6 +24,7 @@ public class ClientHandler extends Thread {
     private PrintWriter output;
     private String username;
     private final ClientManager clientManager;
+    private final Gson gson = new Gson();
 
     /**
      * Constructor to initialize the ClientHandler with a socket and a reference to the ClientManager.
@@ -41,25 +47,19 @@ public class ClientHandler extends Thread {
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
-            String credentials = input.readLine();
-            System.out.println("[Server] Received credentials: " + credentials);
+            String jsonRequest;
+            while ((jsonRequest = input.readLine()) != null) {
+                Request request = gson.fromJson(jsonRequest, Request.class);
 
-            String[] parts = credentials.split(" ");
-            if (parts.length == 2) {
-                //TODO check the credentials in the database -> write a service
-                this.username = parts[0];
-                String password = parts[1];
-                System.out.println("[Server] " + username + " has connected");
+                System.out.println("---------------");
+                System.out.println("Action: " + request.getAction());
+                System.out.println("Data: " + request.getData());
+                System.out.println("---------------");
 
-                output.println("Login successful");
+                Command command = CommandFactory.getCommand(request.getAction());
+                Response response = command.execute(request);
 
-                // This is to keep user not closeConnection() until close the app
-                String message;
-                while ((message = input.readLine()) != null) {
-                    System.out.println("[Server] Received message from " + username + ": " + message);
-                }
-            } else {
-                output.println("Invalid credentials format.");
+                output.println(gson.toJson(response));
             }
         } catch (IOException e) {
             System.out.println("Error with client " + username + ": " + e.getMessage());
