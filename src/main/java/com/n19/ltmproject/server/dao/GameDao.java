@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.Date;
 import java.util.List;
 
 public class GameDao {
@@ -35,5 +36,55 @@ public class GameDao {
         }
 
         return games;
+    }
+
+    public Game createNewGame(long player1Id, long player2Id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        Game game = null;
+
+        try {
+            transaction = session.beginTransaction();
+            game = new Game();
+            game.setPlayer1Id(player1Id);
+            game.setPlayer2Id(player2Id);
+            game.setStartTime(String.valueOf(new Date()));
+            session.save(game);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
+        return game;
+    }
+
+    public Game endGameById(long gameId, long player1Score, long player2Score) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        Game game = null;
+
+        try {
+            transaction = session.beginTransaction();
+            game = session.get(Game.class, gameId);
+            game.setPlayer1Score(player1Score);
+            game.setPlayer2Score(player2Score);
+            game.setEndTime(String.valueOf(new Date()));
+            session.update(game);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
+        return game;
     }
 }

@@ -22,7 +22,6 @@ public class ClientHandler extends Thread {
     private final Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-    private String username;
     private final ClientManager clientManager;
     private final Gson gson = new Gson();
 
@@ -53,7 +52,7 @@ public class ClientHandler extends Thread {
 
                 System.out.println("---------------");
                 System.out.println("Action: " + request.getAction());
-                System.out.println("Data: " + request.getData());
+                System.out.println("Data: " + request.getParams().toString());
                 System.out.println("---------------");
 
                 Command command = CommandFactory.getCommand(request.getAction());
@@ -62,14 +61,10 @@ public class ClientHandler extends Thread {
                 output.println(gson.toJson(response));
             }
         } catch (IOException e) {
-            System.out.println("Error with client " + username + ": " + e.getMessage());
+            System.out.println("[Error]: " + e.getMessage());
         } finally {
             closeConnection();
         }
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     /**
@@ -89,7 +84,7 @@ public class ClientHandler extends Thread {
             if (input != null) input.close();
             if (output != null) output.close();
             if (socket != null) socket.close();
-            System.out.println("Client " + username + " disconnected.");
+            System.out.println("Client disconnected.");
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {

@@ -19,10 +19,10 @@ public class GetAllGameDataCommand implements Command {
     @Override
     public Response execute(Request request) {
         List<Game> games = gameService.getAllGameData();
-        Response response = new Response();
-        response.setStatus("OK");
-        response.setMessage("Game data fetched successfully");
-        response.setData(games);
-        return response;
+        return Response.builder()
+                .status("OK")
+                .message("Game data fetched successfully")
+                .data(games)
+                .build();
     }
 }
