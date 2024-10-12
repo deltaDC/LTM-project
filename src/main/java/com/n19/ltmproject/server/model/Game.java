@@ -3,8 +3,6 @@ package com.n19.ltmproject.server.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Getter
@@ -37,7 +35,7 @@ public class Game {
 
     private long player2Score;
 
-    private LocalDateTime startTime;
+    private String startTime;
 
-    private LocalDateTime endTime;
+    private String endTime;
 }
