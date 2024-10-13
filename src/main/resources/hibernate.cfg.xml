@@ -9,7 +9,7 @@
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ltm</property>
         <property name="hibernate.connection.username">root</property>
 <!--        TODO add password-->
-        <property name="hibernate.connection.password"></property>
+        <property name="hibernate.connection.password">110303</property>
 
         <!-- JDBC connection pool settings -->
         <property name="hibernate.c3p0.min_size">5</property>
