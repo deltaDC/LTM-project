@@ -40,7 +40,7 @@ public class LoginController {
          String username = userText.getText();
          String password = passText.getText();
 
-         serverHandler.sendMessage(username + " " + password);
+//         serverHandler.sendMessage(username + " " + password);
 
          Request request = new Request();
          request.setAction("login");
