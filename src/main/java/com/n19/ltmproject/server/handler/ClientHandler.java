@@ -43,6 +43,7 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         try {
+
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 

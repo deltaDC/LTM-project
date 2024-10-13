@@ -12,10 +12,10 @@ public class ServerHandler {
     public void connect(String host, int port) {
         try {
             socket = new Socket(host, port);
-            out = new PrintWriter(socket.getOutputStream(), true);  // Enable auto-flush
+            out = new PrintWriter(socket.getOutputStream(), true); // Enable auto-flush
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            System.out.println("Successfully connected to the server!");  // Successful connection
+            System.out.println("Successfully connected to the server!"); // Successful connection
         } catch (UnknownHostException e) {
             System.out.println("Cannot connect to host: " + host + ". Check the server address.");
             e.printStackTrace();
@@ -27,9 +27,12 @@ public class ServerHandler {
 
     public void disconnect() throws IOException {
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (socket != null) socket.close();
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+            if (socket != null)
+                socket.close();
             System.out.println("Disconnected from the server.");
         } catch (IOException e) {
             System.out.println("Error while disconnecting: " + e.getMessage());
