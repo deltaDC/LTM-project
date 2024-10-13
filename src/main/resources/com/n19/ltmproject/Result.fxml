@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.n19.ltmproject.client.controller.ResultController">
+    <children>
+        <!-- Background Image -->
+        <ImageView layoutX="0" layoutY="0" fitWidth="500" fitHeight="400">
+            <image>
+                <Image url="@images/resultbackground.png"/>
+            </image>
+        </ImageView>
+
+        <!-- Game Title -->
+        <Label fx:id="gameTitle" layoutX="150" layoutY="0" text="GAME PHÂN LOẠI RÁC"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: black;"/>
+
+        <!-- Result Label -->
+        <Label fx:id="resultLabel" layoutX="120" layoutY="150" text="KẾT QUẢ TRÒ CHƠI"
+               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+        <!-- Score Section -->
+        <HBox layoutX="140" layoutY="200" spacing="10">
+            <!-- Player 1 Section -->
+            <VBox alignment="CENTER">
+                <ImageView fitWidth="60" fitHeight="60">
+                    <image>
+                        <Image url="@images/useravartar.png"/>
+                    </image>
+                </ImageView>
+                <Label text="PLAYER 1" style="-fx-text-fill: white;"/>
+            </VBox>
+
+            <!-- Score Label -->
+            <VBox alignment="CENTER">
+                <Label text="TỈ SỐ" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                <Label fx:id="scoreLabel" text="0 - 0" style="-fx-font-size: 40px; -fx-text-fill: white;"/>
+            </VBox>
+
+            <!-- Player 2 Section -->
+            <VBox alignment="CENTER">
+                <ImageView fitWidth="60" fitHeight="60">
+                    <image>
+                        <Image url="@images/useravartar3.png"/>
+                    </image>
+                </ImageView>
+                <Label text="PLAYER 2" style="-fx-text-fill: white;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Buttons Section -->
+        <HBox layoutX="160" layoutY="300" spacing="20">
+            <!-- Play Again Button -->
+            <Button fx:id="playAgainButton" text="Thách đấu lại" onAction="#handlePlayAgain"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+
+            <!-- Leaderboard Button
+             <Button fx:id="leaderboardButton" text="Xem Bảng Xếp Hạng" onAction="#handleViewLeaderboard"
+                    style="-fx-background-color: #00BFFF; -fx-text-fill: white;"/>
+            -->
+
+            <!-- Exit Button -->
+            <Button fx:id="exitButton" text="Thoát" onAction="#handleExit"
+                    style="-fx-background-color: #FF0000; -fx-text-fill: white;"/>
+        </HBox>
+    </children>
+</AnchorPane>
