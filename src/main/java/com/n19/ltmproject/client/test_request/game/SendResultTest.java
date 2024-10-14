@@ -2,7 +2,6 @@ package com.n19.ltmproject.client.test_request.game;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.service.SendResultService;
-import com.n19.ltmproject.client.model.dto.Response;
 
 import java.io.IOException;
 
@@ -20,7 +19,7 @@ public class SendResultTest {
         String result = "Team A won";  // Kết quả trận đấu
         try {
             // Gửi kết quả và nhận phản hồi
-            String responseMessage = sendResultService.sendMatchResult(matchId, result);
+            String responseMessage = sendResultService.sendGameResult(matchId, result);
             // In ra phản hồi
             System.out.println("Server response: " + responseMessage);
         } catch (IOException e) {

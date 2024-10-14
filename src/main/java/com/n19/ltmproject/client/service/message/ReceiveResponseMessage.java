@@ -1,4 +1,4 @@
-package com.n19.ltmproject.client.message;
+package com.n19.ltmproject.client.service.message;
 
 import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
