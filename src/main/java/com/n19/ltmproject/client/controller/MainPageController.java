@@ -1,5 +1,7 @@
 package com.n19.ltmproject.client.controller;
-
+// LAY DANH SACH NGUOI ON-LinE
+//LAY DANH SACH NGUOI IN_GAME
+// GUI LOI MOI
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;

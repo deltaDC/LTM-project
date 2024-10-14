@@ -1,5 +1,5 @@
 package com.n19.ltmproject.client.controller;
-
+// LOGIN
 import java.io.IOException;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.event.ActionEvent;
