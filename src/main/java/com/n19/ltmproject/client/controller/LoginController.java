@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.model.Player;
 import com.n19.ltmproject.client.model.dto.Request;
 import com.n19.ltmproject.client.model.dto.Response;
 import javafx.event.ActionEvent;
@@ -17,6 +18,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -28,10 +31,12 @@ public class LoginController {
 
 
     @FXML
-    TextField userText,passText;
+    TextField userText;
+    @FXML
+    PasswordField passText;
 
     public void ClickLogin(ActionEvent e) throws IOException {
-        Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+         Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
          BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
          PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
          ServerHandler serverHandler = new ServerHandler();
@@ -39,8 +44,6 @@ public class LoginController {
 
          String username = userText.getText();
          String password = passText.getText();
-
-//         serverHandler.sendMessage(username + " " + password);
 
          Request request = new Request();
          request.setAction("login");
@@ -57,7 +60,11 @@ public class LoginController {
 
          //TODO change hard code to enum
         if (response.getMessage().contains("Login successful")) {
-            System.out.println("Login successful, transitioning to MainPage...");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Login");
+            alert.setAlertType(Alert.AlertType.INFORMATION);
+            alert.setContentText("Login successful!");
+            alert.showAndWait();
 
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             FXMLLoader loader = new FXMLLoader();
@@ -75,6 +82,10 @@ public class LoginController {
             stage.setScene(scene);
             System.out.println("Scene changed to MainPage.");
         } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Signup");
+            alert.setContentText(response.getMessage());
+            alert.showAndWait();
             System.out.println("Login failed: " + response);
         }
     }
