@@ -6,67 +6,63 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.GamePlayController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.GamePlayController">
    <children>
-      <ImageView fx:id="avatarUser1" layoutX="30.0" layoutY="50.0" fitHeight="60.0" fitWidth="60.0">
+      <!-- Avatar and Score User 1 -->
+      <ImageView fx:id="avatarUser1" layoutX="10.0" layoutY="20.0" fitHeight="60.0" fitWidth="60.0">
          <image>
             <Image url="@images/useravartar.png" />
          </image>
       </ImageView>
+      <Label layoutX="10.0" layoutY="90.0" text="me" />
+      <Label fx:id="scoreUser1" layoutX="10.0" layoutY="110.0" text="Score: 0" />
 
-      <ImageView fx:id="avatarUser2" layoutX="520.0" layoutY="50.0" fitHeight="60.0" fitWidth="60.0">
+      <!-- Avatar and Score User 2 (Opponent) -->
+      <ImageView fx:id="avatarUser2" layoutX="530.0" layoutY="20.0" fitHeight="60.0" fitWidth="60.0">
          <image>
             <Image url="@images/useravartar3.png" />
          </image>
       </ImageView>
+      <Label layoutX="530.0" layoutY="90.0" text="User2" />
+      <Label fx:id="scoreUser2" layoutX="530.0" layoutY="110.0" text="Score: 0" />
 
-      <Label layoutX="30.0" layoutY="110.0" text="me" />
-      <Label fx:id="scoreUser1" layoutX="30.0" layoutY="130.0" text="Score: 15" />
+      <!-- Trash Image in Center -->
+      <ImageView fx:id="trashImage" layoutX="250.0" layoutY="180.0" fitHeight="100.0" fitWidth="100.0" />
 
-      <Label layoutX="520.0" layoutY="110.0" text="User2" />
-      <Label fx:id="scoreUser2" layoutX="520.0" layoutY="130.0" text="Score: 12" />
-
-      <Label fx:id="timerLabel" layoutX="280.0" layoutY="50.0" text="100" />
-
-<!--      <ImageView fx:id="trashImage" layoutX="250.0" layoutY="150.0" fitHeight="100.0" fitWidth="100.0" />-->
-
-      <ImageView fx:id="trashImage" layoutX="250.0" layoutY="130.0" fitHeight="100.0" fitWidth="100.0">
+      <!-- Trash Cans at the Bottom -->
+      <ImageView fx:id="trashCan1" layoutX="30.0" layoutY="450.0" fitHeight="120.0" fitWidth="90.0">
          <image>
-            <Image url="@images/organic/organic1.png" />
+            <Image url="@images/trashbin/trashbin_glass.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="trashCan2" layoutX="140.0" layoutY="450.0" fitHeight="120.0" fitWidth="90.0">
+         <image>
+            <Image url="@images/trashbin/trashbin_metal.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="trashCan3" layoutX="250.0" layoutY="450.0" fitHeight="120.0" fitWidth="90.0">
+         <image>
+            <Image url="@images/trashbin/trashbin_organic.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="trashCan4" layoutX="360.0" layoutY="450.0" fitHeight="120.0" fitWidth="90.0">
+         <image>
+            <Image url="@images/trashbin/trashbin_paper.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="trashCan5" layoutX="470.0" layoutY="450.0" fitHeight="120.0" fitWidth="90.0">
+         <image>
+            <Image url="@images/trashbin/trashbin_plastic.png" />
          </image>
       </ImageView>
 
-      <ImageView fx:id="trashCan1" layoutX="75.0" layoutY="300.0" fitHeight="100.0" fitWidth="60.0">
-         <image>
-            <Image url="@images/GlassBin.png" />
-         </image>
-      </ImageView>
+      <!-- Feedback Text -->
+      <Label fx:id="feedbackLabel" layoutX="50.0" layoutY="200.0" text="" style="-fx-font-size: 24px;" />
 
-      <ImageView fx:id="trashCan2" layoutX="175.0" layoutY="300.0" fitHeight="100.0" fitWidth="60.0">
-         <image>
-            <Image url="@images/MetalBin.png" />
-         </image>
-      </ImageView>
+      <!-- Timer -->
+      <Label fx:id="timerLabel" layoutX="300.0" layoutY="40.0" text="120" style="-fx-font-size: 18px;" />
 
-      <ImageView fx:id="trashCan3" layoutX="275.0" layoutY="300.0" fitHeight="100.0" fitWidth="60.0">
-         <image>
-            <Image url="@images/OrganicBin.png" />
-         </image>
-      </ImageView>
-
-      <ImageView fx:id="trashCan4" layoutX="375.0" layoutY="300.0" fitHeight="100.0" fitWidth="60.0">
-         <image>
-            <Image url="@images/PaperBin.png" />
-         </image>
-      </ImageView>
-
-      <ImageView fx:id="trashCan5" layoutX="475.0" layoutY="300.0" fitHeight="100.0" fitWidth="60.0">
-         <image>
-            <Image url="@images/PlasticBin.png" />
-         </image>
-      </ImageView>
-
-      <Button layoutX="30.0" layoutY="150.0" mnemonicParsing="false" onAction="#handleExit" text="EXIT" />
-
+      <!-- Exit Button -->
+      <Button fx:id="exitButton" layoutX="10.0" layoutY="130.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" />
    </children>
 </AnchorPane>

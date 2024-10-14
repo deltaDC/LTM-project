@@ -30,4 +30,6 @@ module com.example.demojavafx {
     exports com.n19.ltmproject.client.test_request.game;
     opens com.n19.ltmproject.client.test_request.game to javafx.fxml;
     opens com.n19.ltmproject.client.model.dto to com.google.gson;
+    exports com.n19.ltmproject.client.test_request.game.test_logicPage;
+    opens com.n19.ltmproject.client.test_request.game.test_logicPage to javafx.fxml;
 }
