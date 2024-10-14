@@ -5,7 +5,7 @@ import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.EndGameById;
 import com.n19.ltmproject.server.command.game.GetAllGameDataCommand;
 import com.n19.ltmproject.server.command.game.StartNewGame;
-
+import com.n19.ltmproject.server.command.game.SendMatchResult;
 
 /**
  * CommandFactory class is a factory class that creates Command objects based on the action string.
@@ -26,6 +26,8 @@ public class CommandFactory {
                 return new StartNewGame();
             case "endGameById":
                 return new EndGameById();
+            case "sendMatchResult":
+                return new SendMatchResult();
             default:
                 throw new IllegalArgumentException("Unknown action: " + action);
         }
