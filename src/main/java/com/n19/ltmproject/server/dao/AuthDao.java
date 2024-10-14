@@ -19,8 +19,12 @@ public class AuthDao {
 
     public Player loginPlayerDao(String username, String password) {
         Session session = sessionFactory.openSession();
+        Transaction transaction = null; // Bắt đầu giao dịch
 
         try {
+            // Bắt đầu giao dịch
+            transaction = session.beginTransaction();
+
             // Sử dụng CriteriaBuilder để tạo truy vấn
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Player> query = builder.createQuery(Player.class);
@@ -36,11 +40,22 @@ public class AuthDao {
             // Thực hiện truy vấn và lấy kết quả duy nhất (nếu có)
             Query q = session.createQuery(query);
             Player player = (Player) q.getSingleResult();
-            return player;
+
+            // Nếu người dùng hợp lệ, cập nhật trạng thái thành ONLINE
+            if (player != null) {
+                player.setStatus(PlayerStatus.ONLINE);  // Giả sử PlayerStatus có giá trị ONLINE
+                session.update(player);  // Cập nhật trạng thái người chơi trong cơ sở dữ liệu
+            }
+
+            transaction.commit();  // Hoàn tất giao dịch
+            return player;  // Trả về đối tượng Player sau khi đã cập nhật trạng thái
         } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();  // Nếu có lỗi, rollback giao dịch
+            }
             e.printStackTrace();
         } finally {
-            session.close();
+            session.close();  // Đóng session sau khi hoàn tất
         }
         return null;
     }
