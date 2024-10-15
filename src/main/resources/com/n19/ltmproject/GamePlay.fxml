@@ -27,7 +27,7 @@
       <Label fx:id="scoreUser2" layoutX="530.0" layoutY="110.0" text="Score: 0" />
 
       <!-- Trash Image in Center -->
-      <ImageView fx:id="trashImage" layoutX="250.0" layoutY="180.0" fitHeight="100.0" fitWidth="100.0" />
+      <ImageView fx:id="trashImage" layoutX="250.0" layoutY="180.0" fitHeight="80.0" fitWidth="80.0" />
 
       <!-- Trash Cans at the Bottom -->
       <ImageView fx:id="trashCan1" layoutX="30.0" layoutY="450.0" fitHeight="120.0" fitWidth="90.0">
@@ -60,7 +60,7 @@
       <Label fx:id="feedbackLabel" layoutX="50.0" layoutY="200.0" text="" style="-fx-font-size: 24px;" />
 
       <!-- Timer -->
-      <Label fx:id="timerLabel" layoutX="300.0" layoutY="40.0" text="120" style="-fx-font-size: 18px;" />
+      <Label fx:id="timerLabel" layoutX="200.0" layoutY="40.0" text="" style="-fx-font-size: 18px;" />
 
       <!-- Exit Button -->
       <Button fx:id="exitButton" layoutX="10.0" layoutY="130.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" />

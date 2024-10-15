@@ -38,32 +38,35 @@ public class GamePlayController {
 	private Label feedbackLabel;
 
 	@FXML
-	private Label scoreUser1;
+	Label scoreUser1;
 	@FXML
-	private Label scoreUser2;
+    Label scoreUser2;
 
 	@FXML
-	private Label timerLabel;
+	Label timerLabel;
 
-	private Random random = new Random();
-	private String imageDirectory = "/com/n19/ltmproject/images/";
-//	private int[] trashImagesCount = {21, 30, 25, 18, 20};
-	private int[] trashImagesCount = {21};
-
+	private final Random random = new Random();
+	private final int[] trashImagesCount = {21};
 
 	private ServerHandler serverConnection;
 	private Stage primaryStage;
 
 	private int score = 0;
 	private int opponentScore = 0;
-	private int timeLeft = 120;
-	private boolean isGameActive = true;
+	private int timeLeft = 5;
+	private final boolean isGameActive = true;
+	Timeline timeline;
 
-	private String[] trashTypes = {"organic"};
-//	private String[] trashTypes = {"organic", "plastic", "metal", "paper", "glass"};
-	private String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
-	private String[] incorrectFeedback = {"Wrong!", "Try next time!"};
+	private final String[] trashTypes = {"organic"};
+	private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
+	private final String[] incorrectFeedback = {"Wrong!", "Try next time!"};
 	private String currentTrashType;
+
+	private boolean isDragging = false;
+	private double offsetX;
+	private double offsetY;
+	private double initialX;
+	private double initialY;
 
 	public void setServerConnection(ServerHandler serverHandler, Stage stage) {
 		this.serverConnection = serverHandler;
@@ -72,13 +75,13 @@ public class GamePlayController {
 	}
 
 	private void startGame() {
-		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateTimer()));
+		timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateTimer()));
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 		spawnTrash();
 	}
 
-	private void updateTimer() {
+	void updateTimer() {
 		if (timeLeft > 0) {
 			timeLeft--;
 			timerLabel.setText("Thời gian còn lại: " + timeLeft + " giây");
@@ -93,26 +96,75 @@ public class GamePlayController {
 
 		int maxImages = trashImagesCount[randomTypeIndex];
 		int randomImageIndex = random.nextInt(maxImages) + 1;
+		String imageDirectory = "/com/n19/ltmproject/images/";
 		String imagePath = imageDirectory + currentTrashType + "/" + currentTrashType + randomImageIndex + ".png";
 
 		try {
 			Image trashImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
 			trashImage.setImage(trashImg);
-			System.out.println("Hình ảnh rác được tải: " + imagePath);
 		} catch (Exception e) {
 			System.out.println("Lỗi: Không thể tải hình ảnh từ " + imagePath);
 		}
-
+		resetTrashPosition();
 	}
-
 
 	@FXML
 	private void initialize() {
+		trashImage.setOnMousePressed(event -> {
+			isDragging = true;
+			offsetX = event.getSceneX() - trashImage.getLayoutX();
+			offsetY = event.getSceneY() - trashImage.getLayoutY();
+			initialX = trashImage.getLayoutX();
+			initialY = trashImage.getLayoutY();
+		});
+
+		trashImage.setOnMouseDragged(event -> {
+			if (isDragging) {
+				trashImage.setLayoutX(event.getSceneX() - offsetX);
+				trashImage.setLayoutY(event.getSceneY() - offsetY);
+			}
+		});
+
+		trashImage.setOnMouseReleased(event -> {
+			isDragging = false;
+			checkTrashDrop(event.getSceneX(), event.getSceneY());
+		});
+
 		trashCan1.setOnMouseClicked(event -> handleTrashDrop("glass"));
 		trashCan2.setOnMouseClicked(event -> handleTrashDrop("metal"));
 		trashCan3.setOnMouseClicked(event -> handleTrashDrop("organic"));
 		trashCan4.setOnMouseClicked(event -> handleTrashDrop("paper"));
 		trashCan5.setOnMouseClicked(event -> handleTrashDrop("plastic"));
+	}
+
+	private void checkTrashDrop(double dropX, double dropY) {
+		if (isWithinBounds(dropX, dropY, trashCan1)) {
+			handleTrashDrop("glass");
+		} else if (isWithinBounds(dropX, dropY, trashCan2)) {
+			handleTrashDrop("metal");
+		} else if (isWithinBounds(dropX, dropY, trashCan3)) {
+			handleTrashDrop("organic");
+		} else if (isWithinBounds(dropX, dropY, trashCan4)) {
+			handleTrashDrop("paper");
+		} else if (isWithinBounds(dropX, dropY, trashCan5)) {
+			handleTrashDrop("plastic");
+		} else {
+			resetTrashPosition();
+		}
+	}
+
+	private boolean isWithinBounds(double dropX, double dropY, ImageView trashCan) {
+		double canX = trashCan.getLayoutX();
+		double canY = trashCan.getLayoutY();
+		double canWidth = trashCan.getFitWidth();
+		double canHeight = trashCan.getFitHeight();
+
+		return dropX >= canX && dropX <= canX + canWidth && dropY >= canY && dropY <= canY + canHeight;
+	}
+
+	private void resetTrashPosition() {
+		trashImage.setLayoutX(250);
+		trashImage.setLayoutY(180);
 	}
 
 	private void handleTrashDrop(String binType) {
@@ -142,15 +194,20 @@ public class GamePlayController {
 	}
 
 	private void endGame() {
-//		isGameActive = false;
+		timeline.stop();
+
+		boolean isWinner = score > opponentScore;
+		boolean isDraw = score == opponentScore;
+		String resultMessage = isDraw ? "Hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!");
+
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
 			Parent resultView = loader.load();
 			Scene scene = new Scene(resultView);
 
 			ResultController resultController = loader.getController();
-			String results = "Điểm của bạn: " + score;
-			resultController.setResults(results, score > opponentScore);
+			String results = "Điểm của bạn: " + score + "\nĐiểm đối thủ: " + opponentScore;
+			resultController.setResults(results, isWinner, isDraw, "Đối thủ");
 
 			primaryStage.setScene(scene);
 		} catch (IOException e) {
@@ -159,8 +216,37 @@ public class GamePlayController {
 		}
 	}
 
+	private void sendResultToServer(String result) {
+		try {
+			// Giả sử serverConnection có phương thức send để gửi dữ liệu
+//			serverConnection.send("Kết quả trận đấu: " + result + ", Điểm của bạn: " + score + ", Điểm đối thủ: " + opponentScore);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Lỗi: Không thể gửi kết quả về server");
+		}
+	}
+
 	@FXML
 	private void handleExit() {
-		primaryStage.close();
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/ExitBattle.fxml"));
+			Parent exitBattleView = loader.load();
+			Scene exitScene = new Scene(exitBattleView);
+
+			ExitBattleController exitController = loader.getController();
+			exitController.setGamePlayState(score, opponentScore, timeLeft, timeline, serverConnection, primaryStage);
+
+			primaryStage.setScene(exitScene);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error: Unable to load ExitBattle.fxml");
+		}
 	}
+
+	// Hàm để cập nhật thời gian sau khi quay lại từ trang ExitBattle
+	public void setTimeLeft(int newTimeLeft) {
+		this.timeLeft = newTimeLeft;
+		timerLabel.setText("Thời gian còn lại: " + timeLeft + " giây");
+	}
+
 }
