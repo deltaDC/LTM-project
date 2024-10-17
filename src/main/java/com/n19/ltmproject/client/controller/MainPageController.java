@@ -27,7 +27,7 @@ public class MainPageController implements Initializable {
     private TableView<Player> table;
 
     @FXML
-    private TableColumn<Player, String> nameColumn;
+    private TableColumn<Player, String> username;
 
     @FXML
     private TableColumn<Player, Integer> pointColumn;
@@ -154,25 +154,21 @@ public class MainPageController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //TODO: get player list from server
-//        playerList = FXCollections.observableArrayList(
-//            new Player("user1", "1", "chinh@gmail.com"),
-//            new Player("user2", "1", "chinh@gmail.com"),
-//            new Player("user3", "1", "chinh@gmail.com"),
-//            new Player("user4", "1", "chinh@gmail.com"),
-//            new Player("user5", "1", "chinh@gmail.com"),
-//            new Player("user6", "1", "chinh@gmail.com")
+        // Tạo danh sách người chơi
+        playerList = FXCollections.observableArrayList(
+                new Player(1, "user1", "password1", PlayerStatus.ONLINE),
+                new Player(2, "user2", "password2", PlayerStatus.OFFLINE)
+        );
 
-//        );
+        System.out.println("Player list: " + playerList);
+        username.setCellValueFactory(new PropertyValueFactory<Player, String>("username"));
 
-//        nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
-//        pointColumn.setCellValueFactory(new PropertyValueFactory<>("totalPoints"));
-//        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-//        table.setItems(playerList);
-//        table.setFocusTraversable(false);
-//        table.getSelectionModel().clearSelection();
-//
+        table.setItems(playerList);
+        table.setFocusTraversable(false);
+        table.getSelectionModel().clearSelection();
+
+
 //        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 //            if (newSelection != null) {
 //                System.out.println("Selected items: " + newSelection.getUsername());

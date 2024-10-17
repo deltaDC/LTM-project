@@ -10,6 +10,7 @@ import org.hibernate.Transaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class AuthDao {
     private SessionFactory sessionFactory;
@@ -32,19 +33,27 @@ public class AuthDao {
 
             // Thiết lập các điều kiện cho username và password
             Predicate usernamePredicate = builder.equal(root.get("username"), username);
-            Predicate passwordPredicate = builder.equal(root.get("password"), password);
 
             // Kết hợp cả hai điều kiện trong truy vấn
-            query.select(root).where(builder.and(usernamePredicate, passwordPredicate));
+            query.select(root).where(builder.and(usernamePredicate));
 
             // Thực hiện truy vấn và lấy kết quả duy nhất (nếu có)
             Query q = session.createQuery(query);
-            Player player = (Player) q.getSingleResult();
+            Player player = null;
 
-            // Nếu người dùng hợp lệ, cập nhật trạng thái thành ONLINE
-            if (player != null) {
-                player.setStatus(PlayerStatus.ONLINE);  // Giả sử PlayerStatus có giá trị ONLINE
-                session.update(player);  // Cập nhật trạng thái người chơi trong cơ sở dữ liệu
+            try {
+                player = (Player) q.getSingleResult();
+            } catch (NoResultException e) {
+                // Người dùng không tồn tại
+                return null;
+            }
+
+            // So sánh mật khẩu đã mã hóa
+            if (player != null && BCrypt.checkpw(password, player.getPassword())) {
+                player.setStatus(PlayerStatus.ONLINE);
+                session.update(player);
+            } else {
+                return null; // Sai mật khẩu
             }
 
             transaction.commit();  // Hoàn tất giao dịch
@@ -97,10 +106,13 @@ public class AuthDao {
                 return "Username already exists.";
             }
 
+            // Mã hóa
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
             // Nếu người dùng chưa tồn tại, tiến hành lưu người dùng mới
             Player newPlayer = new Player();
             newPlayer.setUsername(username);
-            newPlayer.setPassword(password);  // Lưu password, có thể mã hóa trước khi lưu nếu cần
+            newPlayer.setPassword(hashedPassword);  // Lưu password, có thể mã hóa trước khi lưu nếu cần
             newPlayer.setStatus(PlayerStatus.OFFLINE);  // Set trạng thái ban đầu
 
             // Lưu người dùng mới vào cơ sở dữ liệu

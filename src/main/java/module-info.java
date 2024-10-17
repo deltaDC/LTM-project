@@ -17,6 +17,7 @@ module com.example.demojavafx {
     requires java.naming;
     requires java.validation;
     requires com.google.gson;
+    requires jbcrypt;
 
     opens com.n19.ltmproject to javafx.fxml;
     exports com.n19.ltmproject.client.controller;

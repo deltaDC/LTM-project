@@ -59,13 +59,14 @@
          <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="335.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/iconrecycle2.png" />
          </ImageView>
-<!--         <TableView fx:id="table" focusTraversable="false" layoutX="12.0" layoutY="55.0" prefHeight="220.0" prefWidth="242.0" stylesheets="@css/application.css">-->
-<!--            <columns>-->
-<!--               <TableColumn fx:id="nameColumn" prefWidth="92.0" text="Name" />-->
+         <TableView fx:id="table" focusTraversable="false" layoutX="12.0" layoutY="55.0" prefHeight="220.0" prefWidth="242.0" stylesheets="@css/application.css">
+            <columns>
+<!--               <TableColumn fx:id="username" prefWidth="92.0" text="Name" />-->
+               <TableColumn fx:id="username" prefWidth="242.0" text="Name" />
 <!--               <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="80.79998779296875" text="Status" />-->
 <!--               <TableColumn fx:id="pointColumn" minWidth="0.0" prefWidth="69.60003662109375" text="Point" />-->
-<!--            </columns>-->
-<!--         </TableView>-->
+            </columns>
+         </TableView>
       </AnchorPane>
    </AnchorPane>
    <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#ClickLogout" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #0DBC4A;" text="Log out" textFill="WHITE">
