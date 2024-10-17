@@ -1,6 +1,7 @@
 package com.n19.ltmproject.server.command;
 
 import com.n19.ltmproject.server.command.auth.LoginCommand;
+import com.n19.ltmproject.server.command.auth.SendInvitationCommand;
 import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.EndGameById;
 import com.n19.ltmproject.server.command.game.GetAllGameDataCommand;
@@ -26,6 +27,8 @@ public class CommandFactory {
                 return new StartNewGame();
             case "endGameById":
                 return new EndGameById();
+            case "sendInvitation":
+                return new SendInvitationCommand();
             case "sendMatchResult":
                 return new SendMatchResult();
             default:

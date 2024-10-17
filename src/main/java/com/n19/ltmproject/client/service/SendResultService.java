@@ -32,7 +32,7 @@ public class SendResultService {
         );
 
         // Gửi yêu cầu
-        sendRequestMessage.sendRequest("sendGameResult", params);
+        sendRequestMessage.sendRequest("sendMatchResult", params);
 
         // Nhận phản hồi từ server
         return receiveResponseMessage.receiveResponse().getMessage();

@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
+import com.n19.ltmproject.client.service.SendInvitationService;
+import com.n19.ltmproject.client.service.SendResultService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,19 +25,19 @@ import com.n19.ltmproject.client.model.Player;
 
 public class MainPageController implements Initializable {
 
-    @FXML
-    private TableView<Player> table;
-
-    @FXML
-    private TableColumn<Player, String> nameColumn;
-
-    @FXML
-    private TableColumn<Player, Integer> pointColumn;
-
-    @FXML
-    private TableColumn<Player, PlayerStatus> statusColumn;
-
-    private ObservableList<Player> playerList;
+//    @FXML
+//    private TableView<Player> table;
+//
+//    @FXML
+//    private TableColumn<Player, String> nameColumn;
+//
+//    @FXML
+//    private TableColumn<Player, Integer> pointColumn;
+//
+//    @FXML
+//    private TableColumn<Player, PlayerStatus> statusColumn;
+//
+//    private ObservableList<Player> playerList;
     private ServerHandler serverHandler;
     private Stage primaryStage;
 
@@ -142,40 +144,64 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickInvitePlayer(ActionEvent event) {
-        Player selectedPlayer = table.getSelectionModel().getSelectedItem();
-        if (selectedPlayer != null) {
-            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
+//        Player selectedPlayer = table.getSelectionModel().getSelectedItem();
+//        if (selectedPlayer != null) {
+//            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
+//
+//            moveToWaitingRoom();
+//        } else {
+//            System.out.println("Please choose a player to invite!");
+//        }
+        ServerHandler serverHandler = new ServerHandler();
+        serverHandler.connect("127.0.0.1", 1234);
 
-            moveToWaitingRoom();
-        } else {
-            System.out.println("Please choose a player to invite!");
+        // Tạo SendResultService
+        SendInvitationService sendinvite = new SendInvitationService(serverHandler);
+
+        // Gửi kết quả trận đấu
+        String userId = "user2";  // ID của đối thủ
+
+        try {
+            // Gửi kết quả và nhận phản hồi
+            String responseMessage = sendinvite.sendInvitation(userId);
+            // In ra phản hồi
+            System.out.println("Server response: " + responseMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //   Ngắt kết nối
+            try {
+                serverHandler.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        playerList = FXCollections.observableArrayList(
-//            new Player("user1", "1", "chinh@gmail.com"),
-//            new Player("user2", "1", "chinh@gmail.com"),
-//            new Player("user3", "1", "chinh@gmail.com"),
-//            new Player("user4", "1", "chinh@gmail.com"),
-//            new Player("user5", "1", "chinh@gmail.com"),
-//            new Player("user6", "1", "chinh@gmail.com")
-
-        );
-
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
-        pointColumn.setCellValueFactory(new PropertyValueFactory<>("totalPoints"));
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        table.setItems(playerList);
-        table.setFocusTraversable(false);
-        table.getSelectionModel().clearSelection();
-
-        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                System.out.println("Selected items: " + newSelection.getUsername());
-            }
-        });
+//        playerList = FXCollections.observableArrayList(
+////            new Player("user1", "1", "chinh@gmail.com"),
+////            new Player("user2", "1", "chinh@gmail.com"),
+////            new Player("user3", "1", "chinh@gmail.com"),
+////            new Player("user4", "1", "chinh@gmail.com"),
+////            new Player("user5", "1", "chinh@gmail.com"),
+////            new Player("user6", "1", "chinh@gmail.com")
+//
+//        );
+//
+//        nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+//        pointColumn.setCellValueFactory(new PropertyValueFactory<>("totalPoints"));
+//        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+//
+//        table.setItems(playerList);
+//        table.setFocusTraversable(false);
+//        table.getSelectionModel().clearSelection();
+//
+//        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+//            if (newSelection != null) {
+//                System.out.println("Selected items: " + newSelection.getUsername());
+//            }
+//        });
     }
 }
