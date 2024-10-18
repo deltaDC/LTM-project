@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -138,19 +139,22 @@ public class GamePlayController {
 	}
 
 	private void checkTrashDrop(double dropX, double dropY) {
-		if (isWithinBounds(dropX, dropY, trashCan1)) {
-			handleTrashDrop("glass");
-		} else if (isWithinBounds(dropX, dropY, trashCan2)) {
-			handleTrashDrop("metal");
-		} else if (isWithinBounds(dropX, dropY, trashCan3)) {
-			handleTrashDrop("organic");
-		} else if (isWithinBounds(dropX, dropY, trashCan4)) {
-			handleTrashDrop("paper");
-		} else if (isWithinBounds(dropX, dropY, trashCan5)) {
-			handleTrashDrop("plastic");
-		} else {
-			resetTrashPosition();
+		Map<String, ImageView> trashCanMap = Map.of(
+				"glass", trashCan1,
+				"metal", trashCan2,
+				"organic", trashCan3,
+				"paper", trashCan4,
+				"plastic", trashCan5
+		);
+
+		for (Map.Entry<String, ImageView> entry : trashCanMap.entrySet()) {
+			if (isWithinBounds(dropX, dropY, entry.getValue())) {
+				handleTrashDrop(entry.getKey());
+				return;
+			}
 		}
+
+		resetTrashPosition();
 	}
 
 	private boolean isWithinBounds(double dropX, double dropY, ImageView trashCan) {
