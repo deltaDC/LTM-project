@@ -1,5 +1,6 @@
 package com.n19.ltmproject.client.controller;
-
+// ACCEPT INVITATION
+// REFUSE INVITATION
 import java.io.IOException;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.event.ActionEvent;

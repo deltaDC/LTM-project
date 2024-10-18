@@ -1,3 +1,4 @@
+// GET INFORMATION USER (WIN , LOSS, DRAW, POINT)
 package com.n19.ltmproject.client.controller;
 
 import com.n19.ltmproject.client.handler.ServerHandler;

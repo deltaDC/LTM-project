@@ -54,16 +54,16 @@
             </VBox>
         </HBox>
 
+        <!-- Display Scores -->
+        <VBox layoutX="160" layoutY="260" alignment="CENTER" spacing="10">
+            <Label fx:id="scoreTextArea" text="Điểm của bạn: 0\nĐiểm đối thủ: 0" style="-fx-text-fill: white;"/>
+        </VBox>
+
         <!-- Buttons Section -->
-        <HBox layoutX="160" layoutY="300" spacing="20">
+        <HBox layoutX="160" layoutY="320" spacing="20">
             <!-- Play Again Button -->
             <Button fx:id="playAgainButton" text="Thách đấu lại" onAction="#handlePlayAgain"
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-
-            <!-- Leaderboard Button
-             <Button fx:id="leaderboardButton" text="Xem Bảng Xếp Hạng" onAction="#handleViewLeaderboard"
-                    style="-fx-background-color: #00BFFF; -fx-text-fill: white;"/>
-            -->
 
             <!-- Exit Button -->
             <Button fx:id="exitButton" text="Thoát" onAction="#handleExit"

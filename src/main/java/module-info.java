@@ -36,4 +36,6 @@ module com.example.demojavafx {
     opens com.n19.ltmproject.client.model to com.google.gson, java.base, javafx.base;
     exports com.n19.ltmproject.client.model to com.google.gson, java.base;
     exports com.n19.ltmproject.client.model.enums to com.google.gson, java.base;
+    exports com.n19.ltmproject.client.test_request.game.test_logicPage;
+    opens com.n19.ltmproject.client.test_request.game.test_logicPage to javafx.fxml;
 }
