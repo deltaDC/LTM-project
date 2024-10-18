@@ -43,6 +43,7 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         try {
+
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
@@ -51,8 +52,10 @@ public class ClientHandler extends Thread {
                 Request request = gson.fromJson(jsonRequest, Request.class);
 
                 System.out.println("---------------");
-                System.out.println("Action: " + request.getAction());
-                System.out.println("Data: " + request.getParams().toString());
+                if(!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
+                    System.out.println("Action: " + request.getAction());
+                    System.out.println("Data: " + request.getParams().toString());
+                }
                 System.out.println("---------------");
 
                 Command command = CommandFactory.getCommand(request.getAction());
