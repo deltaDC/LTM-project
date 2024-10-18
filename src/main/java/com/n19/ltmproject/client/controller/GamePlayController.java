@@ -35,7 +35,18 @@ public class GamePlayController {
 	private ImageView trashCan5;
 
 	@FXML
+	private ImageView humangameplay;
+	@FXML
+	private ImageView messagegameplay;
+	@FXML
 	private Label feedbackLabel;
+	@FXML
+	private ImageView humangameplay1;
+	@FXML
+	private ImageView messagegameplay1;
+	@FXML
+	private Label feedbackLabel1;
+
 
 	@FXML
 	Label scoreUser1;
@@ -180,11 +191,21 @@ public class GamePlayController {
 
 	private void showFeedback(boolean isCorrect) {
 		if (isCorrect) {
+			humangameplay1.setVisible(false);
+			messagegameplay1.setVisible(false);
+			humangameplay.setVisible(true);
+			messagegameplay.setVisible(true);
+			feedbackLabel1.setText("");
 			feedbackLabel.setText(correctFeedback[random.nextInt(correctFeedback.length)]);
 			feedbackLabel.setStyle("-fx-text-fill: green;");
 		} else {
-			feedbackLabel.setText(incorrectFeedback[random.nextInt(incorrectFeedback.length)]);
-			feedbackLabel.setStyle("-fx-text-fill: red;");
+			humangameplay.setVisible(false);
+			messagegameplay.setVisible(false);
+			humangameplay1.setVisible(true);
+			messagegameplay1.setVisible(true);
+			feedbackLabel.setText("");
+			feedbackLabel1.setText(incorrectFeedback[random.nextInt(incorrectFeedback.length)]);
+			feedbackLabel1.setStyle("-fx-text-fill: red;");
 		}
 	}
 
