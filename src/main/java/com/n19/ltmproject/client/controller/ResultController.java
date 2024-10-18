@@ -12,20 +12,21 @@ import java.io.IOException;
 public class ResultController {
 
     @FXML
-    private Label scoreTextArea;
+    private Label resultLabel;
 
     @FXML
-    private Label resultLabel;
+    private Label scoreLabel;
 
     private boolean isWinner;
     private boolean isDraw;
     private String opponent;
 
-    public void setResults(String results, boolean isWinner, boolean isDraw, String opponent) {
+    public void setResults(String results, String score, boolean isWinner, boolean isDraw, String opponent) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
         this.opponent = opponent;
-        scoreTextArea.setText(results);
+
+        scoreLabel.setText(score);
 
         if (isDraw) {
             resultLabel.setText("Trận đấu hòa!");
@@ -43,7 +44,7 @@ public class ResultController {
             Parent mainPage = loader.load();
             Scene scene = new Scene(mainPage);
 
-            Stage stage = (Stage) scoreTextArea.getScene().getWindow();
+            Stage stage = (Stage) scoreLabel.getScene().getWindow();
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -56,7 +57,7 @@ public class ResultController {
     private void handlePlayAgain() {
         sendRematchInvitation(opponent);
 
-        Stage stage = (Stage) scoreTextArea.getScene().getWindow();
+        Stage stage = (Stage) scoreLabel.getScene().getWindow();
         stage.close();
     }
 

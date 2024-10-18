@@ -18,7 +18,7 @@
         </ImageView>
 
         <!-- Game Title -->
-        <Label fx:id="gameTitle" layoutX="150" layoutY="0" text="GAME PHÂN LOẠI RÁC"
+        <Label fx:id="gameTitle" layoutX="200" layoutY="0" text="GAME PHÂN LOẠI RÁC"
                style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: black;"/>
 
         <!-- Result Label -->
@@ -53,11 +53,6 @@
                 <Label text="PLAYER 2" style="-fx-text-fill: white;"/>
             </VBox>
         </HBox>
-
-        <!-- Display Scores -->
-        <VBox layoutX="160" layoutY="260" alignment="CENTER" spacing="10">
-            <Label fx:id="scoreTextArea" text="Điểm của bạn: 0\nĐiểm đối thủ: 0" style="-fx-text-fill: white;"/>
-        </VBox>
 
         <!-- Buttons Section -->
         <HBox layoutX="160" layoutY="320" spacing="20">

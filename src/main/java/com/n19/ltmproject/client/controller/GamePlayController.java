@@ -1,6 +1,5 @@
 package com.n19.ltmproject.client.controller;
-// CLICK EXIT
-// SEND KET QUA TRAN DAU (UPDATE WIN , LOSS)
+
 import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -40,12 +39,12 @@ public class GamePlayController {
 	private Label feedbackLabel;
 
 	@FXML
-	Label scoreUser1;
+	private Label scoreUser1;
 	@FXML
-    Label scoreUser2;
+	private Label scoreUser2;
 
 	@FXML
-	Label timerLabel;
+	private Label timerLabel;
 
 	private final Random random = new Random();
 	private final int[] trashImagesCount = {21};
@@ -56,7 +55,7 @@ public class GamePlayController {
 	private int score = 0;
 	private int opponentScore = 0;
 	private int timeLeft = 5;
-	private final boolean isGameActive = true;
+	private boolean isGameActive = true;
 	Timeline timeline;
 
 	private final String[] trashTypes = {"organic"};
@@ -196,6 +195,8 @@ public class GamePlayController {
 	public void updateOpponentScore(int newScore) {
 		opponentScore = newScore;
 		scoreUser2.setText("Score: " + opponentScore);
+		// Optionally, send score updates to the server for real-time updates
+		sendScoreUpdateToServer(score, opponentScore);
 	}
 
 	private void endGame() {
@@ -205,6 +206,9 @@ public class GamePlayController {
 		boolean isDraw = score == opponentScore;
 		String resultMessage = isDraw ? "Hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!");
 
+		// Send results to the server before transitioning to the result page
+		sendResultToServer(isWinner, isDraw);
+
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
 			Parent resultView = loader.load();
@@ -212,7 +216,7 @@ public class GamePlayController {
 
 			ResultController resultController = loader.getController();
 			String results = "Điểm của bạn: " + score + "\nĐiểm đối thủ: " + opponentScore;
-			resultController.setResults(results, isWinner, isDraw, "Đối thủ");
+			resultController.setResults(results, score + " - " + opponentScore, isWinner, isDraw, "Đối thủ");
 
 			primaryStage.setScene(scene);
 		} catch (IOException e) {
@@ -221,13 +225,30 @@ public class GamePlayController {
 		}
 	}
 
-	private void sendResultToServer(String result) {
+	private void sendResultToServer(boolean isWinner, boolean isDraw) {
 		try {
-			// Giả sử serverConnection có phương thức send để gửi dữ liệu
-//			serverConnection.send("Kết quả trận đấu: " + result + ", Điểm của bạn: " + score + ", Điểm đối thủ: " + opponentScore);
+			String result = "Kết quả trận đấu: " +
+					"\nĐiểm của bạn: " + score +
+					"\nĐiểm đối thủ: " + opponentScore +
+					"\nKết quả: " + (isDraw ? "Hòa" : (isWinner ? "Thắng" : "Thua"));
+			System.out.println("Dữ liệu gửi về server: " + result);
+			serverConnection.sendMessage("RESULT " + result);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Lỗi: Không thể gửi kết quả về server");
+		}
+	}
+
+	private void sendScoreUpdateToServer(int user1Score, int user2Score) {
+		try {
+			String scoreUpdate = "UPDATE_SCORE " + "User1: " + user1Score + ", User2: " + user2Score;
+
+			System.out.println("Dữ liệu gửi về server: " + scoreUpdate);
+
+			serverConnection.sendMessage("UPDATE_SCORE " + "User1: " + user1Score + ", User2: " + user2Score);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Lỗi: Không thể gửi cập nhật điểm về server");
 		}
 	}
 
@@ -248,10 +269,8 @@ public class GamePlayController {
 		}
 	}
 
-	// Hàm để cập nhật thời gian sau khi quay lại từ trang ExitBattle
 	public void setTimeLeft(int newTimeLeft) {
 		this.timeLeft = newTimeLeft;
 		timerLabel.setText("Thời gian còn lại: " + timeLeft + " giây");
 	}
-
 }
