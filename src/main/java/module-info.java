@@ -17,6 +17,7 @@ module com.example.demojavafx {
     requires java.naming;
     requires java.validation;
     requires com.google.gson;
+    requires jbcrypt;
 
     opens com.n19.ltmproject to javafx.fxml;
     exports com.n19.ltmproject.client.controller;
@@ -30,6 +31,11 @@ module com.example.demojavafx {
     exports com.n19.ltmproject.client.test_request.game;
     opens com.n19.ltmproject.client.test_request.game to javafx.fxml;
     opens com.n19.ltmproject.client.model.dto to com.google.gson;
+    opens com.n19.ltmproject.server.model.enums to com.google.gson;
+    exports com.n19.ltmproject.server.model.enums to com.google.gson;
+    opens com.n19.ltmproject.client.model to com.google.gson, java.base, javafx.base;
+    exports com.n19.ltmproject.client.model to com.google.gson, java.base;
+    exports com.n19.ltmproject.client.model.enums to com.google.gson, java.base;
     exports com.n19.ltmproject.client.test_request.game.test_logicPage;
     opens com.n19.ltmproject.client.test_request.game.test_logicPage to javafx.fxml;
 }

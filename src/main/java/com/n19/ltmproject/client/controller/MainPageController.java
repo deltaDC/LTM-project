@@ -1,13 +1,26 @@
 package com.n19.ltmproject.client.controller;
+
 // LAY DANH SACH NGUOI ON-LinE
 //LAY DANH SACH NGUOI IN_GAME
 // GUI LOI MOI
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.model.dto.Request;
+import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,10 +42,10 @@ public class MainPageController implements Initializable {
     private TableView<Player> table;
 
     @FXML
-    private TableColumn<Player, String> nameColumn;
+    private TableColumn<Player, String> username;
 
     @FXML
-    private TableColumn<Player, Integer> pointColumn;
+    private TableColumn<Player, Integer> numberColumn;
 
     @FXML
     private TableColumn<Player, PlayerStatus> statusColumn;
@@ -118,6 +131,7 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(loginViewParent);
         stage.setScene(scene);
     }
+
     public void ClickAchievement(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
@@ -156,28 +170,54 @@ public class MainPageController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        playerList = FXCollections.observableArrayList(
-//            new Player("user1", "1", "chinh@gmail.com"),
-//            new Player("user2", "1", "chinh@gmail.com"),
-//            new Player("user3", "1", "chinh@gmail.com"),
-//            new Player("user4", "1", "chinh@gmail.com"),
-//            new Player("user5", "1", "chinh@gmail.com"),
-//            new Player("user6", "1", "chinh@gmail.com")
+        new Thread(() -> {
+            try (Socket socket = new Socket("localhost", 1234);
+                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true)) {
 
-        );
+                // Create a request to get all players
+                Request request = new Request();
+                request.setAction("getAllPlayer");
+                request.setParams(Map.of());
 
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
-        pointColumn.setCellValueFactory(new PropertyValueFactory<>("totalPoints"));
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+                String toJson = new Gson().toJson(request);
 
-        table.setItems(playerList);
-        table.setFocusTraversable(false);
-        table.getSelectionModel().clearSelection();
+                // Send the request to the server
+                output.println(toJson);
 
-        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                System.out.println("Selected items: " + newSelection.getUsername());
+                // Read the response from the server
+                String jsonResponse = input.readLine();
+                Response response = new Gson().fromJson(jsonResponse, Response.class);
+
+                if ("OK".equalsIgnoreCase(response.getStatus())) {
+                    // Convert the response data to a list of Player objects
+                    List<Player> players = new Gson().fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>(){}.getType());
+
+                    // Update the TableView on the JavaFX Application Thread
+                    Platform.runLater(() -> {
+                        playerList = FXCollections.observableArrayList(players);
+                        numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
+                        username.setCellValueFactory(new PropertyValueFactory<Player, String>("username"));
+                        statusColumn.setCellValueFactory(new PropertyValueFactory<Player, PlayerStatus>("status"));
+
+                        table.setItems(playerList);
+                        table.setFocusTraversable(false);
+                        table.getSelectionModel().clearSelection();
+
+                        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                            if (newSelection != null) {
+                                System.out.println("Selected items: " + newSelection.getUsername());
+                            }
+                        });
+                    });
+                } else {
+                    System.out.println("Failed to get players: " + response.getMessage());
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }).start();
     }
 }
