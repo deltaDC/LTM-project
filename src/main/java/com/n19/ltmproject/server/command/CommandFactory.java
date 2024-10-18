@@ -5,6 +5,7 @@ import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.EndGameById;
 import com.n19.ltmproject.server.command.game.GetAllGameDataCommand;
 import com.n19.ltmproject.server.command.game.StartNewGame;
+import com.n19.ltmproject.server.command.player.GetAllPlayerCommand;
 
 
 /**
@@ -15,19 +16,14 @@ import com.n19.ltmproject.server.command.game.StartNewGame;
 public class CommandFactory {
 
     public static Command getCommand(String action) {
-        switch (action) {
-            case "login":
-                return new LoginCommand();
-            case "signUp":
-                return new SignupCommand();
-            case "getAllGameData":
-                return new GetAllGameDataCommand();
-            case "startNewGame":
-                return new StartNewGame();
-            case "endGameById":
-                return new EndGameById();
-            default:
-                throw new IllegalArgumentException("Unknown action: " + action);
-        }
+        return switch (action) {
+            case "login" -> new LoginCommand();
+            case "signUp" -> new SignupCommand();
+            case "getAllGameData" -> new GetAllGameDataCommand();
+            case "startNewGame" -> new StartNewGame();
+            case "endGameById" -> new EndGameById();
+            case "getAllPlayer" -> new GetAllPlayerCommand();
+            default -> throw new IllegalArgumentException("Unknown action: " + action);
+        };
     }
 }

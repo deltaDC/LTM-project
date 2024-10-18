@@ -7,6 +7,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.List;
+
 public class PlayerDao {
 
     private SessionFactory sessionFactory;
@@ -35,5 +37,25 @@ public class PlayerDao {
         } finally {
             session.close();
         }
+    }
+
+    public List<Player> getAllPlayers() {
+        List<Player> players = null;
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+            players = session.createQuery("from Player", Player.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return players;
     }
 }
