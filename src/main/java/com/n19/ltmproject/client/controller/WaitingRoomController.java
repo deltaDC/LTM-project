@@ -1,5 +1,6 @@
 package com.n19.ltmproject.client.controller;
 
+// CLICK STARTGAME ( XAC NHAN DA READY CHUA)
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;

@@ -1,5 +1,6 @@
 package com.n19.ltmproject.client.controller;
-
+// CLICK EXIT
+// SEND KET QUA TRAN DAU (UPDATE WIN , LOSS)
 import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

@@ -1,5 +1,5 @@
 package com.n19.ltmproject.client.controller;
-
+// GET BXH
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
