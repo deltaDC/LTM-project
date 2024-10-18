@@ -61,9 +61,10 @@
          </ImageView>
          <TableView fx:id="table" focusTraversable="false" layoutX="12.0" layoutY="55.0" prefHeight="220.0" prefWidth="242.0" stylesheets="@css/application.css">
             <columns>
+<!--               <TableColumn fx:id="numberColumn" minWidth="0.0" prefWidth="69.60003662109375" text="Point" />-->
                <TableColumn fx:id="nameColumn" prefWidth="92.0" text="Name" />
                <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="80.79998779296875" text="Status" />
-               <TableColumn fx:id="pointColumn" minWidth="0.0" prefWidth="69.60003662109375" text="Point" />
+
             </columns>
          </TableView>
       </AnchorPane>
