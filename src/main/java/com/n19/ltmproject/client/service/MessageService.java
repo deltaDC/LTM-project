@@ -8,16 +8,16 @@ import com.n19.ltmproject.client.model.dto.Response;
 import java.io.IOException;
 import java.util.Map;
 
-public class SendRequestMessage {
+public class MessageService {
 
     private final ServerHandler serverHandler;
     private final Gson gson = new Gson();
 
-    public SendRequestMessage(ServerHandler serverHandler) {
+    public MessageService(ServerHandler serverHandler) {
         this.serverHandler = serverHandler;
     }
 
-    public boolean sendRequest(String action, Map<String, Object> params) {
+    public Response sendRequest(String action, Map<String, Object> params) {
         Request request = new Request();
         request.setAction(action);
         request.setParams(params);
@@ -27,12 +27,11 @@ public class SendRequestMessage {
 
         try {
             String jsonResponse = serverHandler.receiveMessage();
-            Response response = gson.fromJson(jsonResponse, Response.class);
-            return response.getStatus().equalsIgnoreCase("OK");
+            return gson.fromJson(jsonResponse, Response.class);
         } catch (IOException e) {
             System.err.println("Error sending request: " + e.getMessage());
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 }

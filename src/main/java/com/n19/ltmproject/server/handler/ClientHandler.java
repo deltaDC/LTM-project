@@ -25,6 +25,8 @@ public class ClientHandler extends Thread {
     private final ClientManager clientManager;
     private final Gson gson = new Gson();
 
+    private final String clientAddress;
+
     /**
      * Constructor to initialize the ClientHandler with a socket and a reference to the ClientManager.
      *
@@ -34,6 +36,9 @@ public class ClientHandler extends Thread {
     public ClientHandler(Socket socket, ClientManager clientManager) {
         this.socket = socket;
         this.clientManager = clientManager;
+        this.clientAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+
+        System.out.println("Client connected from: " + clientAddress);
     }
 
     /**
@@ -52,6 +57,7 @@ public class ClientHandler extends Thread {
                 Request request = gson.fromJson(jsonRequest, Request.class);
 
                 System.out.println("---------------");
+                System.out.println("Received request from client: " + clientAddress);
                 if(!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
                     System.out.println("Action: " + request.getAction());
                     System.out.println("Data: " + request.getParams().toString());

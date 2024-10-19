@@ -3,11 +3,7 @@ package com.n19.ltmproject.client.controller;
 // LAY DANH SACH NGUOI ON-LinE
 //LAY DANH SACH NGUOI IN_GAME
 // GUI LOI MOI
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +12,9 @@ import java.util.ResourceBundle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.client.model.dto.Request;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
+import com.n19.ltmproject.client.service.MessageService;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -51,19 +47,67 @@ public class MainPageController implements Initializable {
     private TableColumn<Player, PlayerStatus> statusColumn;
 
     private ObservableList<Player> playerList;
-    private ServerHandler serverHandler;
     private Stage primaryStage;
+    private MessageService messageService;
+    private final Gson gson = new Gson();
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
 
     private boolean isListening = false;
 
-
+    //DEPRECATED
     public void setServerConnection(ServerHandler serverHandler, Stage stage) {
-        this.serverHandler = serverHandler;
+//        this.serverHandler = ServerHandler.getInstance();
         this.primaryStage = stage;
+//        this.messageService = new MessageService(serverHandler);
+
+//        if (!isListening) {
+//            startListeningToServer();
+//        }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        messageService = new MessageService(serverHandler);
+
+        loadPlayers();
 
         if (!isListening) {
             startListeningToServer();
         }
+    }
+
+    private void loadPlayers() {
+        new Thread(() -> {
+            try {
+                Map<String, Object> params = Map.of();
+                Response response = messageService.sendRequest("getAllPlayer", params);
+
+                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                    List<Player> players = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>() {}.getType());
+
+                    Platform.runLater(() -> {
+                        playerList = FXCollections.observableArrayList(players);
+                        numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
+                        username.setCellValueFactory(new PropertyValueFactory<>("username"));
+                        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+                        table.setItems(playerList);
+                        table.setFocusTraversable(false);
+                        table.getSelectionModel().clearSelection();
+
+                        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                            if (newSelection != null) {
+                                System.out.println("Selected items: " + newSelection.getUsername());
+                            }
+                        });
+                    });
+                } else {
+                    System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public void startListeningToServer() {
@@ -95,7 +139,7 @@ public class MainPageController implements Initializable {
                 Parent waitViewParent = loader.load();
 
                 WaitingRoomController waitingRoomController = loader.getController();
-                waitingRoomController.setServerConnection(serverHandler,primaryStage);
+                waitingRoomController.setServerConnection(serverHandler, primaryStage);
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -113,7 +157,7 @@ public class MainPageController implements Initializable {
                 Parent invitationParent = loader.load();
 
                 InvitationController inviteController = loader.getController();
-                inviteController.setServerConnection(serverHandler,primaryStage);
+                inviteController.setServerConnection(serverHandler, primaryStage);
 
                 Scene scene = new Scene(invitationParent);
                 primaryStage.setScene(scene);
@@ -140,10 +184,11 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(AchievementViewParent);
 
         AchievementController achievementController = loader.getController();
-        achievementController.setServerConnection(serverHandler,primaryStage);
+        achievementController.setServerConnection(serverHandler, primaryStage);
 
         primaryStage.setScene(scene);
     }
+
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
@@ -161,63 +206,9 @@ public class MainPageController implements Initializable {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
         if (selectedPlayer != null) {
             serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
-
             moveToWaitingRoom();
         } else {
             System.out.println("Please choose a player to invite!");
         }
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        new Thread(() -> {
-            try (Socket socket = new Socket("localhost", 1234);
-                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true)) {
-
-                // Create a request to get all players
-                Request request = new Request();
-                request.setAction("getAllPlayer");
-                request.setParams(Map.of());
-
-                String toJson = new Gson().toJson(request);
-
-                // Send the request to the server
-                output.println(toJson);
-
-                // Read the response from the server
-                String jsonResponse = input.readLine();
-                Response response = new Gson().fromJson(jsonResponse, Response.class);
-
-                if ("OK".equalsIgnoreCase(response.getStatus())) {
-                    // Convert the response data to a list of Player objects
-                    List<Player> players = new Gson().fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>(){}.getType());
-
-                    // Update the TableView on the JavaFX Application Thread
-                    Platform.runLater(() -> {
-                        playerList = FXCollections.observableArrayList(players);
-                        numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
-                        username.setCellValueFactory(new PropertyValueFactory<Player, String>("username"));
-                        statusColumn.setCellValueFactory(new PropertyValueFactory<Player, PlayerStatus>("status"));
-
-                        table.setItems(playerList);
-                        table.setFocusTraversable(false);
-                        table.getSelectionModel().clearSelection();
-
-                        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                            if (newSelection != null) {
-                                System.out.println("Selected items: " + newSelection.getUsername());
-                            }
-                        });
-                    });
-                } else {
-                    System.out.println("Failed to get players: " + response.getMessage());
-                }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }
