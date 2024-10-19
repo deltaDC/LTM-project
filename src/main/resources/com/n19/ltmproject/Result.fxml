@@ -11,7 +11,7 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.n19.ltmproject.client.controller.ResultController">
     <children>
         <!-- Background Image -->
-        <ImageView layoutX="0" layoutY="0" fitWidth="500" fitHeight="400">
+        <ImageView layoutX="0" layoutY="0" fitWidth="600" fitHeight="600">
             <image>
                 <Image url="@images/resultbackground.png"/>
             </image>
@@ -22,14 +22,14 @@
                style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: black;"/>
 
         <!-- Result Label -->
-        <Label fx:id="resultLabel" layoutX="120" layoutY="150" text="KẾT QUẢ TRÒ CHƠI"
+        <Label fx:id="resultLabel" layoutX="220" layoutY="250" text="KẾT QUẢ TRÒ CHƠI"
                style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;"/>
 
         <!-- Score Section -->
-        <HBox layoutX="140" layoutY="200" spacing="10">
+        <HBox layoutX="160" layoutY="300" spacing="40">
             <!-- Player 1 Section -->
             <VBox alignment="CENTER">
-                <ImageView fitWidth="60" fitHeight="60">
+                <ImageView fitWidth="80" fitHeight="80">
                     <image>
                         <Image url="@images/useravartar.png"/>
                     </image>
@@ -45,7 +45,7 @@
 
             <!-- Player 2 Section -->
             <VBox alignment="CENTER">
-                <ImageView fitWidth="60" fitHeight="60">
+                <ImageView fitWidth="80" fitHeight="80">
                     <image>
                         <Image url="@images/useravartar3.png"/>
                     </image>
@@ -55,7 +55,7 @@
         </HBox>
 
         <!-- Buttons Section -->
-        <HBox layoutX="160" layoutY="320" spacing="20">
+        <HBox layoutX="220" layoutY="420" spacing="30">
             <!-- Play Again Button -->
             <Button fx:id="playAgainButton" text="Thách đấu lại" onAction="#handlePlayAgain"
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
