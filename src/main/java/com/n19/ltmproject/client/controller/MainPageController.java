@@ -77,37 +77,34 @@ public class MainPageController implements Initializable {
     }
 
     private void loadPlayers() {
-        new Thread(() -> {
-            try {
-                Map<String, Object> params = Map.of();
-                Response response = messageService.sendRequest("getAllPlayer", params);
+        try {
+            Map<String, Object> params = Map.of();
+            Response response = messageService.sendRequest("getAllPlayer", params);
 
+            Platform.runLater(() -> {
                 if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                     List<Player> players = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>() {}.getType());
+                    playerList = FXCollections.observableArrayList(players);
+                    numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
+                    username.setCellValueFactory(new PropertyValueFactory<>("username"));
+                    statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-                    Platform.runLater(() -> {
-                        playerList = FXCollections.observableArrayList(players);
-                        numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
-                        username.setCellValueFactory(new PropertyValueFactory<>("username"));
-                        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+                    table.setItems(playerList);
+                    table.setFocusTraversable(false);
+                    table.getSelectionModel().clearSelection();
 
-                        table.setItems(playerList);
-                        table.setFocusTraversable(false);
-                        table.getSelectionModel().clearSelection();
-
-                        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                            if (newSelection != null) {
-                                System.out.println("Selected items: " + newSelection.getUsername());
-                            }
-                        });
+                    table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            System.out.println("Selected items: " + newSelection.getUsername());
+                        }
                     });
                 } else {
                     System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void startListeningToServer() {
