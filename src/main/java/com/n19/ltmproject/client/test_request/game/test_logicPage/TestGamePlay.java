@@ -9,14 +9,14 @@ import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 
 public class TestGamePlay extends Application {
-
+//    private final ServerHandler serverHandler = ServerHandler.getInstance();
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
         Scene scene = new Scene(loader.load());
 
         GamePlayController gamePlayController = loader.getController();
-        gamePlayController.setServerConnection(new ServerHandler(), primaryStage);  // Giả lập ServerHandler nếu cần
+        gamePlayController.setServerConnection(primaryStage);  // Giả lập ServerHandler nếu cần
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Test GamePlay");

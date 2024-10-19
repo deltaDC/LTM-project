@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class ExitBattleController {
 
-    private ServerHandler serverHandler;
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
     private int score;
     private int opponentScore;
@@ -24,12 +24,11 @@ public class ExitBattleController {
     private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
 
     // Hàm để thiết lập trạng thái của GamePlay
-    public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline, ServerHandler serverHandler, Stage primaryStage) {
+    public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline,  Stage primaryStage) {
         this.score = score;
         this.opponentScore = opponentScore;
         this.timeLeft = timeLeft;
         this.timeline = timeline;
-        this.serverHandler = serverHandler;
         this.primaryStage = primaryStage;
 
         startExitCountdown(); // Bắt đầu đếm ngược trên trang Exit Battle
@@ -63,7 +62,7 @@ public class ExitBattleController {
         Scene scene = new Scene(mainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverHandler, primaryStage);
+        mainPageController.setServerConnection( primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -81,7 +80,7 @@ public class ExitBattleController {
         Scene scene = new Scene(gamePlayViewParent);
 
         GamePlayController gamePlayController = loader.getController();
-        gamePlayController.setServerConnection(serverHandler, primaryStage);
+        gamePlayController.setServerConnection(primaryStage);
 
         // Ghi đè thời gian còn lại của GamePlay bằng thời gian từ trang Exit Battle
         gamePlayController.setTimeLeft(timeLeft);  // Sử dụng hàm mới setTimeLeft để cập nhật thời gian

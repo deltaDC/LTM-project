@@ -5,6 +5,7 @@ package com.n19.ltmproject.client.controller;
 // GUI LOI MOI
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -52,11 +53,12 @@ public class MainPageController implements Initializable {
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
 
+
     private boolean isListening = false;
 
     //DEPRECATED
-    public void setServerConnection(ServerHandler serverHandler, Stage stage) {
-//        this.serverHandler = ServerHandler.getInstance();
+    public void setServerConnection( Stage stage) {
+
         this.primaryStage = stage;
 //        this.messageService = new MessageService(serverHandler);
 
@@ -111,43 +113,54 @@ public class MainPageController implements Initializable {
     }
 
     public void startListeningToServer() {
-        isListening = true;
-
-        new Thread(() -> {
-            try {
-                while (true) {
-                    String serverMessage = serverHandler.receiveMessage();
-                    if (serverMessage != null) {
-                        System.out.println("Received from server: " + serverMessage);
-                        if (serverMessage.contains("Invite You Game")) {
-                            System.out.println("You've received an invitation to play a game!");
-                            moveInvitation();
-                        }
-                    }
-                }
-            } catch (IOException ex) {
-                System.out.println("Error receiving message from server: " + ex.getMessage());
-            }
-        }).start();
+//        isListening = true;
+//
+//        new Thread(() -> {
+//            try {
+//                while (true) {
+//                    String serverMessage = serverHandler.receiveMessage();
+//                    if (serverMessage != null) {
+//                        System.out.println("Received from server: " + serverMessage);
+//                        if (serverMessage.contains("Invite You Game")) {
+//                            System.out.println("You've received an invitation to play a game!");
+//                            moveInvitation();
+//                        }
+//                    }
+//                }
+//            } catch (IOException ex) {
+//                System.out.println("Error receiving message from server: " + ex.getMessage());
+//            }
+//        }).start();
     }
 
-    private void moveToWaitingRoom() {
-        Platform.runLater(() -> {
-            try {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
-                Parent waitViewParent = loader.load();
+//    private void moveToWaitingRoom() {
+//        Platform.runLater(() -> {
+//            try {
+//                FXMLLoader loader = new FXMLLoader();
+//                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+//                Parent waitViewParent = loader.load();
+//
+//                WaitingRoomController waitingRoomController = loader.getController();
+//                waitingRoomController.setServerConnection( primaryStage);
+//
+//                Scene scene = new Scene(waitViewParent);
+//                primaryStage.setScene(scene);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+private void moveToWaitingRoom() throws IOException {
+    Stage stage = (Stage) table.getScene().getWindow();
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+    Parent root = loader.load();
 
-                WaitingRoomController waitingRoomController = loader.getController();
-                waitingRoomController.setServerConnection(serverHandler, primaryStage);
-
-                Scene scene = new Scene(waitViewParent);
-                primaryStage.setScene(scene);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
+    WaitingRoomController waitingRoomController = loader.getController();
+    waitingRoomController.setServerConnection( primaryStage);
+    Scene scene = new Scene(root);
+    stage.setScene(scene);
+    stage.show();
+}
 
     private void moveInvitation() {
         Platform.runLater(() -> {
@@ -157,7 +170,7 @@ public class MainPageController implements Initializable {
                 Parent invitationParent = loader.load();
 
                 InvitationController inviteController = loader.getController();
-                inviteController.setServerConnection(serverHandler, primaryStage);
+                inviteController.setServerConnection( primaryStage);
 
                 Scene scene = new Scene(invitationParent);
                 primaryStage.setScene(scene);
@@ -184,7 +197,7 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(AchievementViewParent);
 
         AchievementController achievementController = loader.getController();
-        achievementController.setServerConnection(serverHandler, primaryStage);
+        achievementController.setServerConnection( primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -197,18 +210,31 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(LeaderBoardViewParent);
 
         LeaderBoardController boardController = loader.getController();
-        boardController.setServerConnection(serverHandler, primaryStage);
+        boardController.setServerConnection( primaryStage);
 
         primaryStage.setScene(scene);
     }
 
-    public void ClickInvitePlayer(ActionEvent event) {
+    public void ClickInvitePlayer(ActionEvent event) throws IOException {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
         if (selectedPlayer != null) {
-            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
-            moveToWaitingRoom();
+//            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
+            Map<String, Object> params = new HashMap<>();
+            params.put("username", selectedPlayer.getUsername());
+
+            Response response = messageService.sendRequest("Invitation", params);
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                System.out.println("Invitation sent");
+                moveToWaitingRoom();
+            } else {
+                System.out.println("Invitation failed");
+            }
+
+//
         } else {
             System.out.println("Please choose a player to invite!");
         }
+
+
     }
 }

@@ -45,12 +45,11 @@ public class LeaderBoardController implements Initializable {
     private TableColumn<Player, Integer> pointColumn;
 
     private ObservableList<Player> playerList;
-    private ServerHandler serverHandler;
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
 
 
-    public void setServerConnection(ServerHandler serverHandler, Stage stage) {
-        this.serverHandler = serverHandler;
+    public void setServerConnection( Stage stage) {
         this.primaryStage = stage;
     }
 
@@ -62,7 +61,7 @@ public class LeaderBoardController implements Initializable {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverHandler,primaryStage);
+        mainPageController.setServerConnection(primaryStage);
 
         primaryStage.setScene(scene);
     }

@@ -11,11 +11,10 @@ import javafx.stage.Stage;
 
 public class InvitationController {
 
-	private ServerHandler serverHandler;
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
 	private Stage primaryStage;
 
-	public void setServerConnection(ServerHandler serverHandler, Stage stage) {
-        this.serverHandler = serverHandler;
+	public void setServerConnection( Stage stage) {
         this.primaryStage = stage; 
 	}
 
@@ -27,7 +26,7 @@ public class InvitationController {
         Scene scene = new Scene(WaitingRoomParent);
 
         WaitingRoomController WaitingRoomParentController = loader.getController();
-        WaitingRoomParentController.setServerConnection(serverHandler,primaryStage);
+        WaitingRoomParentController.setServerConnection(primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -40,7 +39,7 @@ public class InvitationController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverHandler,primaryStage);
+        mainPageController.setServerConnection(primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -53,7 +52,7 @@ public class InvitationController {
         Scene scene = new Scene(trangChuViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverHandler,primaryStage);
+        mainPageController.setServerConnection(primaryStage);
         
         primaryStage.setScene(scene);
     }

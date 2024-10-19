@@ -50,7 +50,7 @@ public class GamePlayController {
 	private final Random random = new Random();
 	private final int[] trashImagesCount = {21};
 
-	private ServerHandler serverConnection;
+	private final ServerHandler serverHandler = ServerHandler.getInstance();
 	private Stage primaryStage;
 
 	private int score = 0;
@@ -70,8 +70,7 @@ public class GamePlayController {
 	private double initialX;
 	private double initialY;
 
-	public void setServerConnection(ServerHandler serverHandler, Stage stage) {
-		this.serverConnection = serverHandler;
+	public void setServerConnection( Stage stage) {
 		this.primaryStage = stage;
 		startGame();
 	}
@@ -239,7 +238,7 @@ public class GamePlayController {
 			Scene exitScene = new Scene(exitBattleView);
 
 			ExitBattleController exitController = loader.getController();
-			exitController.setGamePlayState(score, opponentScore, timeLeft, timeline, serverConnection, primaryStage);
+			exitController.setGamePlayState(score, opponentScore, timeLeft, timeline, primaryStage);
 
 			primaryStage.setScene(exitScene);
 		} catch (IOException e) {

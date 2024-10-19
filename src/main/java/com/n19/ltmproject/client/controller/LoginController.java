@@ -79,6 +79,8 @@ public class LoginController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
         Parent root = loader.load();
 
+        MainPageController mainpageController = loader.getController();
+        mainpageController.setServerConnection( stage);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
