@@ -14,7 +14,7 @@ public class InvitationController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
 	private Stage primaryStage;
 
-	public void setServerConnection( Stage stage) {
+	public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage; 
 	}
 
@@ -26,7 +26,7 @@ public class InvitationController {
         Scene scene = new Scene(WaitingRoomParent);
 
         WaitingRoomController WaitingRoomParentController = loader.getController();
-        WaitingRoomParentController.setServerConnection(primaryStage);
+        WaitingRoomParentController.setPrimaryStage(primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -39,7 +39,7 @@ public class InvitationController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -52,7 +52,7 @@ public class InvitationController {
         Scene scene = new Scene(trangChuViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage);
         
         primaryStage.setScene(scene);
     }

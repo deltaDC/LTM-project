@@ -14,7 +14,7 @@ public class WaitingRoomController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
 
-    public void setServerConnection( Stage stage) {
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
 
@@ -26,7 +26,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -39,7 +39,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(GamePlayViewParent);
 
         GamePlayController gameController = loader.getController();
-        gameController.setServerConnection(primaryStage);
+        gameController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }

@@ -80,7 +80,7 @@ public class LoginController {
         Parent root = loader.load();
 
         MainPageController mainpageController = loader.getController();
-        mainpageController.setServerConnection( stage);
+        mainpageController.setPrimaryStage( stage);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

@@ -70,7 +70,7 @@ public class GamePlayController {
 	private double initialX;
 	private double initialY;
 
-	public void setServerConnection( Stage stage) {
+	public void setPrimaryStage(Stage stage) {
 		this.primaryStage = stage;
 		startGame();
 	}

@@ -62,7 +62,7 @@ public class ExitBattleController {
         Scene scene = new Scene(mainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection( primaryStage);
+        mainPageController.setPrimaryStage( primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -80,7 +80,7 @@ public class ExitBattleController {
         Scene scene = new Scene(gamePlayViewParent);
 
         GamePlayController gamePlayController = loader.getController();
-        gamePlayController.setServerConnection(primaryStage);
+        gamePlayController.setPrimaryStage(primaryStage);
 
         // Ghi đè thời gian còn lại của GamePlay bằng thời gian từ trang Exit Battle
         gamePlayController.setTimeLeft(timeLeft);  // Sử dụng hàm mới setTimeLeft để cập nhật thời gian

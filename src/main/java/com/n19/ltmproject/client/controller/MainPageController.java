@@ -20,6 +20,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,22 +50,15 @@ public class MainPageController implements Initializable {
 
     private ObservableList<Player> playerList;
     private Stage primaryStage;
-    private MessageService messageService;
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
-
+    private MessageService messageService = new MessageService(serverHandler);
+    private Thread listenerThread;
 
     private boolean isListening = false;
 
-    //DEPRECATED
-    public void setServerConnection( Stage stage) {
-
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-//        this.messageService = new MessageService(serverHandler);
-
-//        if (!isListening) {
-//            startListeningToServer();
-//        }
     }
 
     @Override
@@ -73,9 +67,10 @@ public class MainPageController implements Initializable {
 
         loadPlayers();
 
-        if (!isListening) {
-            startListeningToServer();
-        }
+        // Start the listener thread only once
+//        if (listenerThread == null || !listenerThread.isAlive()) {
+//            startListeningToServer();
+//        }
     }
 
     private void loadPlayers() {
@@ -109,72 +104,65 @@ public class MainPageController implements Initializable {
         }
     }
 
+    @Deprecated
     public void startListeningToServer() {
-//        isListening = true;
-//
-//        new Thread(() -> {
-//            try {
-//                while (true) {
-//                    String serverMessage = serverHandler.receiveMessage();
-//                    if (serverMessage != null) {
-//                        System.out.println("Received from server: " + serverMessage);
-//                        if (serverMessage.contains("Invite You Game")) {
-//                            System.out.println("You've received an invitation to play a game!");
-//                            moveInvitation();
-//                        }
-//                    }
-//                }
-//            } catch (IOException ex) {
-//                System.out.println("Error receiving message from server: " + ex.getMessage());
-//            }
-//        }).start();
+        isListening = true;
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    while (isListening) {
+                        String serverMessage = serverHandler.receiveMessage();
+
+                        if (serverMessage != null) {
+                            System.out.println("[MainPageController - startListeningToServer] Received from server: " + serverMessage);
+
+                            // Parse the JSON message to Response object
+                            Response response = gson.fromJson(serverMessage, Response.class);
+
+                            // Check for specific action in the Response object
+                            if (response.getStatus().equalsIgnoreCase("OK")) {
+                                System.out.println("You've received an invitation to play a game!");
+                                System.out.println(response.getMessage());
+                                System.out.println(response.getData());
+
+                                // Set isListening to false to exit the loop
+                                isListening = false;
+
+                                // Move to the invitation page on the JavaFX Application Thread
+                                Platform.runLater(MainPageController.this::moveToInvitationPage);
+                            }
+                        }
+
+                        // Sleep or wait can be added here to avoid busy waiting
+                        Thread.sleep(100); // Adjust the sleep duration as needed
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Error receiving message from server: " + ex.getMessage());
+                }
+                return null; // Return null for a Void task
+            }
+        };
+
+        // Start the task in a new thread
+        new Thread(task).start();
     }
 
-//    private void moveToWaitingRoom() {
-//        Platform.runLater(() -> {
-//            try {
-//                FXMLLoader loader = new FXMLLoader();
-//                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
-//                Parent waitViewParent = loader.load();
-//
-//                WaitingRoomController waitingRoomController = loader.getController();
-//                waitingRoomController.setServerConnection( primaryStage);
-//
-//                Scene scene = new Scene(waitViewParent);
-//                primaryStage.setScene(scene);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
-private void moveToWaitingRoom() throws IOException {
-    Stage stage = (Stage) table.getScene().getWindow();
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
-    Parent root = loader.load();
+    private void moveToInvitationPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
+            Parent invitationParent = loader.load();
 
-    WaitingRoomController waitingRoomController = loader.getController();
-    waitingRoomController.setServerConnection( primaryStage);
-    Scene scene = new Scene(root);
-    stage.setScene(scene);
-    stage.show();
-}
+            InvitationController inviteController = loader.getController();
+            inviteController.setPrimaryStage(primaryStage);
 
-    private void moveInvitation() {
-        Platform.runLater(() -> {
-            try {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
-                Parent invitationParent = loader.load();
-
-                InvitationController inviteController = loader.getController();
-                inviteController.setServerConnection( primaryStage);
-
-                Scene scene = new Scene(invitationParent);
-                primaryStage.setScene(scene);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+            Scene scene = new Scene(invitationParent);
+            primaryStage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void ClickLogout(ActionEvent e) throws IOException {
@@ -194,7 +182,7 @@ private void moveToWaitingRoom() throws IOException {
         Scene scene = new Scene(AchievementViewParent);
 
         AchievementController achievementController = loader.getController();
-        achievementController.setServerConnection( primaryStage);
+        achievementController.setPrimaryStage( primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -207,31 +195,42 @@ private void moveToWaitingRoom() throws IOException {
         Scene scene = new Scene(LeaderBoardViewParent);
 
         LeaderBoardController boardController = loader.getController();
-        boardController.setServerConnection( primaryStage);
+        boardController.setPrimaryStage( primaryStage);
 
         primaryStage.setScene(scene);
     }
 
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
-        if (selectedPlayer != null) {
-//            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
-            Map<String, Object> params = new HashMap<>();
-            params.put("username", selectedPlayer.getUsername());
 
-            Response response = messageService.sendRequest("Invitation", params);
+        if (selectedPlayer != null) {
+            Map<String, Object> params = new HashMap<>();
+            //TODO implement real token here to fetch the inviter
+            params.put("inviter", "pdc");
+            params.put("invitee", selectedPlayer.getUsername());
+
+            Response response = messageService.sendRequest("invitation", params);
+
             if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                 System.out.println("Invitation sent");
                 moveToWaitingRoom();
             } else {
                 System.out.println("Invitation failed");
             }
-
-//
         } else {
             System.out.println("Please choose a player to invite!");
         }
+    }
 
+    private void moveToWaitingRoom() throws IOException {
+        Stage stage = (Stage) table.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+        Parent root = loader.load();
 
+        WaitingRoomController waitingRoomController = loader.getController();
+        waitingRoomController.setPrimaryStage( primaryStage);
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }
