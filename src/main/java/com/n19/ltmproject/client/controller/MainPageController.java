@@ -206,7 +206,7 @@ public class MainPageController implements Initializable {
         if (selectedPlayer != null) {
             Map<String, Object> params = new HashMap<>();
             //TODO implement real token here to fetch the inviter
-            params.put("inviter", "pdc");
+            params.put("inviter", "user1");
             params.put("invitee", selectedPlayer.getUsername());
 
             Response response = messageService.sendRequest("invitation", params);
