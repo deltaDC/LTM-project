@@ -5,20 +5,34 @@ import java.net.*;
 
 public class ServerHandler {
 
+    private static ServerHandler instance;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
+    public static synchronized ServerHandler getInstance() {
+        if (instance == null) {
+            instance = new ServerHandler();
+        }
+        return instance;
+    }
+
+    public void init(String host, int port) {
+        connect(host, port);
+    }
+
     public void connect(String host, int port) {
+        if (socket != null && socket.isConnected()) {
+            // Socket is already connected, no need to reconnect
+            return;
+        }
+
         try {
             socket = new Socket(host, port);
             out = new PrintWriter(socket.getOutputStream(), true); // Enable auto-flush
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             System.out.println("Successfully connected to the server!"); // Successful connection
-        } catch (UnknownHostException e) {
-            System.out.println("Cannot connect to host: " + host + ". Check the server address.");
-            e.printStackTrace();
         } catch (IOException e) {
             System.out.println("Error connecting to server: " + e.getMessage());
             e.printStackTrace();
@@ -47,6 +61,9 @@ public class ServerHandler {
     }
 
     public String receiveMessage() throws IOException {
+        if (in == null) {
+            throw new IllegalStateException("Input stream is not initialized. Ensure connection is established.");
+        }
         try {
             String message = in.readLine();
             if (message != null) {

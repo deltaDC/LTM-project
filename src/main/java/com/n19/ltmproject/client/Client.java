@@ -1,5 +1,6 @@
 package com.n19.ltmproject.client;
 
+import com.n19.ltmproject.client.handler.ServerHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,7 +18,14 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // TODO Auto-generated method stub
+        try {
+            ServerHandler serverHandler = ServerHandler.getInstance();
+            serverHandler.init("localhost", 1234);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the server: " + e.getMessage());
+        }
+
+
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/Login.fxml")));
             Scene scene = new Scene(root);

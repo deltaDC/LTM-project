@@ -1,102 +1,95 @@
 package com.n19.ltmproject.client.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.client.model.Player;
-import com.n19.ltmproject.client.model.dto.Request;
 import com.n19.ltmproject.client.model.dto.Response;
-import javafx.event.ActionEvent;
+import com.n19.ltmproject.client.service.MessageService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class LoginController {
-    private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 1234;
-    private static final Gson gson = new Gson();
-
 
     @FXML
-    TextField userText;
+    private TextField userText;
     @FXML
-    PasswordField passText;
+    private PasswordField passText;
 
-    public void ClickLogin(ActionEvent e) throws IOException {
-         Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-         BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-         PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-         ServerHandler serverHandler = new ServerHandler();
-         serverHandler.connect("localhost", 1234);
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
 
-         String username = userText.getText();
-         String password = passText.getText();
+    @FXML
+    public void ClickLogin() {
+        String username = userText.getText();
+        String password = passText.getText();
 
-         Request request = new Request();
-         request.setAction("login");
-         Map<String, Object> params = Map.of("username", username, "password", password);
-         request.setParams(params);
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
 
-         String toJson = gson.toJson(request);
-         output.println(toJson);
+        Response response = messageService.sendRequest("login", params);
 
-         String jsonResponse = input.readLine();
-         Response response = gson.fromJson(jsonResponse, Response.class);
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            showInformationAlert("Login", "Login successful!");
 
-         System.out.println("Response from server: " + response.getMessage());
-
-         //TODO change hard code to enum
-        if (response.getMessage().contains("Login successful")) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Login");
-            alert.setAlertType(Alert.AlertType.INFORMATION);
-            alert.setContentText("Login successful!");
-            alert.showAndWait();
-
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-
-            Parent MainPageViewParent = loader.load();
-            System.out.println("MainPage.fxml loaded successfully.");
-
-            Scene scene = new Scene(MainPageViewParent);
-
-            MainPageController mainPageController = loader.getController();
-            mainPageController.setServerConnection(serverHandler, stage);
-            System.out.println("MainPageController setup completed.");
-
-            stage.setScene(scene);
-            System.out.println("Scene changed to MainPage.");
+            try {
+                loadMainPage();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Signup");
-            alert.setContentText(response.getMessage());
-            alert.showAndWait();
-            System.out.println("Login failed: " + response);
+            showErrorAlert("Login", "Login failed. Please check your credentials.");
         }
     }
 
-    public void ClickSignUp(MouseEvent e) throws IOException {
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/SignUp.fxml"));
 
-        Parent SignUpParent = loader.load();
-        Scene scene = new Scene(SignUpParent);
+    @FXML
+    public void ClickSignUp() {
+        try {
+            loadScene("/com/n19/ltmproject/SignUp.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showInformationAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void loadMainPage() throws IOException {
+        Stage stage = (Stage) userText.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.show();
+    }
+
+    private void loadScene(String resourcePath) throws IOException {
+        Stage stage = (Stage) userText.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
+        Stage newStage = new Stage();
+        newStage.setScene(new Scene(loader.load()));
+        newStage.show();
+        stage.close();
     }
 }

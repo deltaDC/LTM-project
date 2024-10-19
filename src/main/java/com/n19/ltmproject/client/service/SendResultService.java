@@ -1,8 +1,6 @@
 package com.n19.ltmproject.client.service;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.client.service.message.ReceiveResponseMessage;
-import com.n19.ltmproject.client.service.message.SendRequestMessage;
 
 import java.io.IOException;
 import java.util.Map;
