@@ -3,6 +3,8 @@ package com.n19.ltmproject.client.controller;
 // REFUSE INVITATION
 import java.io.IOException;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,10 +15,13 @@ public class InvitationController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
 	private Stage primaryStage;
-
-	public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage; 
-	}
+    private UserSession usersessions;
+    private Session session;
+    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+        this.primaryStage = stage;
+        this.session = session;
+        this.usersessions = usersessions;
+    }
 
 	public void ClickAccept(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader();
@@ -26,7 +31,7 @@ public class InvitationController {
         Scene scene = new Scene(WaitingRoomParent);
 
         WaitingRoomController WaitingRoomParentController = loader.getController();
-        WaitingRoomParentController.setPrimaryStage(primaryStage);
+        WaitingRoomParentController.setPrimaryStage(primaryStage,session,usersessions);
         
         primaryStage.setScene(scene);
     }
@@ -39,7 +44,7 @@ public class InvitationController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
         
         primaryStage.setScene(scene);
     }
@@ -52,7 +57,7 @@ public class InvitationController {
         Scene scene = new Scene(trangChuViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
         
         primaryStage.setScene(scene);
     }

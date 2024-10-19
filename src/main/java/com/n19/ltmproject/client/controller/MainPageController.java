@@ -5,10 +5,7 @@ package com.n19.ltmproject.client.controller;
 // GUI LOI MOI
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -16,6 +13,9 @@ import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
+
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -34,6 +34,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
 
+
 public class MainPageController implements Initializable {
 
     @FXML
@@ -50,15 +51,21 @@ public class MainPageController implements Initializable {
 
     private ObservableList<Player> playerList;
     private Stage primaryStage;
+    private UserSession usersessions;
+    private Session session;
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService = new MessageService(serverHandler);
     private Thread listenerThread;
+    private boolean isInvitation = false;
 
     private boolean isListening = false;
 
-    public void setPrimaryStage(Stage stage) {
+
+    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
         this.primaryStage = stage;
+        this.session = session;
+        this.usersessions = usersessions;
     }
 
     @Override
@@ -67,10 +74,10 @@ public class MainPageController implements Initializable {
 
         loadPlayers();
 
-        // Start the listener thread only once
-//        if (listenerThread == null || !listenerThread.isAlive()) {
-//            startListeningToServer();
-//        }
+//         Start the listener thread only once
+        if (listenerThread == null || !listenerThread.isAlive()) {
+            startListeningToServer();
+        }
     }
 
     private void loadPlayers() {
@@ -112,42 +119,42 @@ public class MainPageController implements Initializable {
             @Override
             protected Void call() throws Exception {
                 try {
-                    while (isListening) {
+                    while (isListening && isInvitation) {
                         String serverMessage = serverHandler.receiveMessage();
 
                         if (serverMessage != null) {
                             System.out.println("[MainPageController - startListeningToServer] Received from server: " + serverMessage);
 
-                            // Parse the JSON message to Response object
+                            // Phân tích JSON thành đối tượng Response
                             Response response = gson.fromJson(serverMessage, Response.class);
 
-                            // Check for specific action in the Response object
-                            if (response.getStatus().equalsIgnoreCase("OK")) {
-                                System.out.println("You've received an invitation to play a game!");
+                            // Xử lý các hành động dựa trên response
+                            if ("OK".equalsIgnoreCase(response.getStatus())) {
+                                System.out.println("Bạn đã nhận được lời mời tham gia trò chơi!");
                                 System.out.println(response.getMessage());
                                 System.out.println(response.getData());
 
-                                // Set isListening to false to exit the loop
-                                isListening = false;
-
-                                // Move to the invitation page on the JavaFX Application Thread
+                                // Thực hiện cập nhật giao diện trên luồng JavaFX
                                 Platform.runLater(MainPageController.this::moveToInvitationPage);
                             }
                         }
 
-                        // Sleep or wait can be added here to avoid busy waiting
-                        Thread.sleep(100); // Adjust the sleep duration as needed
+                        // Thêm khoảng nghỉ nhỏ để tránh việc đợi bận
+                        Thread.sleep(100);
                     }
                 } catch (Exception ex) {
-                    System.out.println("Error receiving message from server: " + ex.getMessage());
+                    System.out.println("Lỗi khi nhận tin nhắn từ server: " + ex.getMessage());
                 }
-                return null; // Return null for a Void task
+                return null;
             }
         };
 
-        // Start the task in a new thread
-        new Thread(task).start();
+        // Khởi chạy task trong một luồng mới để giữ giao diện không bị đơ
+        listenerThread = new Thread(task);
+        listenerThread.setDaemon(true); // Đảm bảo luồng sẽ dừng khi ứng dụng đóng
+        listenerThread.start();
     }
+
 
     private void moveToInvitationPage() {
         try {
@@ -156,7 +163,7 @@ public class MainPageController implements Initializable {
             Parent invitationParent = loader.load();
 
             InvitationController inviteController = loader.getController();
-            inviteController.setPrimaryStage(primaryStage);
+            inviteController.setPrimaryStage(primaryStage,session,usersessions);
 
             Scene scene = new Scene(invitationParent);
             primaryStage.setScene(scene);
@@ -166,13 +173,41 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickLogout(ActionEvent e) throws IOException {
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
-        Parent loginViewParent = loader.load();
-        Scene scene = new Scene(loginViewParent);
-        stage.setScene(scene);
+        System.out.println(usersessions.getActiveUsers()+" " + session.getUsername());
+        String username = session.getUsername(); // Lấy tên người dùng hiện tại
+
+        if (username != null) { // Kiểm tra xem username có khác null không
+            Map<String, Object> params = new HashMap<>();
+            params.put("username", username);
+
+            Response response = messageService.sendRequest("logout", params);
+
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                Map<String, Object> responseData = (Map<String, Object>) response.getData();
+
+// Lấy danh sách người dùng đang hoạt động và người dùng hiện tại
+                Set<String> activeUsers = new HashSet<>((List<String>) responseData.get("activeUsers"));
+                String currentUser = (String) responseData.get("currentUser");
+                usersessions.setActiveUsers(activeUsers);
+                System.out.println("Logout successful");
+                // Chuyển về trang đăng nhập
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
+                Parent loginViewParent = loader.load();
+                LoginController loginController = loader.getController();
+                loginController.setPrimaryStage( stage, session,usersessions);
+                Scene scene = new Scene(loginViewParent);
+                stage.setScene(scene);
+
+            } else {
+                System.out.println("Logout failed: " + (response != null ? response.getMessage() : "Unknown error"));
+            }
+        } else {
+            System.out.println("No user is currently logged in."); // Xử lý trường hợp không có người dùng nào
+        }
     }
+
 
     public void ClickAchievement(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader();
@@ -182,7 +217,7 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(AchievementViewParent);
 
         AchievementController achievementController = loader.getController();
-        achievementController.setPrimaryStage( primaryStage);
+        achievementController.setPrimaryStage( primaryStage,session,usersessions);
 
         primaryStage.setScene(scene);
     }
@@ -195,12 +230,14 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(LeaderBoardViewParent);
 
         LeaderBoardController boardController = loader.getController();
-        boardController.setPrimaryStage( primaryStage);
+        boardController.setPrimaryStage( primaryStage,session,usersessions);
 
         primaryStage.setScene(scene);
     }
 
+
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
+
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
         if (selectedPlayer != null) {
@@ -228,7 +265,7 @@ public class MainPageController implements Initializable {
         Parent root = loader.load();
 
         WaitingRoomController waitingRoomController = loader.getController();
-        waitingRoomController.setPrimaryStage( primaryStage);
+        waitingRoomController.setPrimaryStage( primaryStage,session,usersessions);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

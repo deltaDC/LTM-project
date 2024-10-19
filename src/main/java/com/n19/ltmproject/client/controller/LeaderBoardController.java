@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -47,10 +49,13 @@ public class LeaderBoardController implements Initializable {
     private ObservableList<Player> playerList;
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
+    private UserSession usersessions;
+    private Session session;
 
-
-    public void setPrimaryStage(Stage stage) {
+    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
         this.primaryStage = stage;
+        this.session = session;
+        this.usersessions = usersessions;
     }
 
     public void clickHome(ActionEvent e) throws IOException {
@@ -61,7 +66,7 @@ public class LeaderBoardController implements Initializable {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
 
         primaryStage.setScene(scene);
     }

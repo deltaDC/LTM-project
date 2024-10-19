@@ -2,6 +2,7 @@ package com.n19.ltmproject.server;
 
 import com.n19.ltmproject.server.handler.ClientHandler;
 import com.n19.ltmproject.server.manager.ClientManager;
+import com.n19.ltmproject.server.service.UserSession;
 import com.n19.ltmproject.server.util.HibernateUtil;
 
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.net.Socket;
 
 public class Server {
     private static final ClientManager clientManager = new ClientManager();
-
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(1234)) {
             System.out.println("[Server] Server is listening on port 1234");

@@ -2,6 +2,8 @@
 package com.n19.ltmproject.client.controller;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,9 +15,12 @@ import java.io.IOException;
 public class AchievementController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
-
-    public void setPrimaryStage(Stage stage) {
+    private UserSession usersessions;
+    private Session session;
+    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
         this.primaryStage = stage;
+        this.session = session;
+        this.usersessions = usersessions;
     }
 
     public void ClickHome(MouseEvent e) throws IOException {
@@ -26,7 +31,7 @@ public class AchievementController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage);
+        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
 
         primaryStage.setScene(scene);
     }

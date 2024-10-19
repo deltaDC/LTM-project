@@ -1,5 +1,6 @@
 package com.n19.ltmproject.server.command;
 
+import com.n19.ltmproject.server.command.auth.LogoutCommand;
 import com.n19.ltmproject.server.command.game.InvitationCommand;
 import com.n19.ltmproject.server.command.auth.LoginCommand;
 import com.n19.ltmproject.server.command.auth.SignupCommand;
@@ -19,6 +20,7 @@ public class CommandFactory {
     public static Command getCommand(String action) {
         return switch (action) {
             case "login" -> new LoginCommand();
+            case "logout" -> new LogoutCommand();
             case "signUp" -> new SignupCommand();
             case "getAllGameData" -> new GetAllGameDataCommand();
             case "startNewGame" -> new StartNewGame();

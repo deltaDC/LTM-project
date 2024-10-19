@@ -2,6 +2,8 @@ package com.n19.ltmproject.client.controller;
 // CLICK EXIT
 // SEND KET QUA TRAN DAU (UPDATE WIN , LOSS)
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -52,7 +54,8 @@ public class GamePlayController {
 
 	private final ServerHandler serverHandler = ServerHandler.getInstance();
 	private Stage primaryStage;
-
+	private UserSession usersessions;
+	private Session session;
 	private int score = 0;
 	private int opponentScore = 0;
 	private int timeLeft = 5;
@@ -70,10 +73,13 @@ public class GamePlayController {
 	private double initialX;
 	private double initialY;
 
-	public void setPrimaryStage(Stage stage) {
+	public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
 		this.primaryStage = stage;
+		this.session = session;
+		this.usersessions = usersessions;
 		startGame();
 	}
+
 
 	private void startGame() {
 		timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateTimer()));

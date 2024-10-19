@@ -1,12 +1,15 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
+
+
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,19 +28,37 @@ public class LoginController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+    private UserSession usersessions;
+    private Session session;
+    private Stage primaryStage;
+
+    public void setPrimaryStage(Stage stage,Session session, UserSession usersessions) {
+        this.primaryStage = stage;
+        this.session = session;
+        this.usersessions = usersessions;
+    }
 
     @FXML
     public void ClickLogin() {
         String username = userText.getText();
         String password = passText.getText();
-
+        session.setUserID(username);
+        session.setUsername(username);
         Map<String, Object> params = new HashMap<>();
         params.put("username", username);
         params.put("password", password);
 
         Response response = messageService.sendRequest("login", params);
-
+        System.out.println(response);
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            Map<String, Object> responseData = (Map<String, Object>) response.getData();
+
+// Lấy danh sách người dùng đang hoạt động và người dùng hiện tại
+            Set<String> activeUsers = new HashSet<>((List<String>) responseData.get("activeUsers"));
+            String currentUser = (String) responseData.get("currentUser");
+
+            usersessions.setActiveUsers(activeUsers);
+
             showInformationAlert("Login", "Login successful!");
 
             try {
@@ -80,7 +101,7 @@ public class LoginController {
         Parent root = loader.load();
 
         MainPageController mainpageController = loader.getController();
-        mainpageController.setPrimaryStage( stage);
+        mainpageController.setPrimaryStage( stage,session, usersessions);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

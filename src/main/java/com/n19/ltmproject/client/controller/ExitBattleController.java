@@ -2,6 +2,8 @@
 package com.n19.ltmproject.client.controller;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,7 +24,13 @@ public class ExitBattleController {
     private int timeLeft;
     private Timeline timeline;
     private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
-
+    private UserSession usersessions;
+    private Session session;
+    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+        this.primaryStage = stage;
+        this.session = session;
+        this.usersessions = usersessions;
+    }
     // Hàm để thiết lập trạng thái của GamePlay
     public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline,  Stage primaryStage) {
         this.score = score;
@@ -62,7 +70,7 @@ public class ExitBattleController {
         Scene scene = new Scene(mainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage( primaryStage);
+        mainPageController.setPrimaryStage( primaryStage,session,usersessions);
 
         primaryStage.setScene(scene);
     }
@@ -80,7 +88,7 @@ public class ExitBattleController {
         Scene scene = new Scene(gamePlayViewParent);
 
         GamePlayController gamePlayController = loader.getController();
-        gamePlayController.setPrimaryStage(primaryStage);
+        gamePlayController.setPrimaryStage(primaryStage,session,usersessions);
 
         // Ghi đè thời gian còn lại của GamePlay bằng thời gian từ trang Exit Battle
         gamePlayController.setTimeLeft(timeLeft);  // Sử dụng hàm mới setTimeLeft để cập nhật thời gian
