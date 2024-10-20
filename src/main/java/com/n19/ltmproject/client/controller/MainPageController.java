@@ -193,6 +193,7 @@ public class MainPageController implements Initializable {
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             // clear user
+            usersessions.removeSession(currentUser.getUsername());
             SessionManager.clearSession();
             AlertController.showInformationAlert("Logout", "Logout successfully!");
 
@@ -237,7 +238,7 @@ public class MainPageController implements Initializable {
 
 
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
-
+        System.out.println(usersessions.getAllSessions());
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
         if (selectedPlayer != null) {

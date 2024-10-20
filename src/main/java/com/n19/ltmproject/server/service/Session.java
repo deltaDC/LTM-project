@@ -1,18 +1,12 @@
 package com.n19.ltmproject.server.service;
 
 public class Session {
-    private static String userID;
     private static String username;
     public Session(){
 
     }
-
-    public static String getUserID() {
-        return userID;
-    }
-
-    public static void setUserID(String userID) {
-        Session.userID = userID;
+    public Session(String username){
+        this.username=username;
     }
     public static String getUsername() {
         return username;

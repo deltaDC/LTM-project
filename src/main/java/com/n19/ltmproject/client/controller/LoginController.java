@@ -31,7 +31,7 @@ public class LoginController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
-    private UserSession usersessions;
+    public static UserSession usersessions = new UserSession();
     private Session session;
     private Stage primaryStage;
 
@@ -45,32 +45,45 @@ public class LoginController {
     public void ClickLogin() {
         String username = userText.getText();
         String password = passText.getText();
-        session.setUserID(username);
-        session.setUsername(username);
         Map<String, Object> params = new HashMap<>();
         params.put("username", username);
         params.put("password", password);
+//        if (usersessions != null) {
+//            params.put("usersession", usersessions);
+//        } else {
+//            System.out.println("usersessions is null");
+//        }
 
         Response response = messageService.sendRequest("login", params);
         System.out.println(response);
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-
+            // Lấy dữ liệu từ response
             Map<String, Object> responseData = (Map<String, Object>) response.getData();
 
-// Lấy danh sách người dùng đang hoạt động và người dùng hiện tại
-            Set<String> activeUsers = new HashSet<>((List<String>) responseData.get("activeUsers"));
-            String currentUser = (String) responseData.get("currentUser");
+            // Kiểm tra xem responseData có phải là Map không
+            if (responseData instanceof Map) {
+                // Lấy UserSession từ responseData
+                Object userSessionObject = responseData.get("usersession");
+                if (userSessionObject instanceof UserSession) {
+                    UserSession sessionData = (UserSession) userSessionObject;
+                    usersessions.setSession(sessionData);
 
-            usersessions.setActiveUsers(activeUsers);
+                }
 
+
+                // Lấy Player từ responseData
+                Object playerObject = responseData.get("player");
+                if (playerObject != null) {
+                    // Chuyển đổi playerObject thành Player
+                    Gson gson = new Gson();
+                    String playerJson = gson.toJson(playerObject);
+                    Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
+                    SessionManager.setCurrentUser(loggedInPlayer);
+                }
+
+            }
+            usersessions.addSession(username);
             AlertController.showInformationAlert("Login", "Login successful!");
-
-            // Lưu thông tin người dùng vào SessionManager
-            Gson gson = new Gson();
-            String playerJson = gson.toJson(response.getData());
-            Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
-
-            SessionManager.setCurrentUser(loggedInPlayer);
 
             try {
                 loadMainPage();

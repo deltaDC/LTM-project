@@ -1,35 +1,43 @@
 package com.n19.ltmproject.server.service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserSession {
-    public UserSession(){
+    private static Map<String, Session> sessions = new HashMap<>();
 
-    }
-    private static Set<String> activeUsers = new HashSet<>();
-
-    // Phương thức tĩnh để thêm người dùng
-    public static synchronized void addUser(String username) {
-        activeUsers.add(username);
-        System.out.println("User added: " + username);
+    // Thêm một phiên người dùng vào danh sách
+    public static void addSession( String username) {
+        Session session = new Session(username);
+        sessions.put(username, session);
     }
 
-    // Phương thức tĩnh để xóa người dùng
-    public static synchronized void removeUser(String username) {
-        activeUsers.remove(username);
-        System.out.println("User removed: " + username);
+    // Lấy phiên người dùng dựa trên userID
+    public static Session getSession(String username) {
+        return sessions.get(username);
     }
 
-    // Phương thức tĩnh để lấy danh sách người dùng đang hoạt động
-    public static synchronized Set<String> getActiveUsers() {
-        return new HashSet<>(activeUsers); // Trả về bản sao của danh sách người dùng đang hoạt động
+    // Xóa một phiên người dùng khi họ đăng xuất
+    public static void removeSession(String username) {
+        sessions.remove(username);
     }
 
-    // Phương thức tĩnh để thiết lập danh sách người dùng đang hoạt động
-    public static void setActiveUsers(Set<String> users) {
-        activeUsers.clear();
-        activeUsers.addAll(users);
+    // Kiểm tra xem user có đang trong phiên không
+    public static boolean isUserLoggedIn(String username) {
+        return sessions.containsKey(username);
+    }
+    public static void setSession(UserSession otherSession) {
+        // Clear existing sessions
+        sessions.clear();
+
+        // Copy sessions from the other UserSession
+        for (Map.Entry<String, Session> entry : otherSession.getAllSessions().entrySet()) {
+            sessions.put(entry.getKey(), entry.getValue());
+        }
     }
 
+    // Lấy tất cả các phiên hiện tại
+    public static Map<String, Session> getAllSessions() {
+        return sessions;
+    }
 }

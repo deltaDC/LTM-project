@@ -12,7 +12,6 @@ import java.util.*;
 public class LoginCommand implements Command {
     private final AuthService authService;
     public static UserSession usersession;
-
     public LoginCommand() {
         this.authService = new AuthService();
     }
@@ -22,23 +21,26 @@ public class LoginCommand implements Command {
         String username = (String) request.getParams().get("username");
         String password = (String) request.getParams().get("password");
 
+
         Player player = authService.loginPlayerService(username, password);
 
         if (player != null) {
             // Thêm người dùng vào UserSession
 
-            usersession.addUser(username);
+            usersession.addSession(username);
 
             // Tạo dữ liệu trả về bao gồm thông tin người dùng
-            Map<String, Object> responseData = new HashMap<>();
-//            responseData.put("player", player); // Thêm thông tin người dùng
-            responseData.put("activeUsers", usersession.getActiveUsers()); // Danh sách người dùng đang hoạt động
+            Map<String, Object> response = new HashMap<>();
+//
+            response.put("player", player);
+            response.put("usersession", usersession);
+            // Danh sách người dùng đang hoạt động
 
 
             return Response.builder()
                     .status("OK")
                     .message("Login successful")
-                    .data(responseData) // Trả về dữ liệu chứa thông tin người dùng
+                    .data(response) // Trả về dữ liệu chứa thông tin người dùng
                     .build();
         } else {
             return Response.builder()
