@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.model.Player;
+import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 import javafx.fxml.FXML;
@@ -38,7 +41,14 @@ public class LoginController {
         Response response = messageService.sendRequest("login", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-            showInformationAlert("Login", "Login successful!");
+            AlertController.showInformationAlert("Login", "Login successful!");
+
+            // Lưu thông tin người dùng vào SessionManager
+            Gson gson = new Gson();
+            String playerJson = gson.toJson(response.getData());
+            Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
+
+            SessionManager.setCurrentUser(loggedInPlayer);
 
             try {
                 loadMainPage();
@@ -46,7 +56,7 @@ public class LoginController {
                 ex.printStackTrace();
             }
         } else {
-            showErrorAlert("Login", "Login failed. Please check your credentials.");
+            AlertController.showErrorAlert("Login", "Login failed. Please check your credentials.");
         }
     }
 
@@ -58,20 +68,6 @@ public class LoginController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void showInformationAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private void loadMainPage() throws IOException {

@@ -5,6 +5,7 @@ package com.n19.ltmproject.client.controller;
 // GUI LOI MOI
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -12,6 +13,7 @@ import java.util.ResourceBundle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
@@ -26,6 +28,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -72,7 +75,7 @@ public class MainPageController implements Initializable {
         loadPlayers();
 
         if (!isListening) {
-            startListeningToServer();
+//            startListeningToServer();
         }
     }
 
@@ -165,12 +168,32 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickLogout(ActionEvent e) throws IOException {
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
-        Parent loginViewParent = loader.load();
-        Scene scene = new Scene(loginViewParent);
-        stage.setScene(scene);
+        Player currentUser = SessionManager.getCurrentUser();
+        if (currentUser != null) {
+            System.out.println("Current logged-in user: " + currentUser);
+        } else {
+            System.out.println("No user is currently logged in.");
+        }
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", currentUser.getUsername());
+        Response response = messageService.sendRequest("logout", params);
+
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            // clear user
+            SessionManager.clearSession();
+            AlertController.showInformationAlert("Logout", "Logout successfully!");
+
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
+            Parent loginViewParent = loader.load();
+            Scene scene = new Scene(loginViewParent);
+            stage.setScene(scene);
+        }
+        else {
+            AlertController.showErrorAlert("Logout", "Something error...Please try again!");
+        }
     }
 
     public void ClickAchievement(ActionEvent e) throws IOException {
@@ -207,5 +230,9 @@ public class MainPageController implements Initializable {
         } else {
             System.out.println("Please choose a player to invite!");
         }
+    }
+
+    public void ClickRefresh(ActionEvent actionEvent) {
+        loadPlayers();
     }
 }
