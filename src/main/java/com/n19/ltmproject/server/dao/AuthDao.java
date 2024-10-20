@@ -132,4 +132,51 @@ public class AuthDao {
             session.close();  // Đóng session sau khi hoàn tất
         }
     }
+
+    public String logoutPlayerDao(String username) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+
+        try {
+            // Bắt đầu giao dịch
+            transaction = session.beginTransaction();
+
+            // Sử dụng CriteriaBuilder để tìm người dùng theo username
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Player> query = builder.createQuery(Player.class);
+            Root<Player> root = query.from(Player.class);
+
+            // Thiết lập điều kiện tìm kiếm
+            Predicate usernamePredicate = builder.equal(root.get("username"), username);
+            query.select(root).where(usernamePredicate);
+
+            // Thực hiện truy vấn
+            Query q = session.createQuery(query);
+            Player player = null;
+
+            try {
+                player = (Player) q.getSingleResult();
+            } catch (NoResultException e) {
+                // Người dùng không tồn tại
+                return null;
+            }
+
+            // Cập nhật trạng thái của người dùng thành OFFLINE
+            if (player != null) {
+                player.setStatus(PlayerStatus.OFFLINE);
+                session.update(player);
+            }
+
+            transaction.commit();  // Hoàn tất giao dịch
+            return "Logout successfully!";  // Đăng xuất thành công
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();  // Nếu có lỗi, rollback giao dịch
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();  // Đóng session sau khi hoàn tất
+        }
+        return null;  // Đăng xuất thất bại
+    }
 }
