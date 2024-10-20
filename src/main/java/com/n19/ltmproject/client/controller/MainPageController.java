@@ -49,15 +49,17 @@ public class MainPageController implements Initializable {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService;
     private boolean isListening = false;
+    private Task<Void> task;
 //    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 //    private ScheduledExecutorService scheduler;
 //private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        if (!isListening) {
-            startListeningToServer();
-        }
+        handleInvitationEntered();
+//        if (!isListening) {
+//            startListeningToServer();
+//        }
         loadPlayers();
     }
 
@@ -92,30 +94,30 @@ public class MainPageController implements Initializable {
         }
     }
 
-    public void startListeningToServer() {
-        isListening = true;
-        new Thread(() -> {
-            try {
-                while (isListening) {
-                    String serverMessage = serverHandler.receiveMessage();
-                    if (serverMessage != null) {
-                        System.out.println("Received from server: " + serverMessage);
-                        if (serverMessage.contains("Invite You Game")) {
-                            Platform.runLater(this::moveInvitation);
-                        }
-                    }
-                }
-            } catch (IOException ex) {
-                System.out.println("Error receiving message from server: " + ex.getMessage());
-            }
-        }).start();
-    }
-    private void handleServerMessage(String message) {
-        System.out.println("Received from server: " + message);
-        if (message.contains("Invite You Game")) {
-            moveInvitation();
-        }
-    }
+//    public void startListeningToServer() {
+//        isListening = true;
+//        new Thread(() -> {
+//            try {
+//                while (isListening) {
+//                    String serverMessage = serverHandler.receiveMessage();
+//                    if (serverMessage != null) {
+//                        System.out.println("Received from server: " + serverMessage);
+//                        if (serverMessage.contains("Invite You Game")) {
+//                            Platform.runLater(this::moveInvitation);
+//                        }
+//                    }
+//                }
+//            } catch (IOException ex) {
+//                System.out.println("Error receiving message from server: " + ex.getMessage());
+//            }
+//        }).start();
+//    }
+//    private void handleServerMessage(String message) {
+//        System.out.println("Received from server: " + message);
+//        if (message.contains("Invite You Game")) {
+//            moveInvitation();
+//        }
+//    }
 
     private void moveInvitation() {
         try {
@@ -151,6 +153,69 @@ public class MainPageController implements Initializable {
             System.out.println("Logout failed");
         }
     }
+    public void handleInvitationEntered() {
+        if (task != null) {
+            task.cancel(); // Hủy task khi vào trang invitation
+        }
+    }
+
+
+    public void Clicknut(ActionEvent event) {
+        // Khởi tạo task để lắng nghe lời mời
+        task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    // Bắt đầu vòng lặp lắng nghe từ server
+                    while (true) {
+                        String serverMessage = serverHandler.receiveMessage(); // Nhận thông điệp từ server
+
+                        if (serverMessage != null) {
+                            System.out.println("Received from server: " + serverMessage);
+                            if (serverMessage.contains("Invite You Game")) {
+                                Platform.runLater(() -> {
+                                    // Gọi một phương thức để hiển thị thông báo hoặc cập nhật giao diện
+                                    openInvitation(); // Mở giao diện lời mời
+                                });
+                            }
+                        }
+
+                        // Thêm khoảng nghỉ để giảm tải cho server
+                        Thread.sleep(100);
+                    }
+                } catch (InterruptedException e) {
+                    // Xử lý khi task bị hủy
+                    Thread.currentThread().interrupt();
+                }
+                return null;
+            }
+        };
+
+        // Khởi chạy task trong một luồng riêng
+        Thread thread = new Thread(task);
+        thread.setDaemon(true); // Đảm bảo luồng dừng khi ứng dụng đóng
+        thread.start();
+    }
+
+    private void openInvitation() {
+        // Hiển thị giao diện lời mời
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
+
+            Parent invitationParent = loader.load();
+            Scene scene = new Scene(invitationParent);
+
+            InvitationController invitationController = loader.getController();
+            invitationController.setPrimaryStage(primaryStage); // Truyền Primary Stage cho InvitationController
+
+            primaryStage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
