@@ -37,34 +37,28 @@ public class LoginController {
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-//        this.session = session;
-//        this.usersessions = usersessions;
     }
 
     @FXML
     public void ClickLogin() {
         String username = userText.getText();
         String password = passText.getText();
+
         Map<String, Object> params = new HashMap<>();
         params.put("username", username);
         params.put("password", password);
 
         Response response = messageService.sendRequest("login", params);
+
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-            // Lấy dữ liệu từ response
-            Map<String, Object> responseData = (Map<String, Object>) response.getData();
-            // Lấy Player từ responseData
-                Object playerObject = responseData.get("player");
-                if (playerObject != null) {
-                    // Chuyển đổi playerObject thành Player
-                    Gson gson = new Gson();
-                    String playerJson = gson.toJson(playerObject);
-                    Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
-                    System.out.println("Nguoi chs:"+loggedInPlayer);
-                    SessionManager.setCurrentUser(loggedInPlayer);
-                }
-//            usersessions.addSession(username);
             AlertController.showInformationAlert("Login", "Login successful!");
+
+            // Lưu thông tin người dùng vào SessionManager
+            Gson gson = new Gson();
+            String playerJson = gson.toJson(response.getData());
+            Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
+
+            SessionManager.setCurrentUser(loggedInPlayer);
 
             try {
                 loadMainPage();
