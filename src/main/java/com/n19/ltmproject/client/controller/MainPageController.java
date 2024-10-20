@@ -52,7 +52,7 @@ public class MainPageController implements Initializable {
 //    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 //    private ScheduledExecutorService scheduler;
-private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
+//private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
         if (!isListening) {
@@ -93,32 +93,23 @@ private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
     }
 
     public void startListeningToServer() {
-//        new Thread(() -> {
-//            try {
-//                while (true) {
-//                    String serverMessage = serverHandler.receiveMessage(); // Chắc chắn đây là không blocking
-//                    if (serverMessage != null) {
-//                        messageQueue.put(serverMessage); // Thêm tin nhắn vào queue
-//                    }
-//                }
-//            } catch (IOException | InterruptedException ex) {
-//                System.out.println("Error receiving message from server: " + ex.getMessage());
-//            }
-//        }).start();
-//
-//        // Thread để xử lý tin nhắn từ queue
-//        new Thread(() -> {
-//            try {
-//                while (true) {
-//                    String message = messageQueue.take(); // Chờ và lấy tin nhắn từ queue
-//                    Platform.runLater(() -> handleServerMessage(message)); // Cập nhật giao diện
-//                }
-//            } catch (InterruptedException ex) {
-//                Thread.currentThread().interrupt();
-//            }
-//        }).start();
+        isListening = true;
+        new Thread(() -> {
+            try {
+                while (isListening) {
+                    String serverMessage = serverHandler.receiveMessage();
+                    if (serverMessage != null) {
+                        System.out.println("Received from server: " + serverMessage);
+                        if (serverMessage.contains("Invite You Game")) {
+                            Platform.runLater(this::moveInvitation);
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                System.out.println("Error receiving message from server: " + ex.getMessage());
+            }
+        }).start();
     }
-
     private void handleServerMessage(String message) {
         System.out.println("Received from server: " + message);
         if (message.contains("Invite You Game")) {
@@ -165,19 +156,19 @@ private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
         if (selectedPlayer != null){
-            Player currentUser = SessionManager.getCurrentUser();
-            Map<String, Object> params = new HashMap<>();
-            params.put("inviter", currentUser.getUsername());
-            params.put("invitee", selectedPlayer.getUsername());
-            Response response = messageService.sendRequest("invitation", params);
-
-            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-                System.out.println(response.getMessage());
+//            Player currentUser = SessionManager.getCurrentUser();
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("inviter", currentUser.getUsername());
+//            params.put("invitee", selectedPlayer.getUsername());
+//            Response response = messageService.sendRequest("invitation", params);
+//
+//            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+//                System.out.println(response.getMessage());
                 moveToWaitingRoom();
                 serverHandler.sendInvite(selectedPlayer.getUsername());
-            } else {
-                System.out.println("Invitation failed");
-            }
+//            } else {
+//                System.out.println("Invitation failed");
+//            }
         } else {
             System.out.println("Please choose a player to invite!");
         }
