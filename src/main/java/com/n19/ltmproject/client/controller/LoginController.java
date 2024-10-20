@@ -31,14 +31,14 @@ public class LoginController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
-    public static UserSession usersessions = new UserSession();
-    private Session session;
+//    public static UserSession usersessions = new UserSession();
+//    private Session session;
     private Stage primaryStage;
 
-    public void setPrimaryStage(Stage stage,Session session, UserSession usersessions) {
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        this.session = session;
-        this.usersessions = usersessions;
+//        this.session = session;
+//        this.usersessions = usersessions;
     }
 
     @FXML
@@ -48,40 +48,21 @@ public class LoginController {
         Map<String, Object> params = new HashMap<>();
         params.put("username", username);
         params.put("password", password);
-//        if (usersessions != null) {
-//            params.put("usersession", usersessions);
-//        } else {
-//            System.out.println("usersessions is null");
-//        }
 
         Response response = messageService.sendRequest("login", params);
-        System.out.println(response);
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             // Lấy dữ liệu từ response
             Map<String, Object> responseData = (Map<String, Object>) response.getData();
-
-//            // Kiểm tra xem responseData có phải là Map không
-//            if (responseData instanceof Map) {
-//                // Lấy UserSession từ responseData
-//                Object userSessionObject = responseData.get("usersession");
-//                if (userSessionObject instanceof UserSession) {
-//                    UserSession sessionData = (UserSession) userSessionObject;
-//                    usersessions.setSession(sessionData);
-//
-//                }
-
-
-                // Lấy Player từ responseData
+            // Lấy Player từ responseData
                 Object playerObject = responseData.get("player");
                 if (playerObject != null) {
                     // Chuyển đổi playerObject thành Player
                     Gson gson = new Gson();
                     String playerJson = gson.toJson(playerObject);
                     Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
+                    System.out.println("Nguoi chs:"+loggedInPlayer);
                     SessionManager.setCurrentUser(loggedInPlayer);
                 }
-
-
 //            usersessions.addSession(username);
             AlertController.showInformationAlert("Login", "Login successful!");
 
@@ -94,7 +75,6 @@ public class LoginController {
             AlertController.showErrorAlert("Login", "Login failed. Please check your credentials.");
         }
     }
-
 
     @FXML
     public void ClickSignUp() {
@@ -111,7 +91,7 @@ public class LoginController {
         Parent root = loader.load();
 
         MainPageController mainpageController = loader.getController();
-        mainpageController.setPrimaryStage( stage,session, usersessions);
+        mainpageController.setPrimaryStage( stage);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

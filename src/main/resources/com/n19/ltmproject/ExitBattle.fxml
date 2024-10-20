@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" styleClass="acthorpane-exit-main" stylesheets="@css/ExitBattle.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.ExitBattleController">
+<AnchorPane prefHeight="600.0" prefWidth="600.0" styleClass="acthorpane-exit-main" stylesheets="@css/ExitBattle.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.ExitBattleController">
    <children>
       <AnchorPane layoutX="59.0" layoutY="68.0" prefHeight="457.0" prefWidth="484.0" styleClass="acthorpane-exit-child">
          <children>

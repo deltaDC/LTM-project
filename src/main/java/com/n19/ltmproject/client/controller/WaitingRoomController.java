@@ -3,8 +3,6 @@ package com.n19.ltmproject.client.controller;
 // CLICK STARTGAME ( XAC NHAN DA READY CHUA)
 import java.io.IOException;
 
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,12 +14,10 @@ public class WaitingRoomController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
-    private UserSession usersessions;
-    private Session session;
-    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+//    private UserSession usersessions;
+//    private Session session;
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        this.session = session;
-        this.usersessions = usersessions;
     }
 
     public void ClickExit(ActionEvent e) throws IOException {
@@ -32,7 +28,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
+        mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -45,7 +41,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(GamePlayViewParent);
 
         GamePlayController gameController = loader.getController();
-        gameController.setPrimaryStage(primaryStage,session,usersessions);
+        gameController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }

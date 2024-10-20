@@ -18,7 +18,7 @@ public class InvitationCommand implements Command {
 
         return Response.builder()
                 .status("OK")
-                .message("Gui lời moi thanh cong")
+                .message(inviter+" Mời "+invitee+" Thành Công")
                 .build();
     }
 }

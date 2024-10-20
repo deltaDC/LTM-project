@@ -9,7 +9,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: #231F20;" stylesheets="@css/Achievement.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.AchievementController">
+<AnchorPane prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: #231F20;" stylesheets="@css/Achievement.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.AchievementController">
    <AnchorPane prefHeight="107.0" prefWidth="600.0" style="-fx-background-color: #231F20;" stylesheets="@css/Achievement.css">
       <Label layoutX="31.0" layoutY="40.0" onMouseClicked="#ClickHome" prefHeight="28.0" prefWidth="53.0" text="Home" textFill="WHITE">
          <font>

@@ -73,10 +73,9 @@ public class GamePlayController {
 	private double initialX;
 	private double initialY;
 
-	public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+	public void setPrimaryStage(Stage stage) {
 		this.primaryStage = stage;
-		this.session = session;
-		this.usersessions = usersessions;
+
 		startGame();
 	}
 

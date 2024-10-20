@@ -22,7 +22,7 @@ public class ClientManager {
         return new ArrayList<>(clients); // Trả về một bản sao của danh sách để tránh các vấn đề đồng bộ
     }
 
-    // Thêm phương thức invitePlayer
+    // Mời người chơi được mời
     public void invitePlayer(String invitedPlayerName, String message) {
         System.out.println("Inviting player: " + invitedPlayerName);
 

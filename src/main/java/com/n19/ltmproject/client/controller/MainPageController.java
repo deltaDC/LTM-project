@@ -1,16 +1,9 @@
 package com.n19.ltmproject.client.controller;
 
-// LAY DANH SACH NGUOI ON-LinE
-//LAY DANH SACH NGUOI IN_GAME
-// GUI LOI MOI
 import java.io.IOException;
 import java.net.URL;
-
 import java.util.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.concurrent.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,7 +12,6 @@ import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
-
 import com.n19.ltmproject.server.service.Session;
 import com.n19.ltmproject.server.service.UserSession;
 import javafx.application.Platform;
@@ -34,55 +26,45 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
 
-
 public class MainPageController implements Initializable {
 
     @FXML
     private TableView<Player> table;
-
     @FXML
     private TableColumn<Player, String> username;
-
     @FXML
     private TableColumn<Player, Integer> numberColumn;
-
     @FXML
     private TableColumn<Player, PlayerStatus> statusColumn;
 
     private ObservableList<Player> playerList;
     private Stage primaryStage;
-    private UserSession usersessions;
-    private Session session;
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
-    private MessageService messageService = new MessageService(serverHandler);
-//    private Thread listenerThread;
+    private MessageService messageService;
     private boolean isListening = false;
+//    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-
-    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+//    private ScheduledExecutorService scheduler;
+private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        this.session = session;
-        this.usersessions = usersessions;
         if (!isListening) {
             startListeningToServer();
         }
+        loadPlayers();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         messageService = new MessageService(serverHandler);
         loadPlayers();
-
-//         Start the listener thread only once
-
     }
 
     private void loadPlayers() {
@@ -101,12 +83,6 @@ public class MainPageController implements Initializable {
                     table.setItems(playerList);
                     table.setFocusTraversable(false);
                     table.getSelectionModel().clearSelection();
-
-                    table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                        if (newSelection != null) {
-                            System.out.println("Selected items: " + newSelection.getUsername());
-                        }
-                    });
                 } else {
                     System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
                 }
@@ -116,117 +92,114 @@ public class MainPageController implements Initializable {
         }
     }
 
-    @Deprecated
     public void startListeningToServer() {
-        isListening = true;
-
-//        Task<Void> task = new Task<Void>() {
-//            @Override
-//            protected Void call() throws Exception {
-//                try {
-//                    while (isListening && isInvitation) {
-//                        String serverMessage = serverHandler.receiveMessage();
-//
-//                        if (serverMessage != null) {
-//                            System.out.println("[MainPageController - startListeningToServer] Received from server: " + serverMessage);
-//
-//                            // Phân tích JSON thành đối tượng Response
-//                            Response response = gson.fromJson(serverMessage, Response.class);
-//
-//                            // Xử lý các hành động dựa trên response
-//                            if ("OK".equalsIgnoreCase(response.getStatus())) {
-//                                System.out.println("Bạn đã nhận được lời mời tham gia trò chơi!");
-//                                System.out.println(response.getMessage());
-//                                System.out.println(response.getData());
-//
-//                                // Thực hiện cập nhật giao diện trên luồng JavaFX
-//                                Platform.runLater(MainPageController.this::moveToInvitationPage);
-//                            }
-//                        }
-//
-//                        // Thêm khoảng nghỉ nhỏ để tránh việc đợi bận
-//                        Thread.sleep(100);
+//        new Thread(() -> {
+//            try {
+//                while (true) {
+//                    String serverMessage = serverHandler.receiveMessage(); // Chắc chắn đây là không blocking
+//                    if (serverMessage != null) {
+//                        messageQueue.put(serverMessage); // Thêm tin nhắn vào queue
 //                    }
-//                } catch (Exception ex) {
-//                    System.out.println("Lỗi khi nhận tin nhắn từ server: " + ex.getMessage());
 //                }
-//                return null;
+//            } catch (IOException | InterruptedException ex) {
+//                System.out.println("Error receiving message from server: " + ex.getMessage());
 //            }
-//        };
-
-        // Khởi chạy task trong một luồng mới để giữ giao diện không bị đơ
-//        listenerThread = new Thread(task);
-//        listenerThread.setDaemon(true); // Đảm bảo luồng sẽ dừng khi ứng dụng đóng
-//        listenerThread.start();
-        new Thread(() -> {
-            try {
-                while (true) {
-                    String serverMessage = serverHandler.receiveMessage();  // Nhận tin nhắn từ server
-                    if (serverMessage != null) {
-                        System.out.println("Received from server: " + serverMessage);
-                        if (serverMessage.contains("Invite You Game")) {
-                            System.out.println("You've received an invitation to play a game!");
-                            moveInvitation();  // Chuyển đến màn hình mời
-                        }
-                    }
-                }
-            } catch (IOException ex) {
-                System.out.println("Error receiving message from server: " + ex.getMessage());
-            }
-        }).start();
+//        }).start();
+//
+//        // Thread để xử lý tin nhắn từ queue
+//        new Thread(() -> {
+//            try {
+//                while (true) {
+//                    String message = messageQueue.take(); // Chờ và lấy tin nhắn từ queue
+//                    Platform.runLater(() -> handleServerMessage(message)); // Cập nhật giao diện
+//                }
+//            } catch (InterruptedException ex) {
+//                Thread.currentThread().interrupt();
+//            }
+//        }).start();
     }
 
-
+    private void handleServerMessage(String message) {
+        System.out.println("Received from server: " + message);
+        if (message.contains("Invite You Game")) {
+            moveInvitation();
+        }
+    }
 
     private void moveInvitation() {
-        Platform.runLater(() -> {
-            try {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
-                Parent invitationParent = loader.load();
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
+            Parent invitationParent = loader.load();
 
-                // Lấy controller của màn hình mời và truyền serverConnection
-                InvitationController inviteController = loader.getController();
-                inviteController.setPrimaryStage(primaryStage,session,usersessions);
+            InvitationController inviteController = loader.getController();
+            inviteController.setPrimaryStage(primaryStage);
 
-                Scene scene = new Scene(invitationParent);
-                primaryStage.setScene(scene);  // Sử dụng primaryStage để chuyển Scene
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+            Scene scene = new Scene(invitationParent);
+            primaryStage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void ClickLogout(ActionEvent e) throws IOException {
         Player currentUser = SessionManager.getCurrentUser();
-        if (currentUser != null) {
-            System.out.println("Current logged-in user: " + currentUser);
-        } else {
-            System.out.println("No user is currently logged in.");
-        }
-
         Map<String, Object> params = new HashMap<>();
         params.put("username", currentUser.getUsername());
         Response response = messageService.sendRequest("logout", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-            // clear user
-//            usersessions.removeSession(currentUser.getUsername());
             SessionManager.clearSession();
-            AlertController.showInformationAlert("Logout", "Logout successfully!");
-
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
             Parent loginViewParent = loader.load();
             Scene scene = new Scene(loginViewParent);
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             stage.setScene(scene);
-        }
-        else {
-            AlertController.showErrorAlert("Logout", "Something error...Please try again!");
+        } else {
+            System.out.println("Logout failed");
         }
     }
 
+    public void ClickInvitePlayer(ActionEvent event) throws IOException {
+        Player selectedPlayer = table.getSelectionModel().getSelectedItem();
+
+        if (selectedPlayer != null){
+            Player currentUser = SessionManager.getCurrentUser();
+            Map<String, Object> params = new HashMap<>();
+            params.put("inviter", currentUser.getUsername());
+            params.put("invitee", selectedPlayer.getUsername());
+            Response response = messageService.sendRequest("invitation", params);
+
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                System.out.println(response.getMessage());
+                moveToWaitingRoom();
+                serverHandler.sendInvite(selectedPlayer.getUsername());
+            } else {
+                System.out.println("Invitation failed");
+            }
+        } else {
+            System.out.println("Please choose a player to invite!");
+        }
+    }
+
+    private void moveToWaitingRoom() {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+                Parent waitViewParent = loader.load();
+
+                WaitingRoomController waitingRoomController = loader.getController();
+                waitingRoomController.setPrimaryStage(primaryStage);
+
+                Scene scene = new Scene(waitViewParent);
+                primaryStage.setScene(scene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     public void ClickAchievement(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader();
@@ -236,7 +209,7 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(AchievementViewParent);
 
         AchievementController achievementController = loader.getController();
-        achievementController.setPrimaryStage( primaryStage,session,usersessions);
+        achievementController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -249,45 +222,12 @@ public class MainPageController implements Initializable {
         Scene scene = new Scene(LeaderBoardViewParent);
 
         LeaderBoardController boardController = loader.getController();
-        boardController.setPrimaryStage( primaryStage,session,usersessions);
+        boardController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }
 
-
-    public void ClickInvitePlayer(ActionEvent event) throws IOException {
-        Player selectedPlayer = table.getSelectionModel().getSelectedItem();
-        if (selectedPlayer != null) {
-            // Gửi lời mời tới người chơi đã chọn
-            serverHandler.sendInvite(selectedPlayer.getUsername());
-            moveToWaitingRoom();
-        } else {
-            System.out.println("Please choose a player to invite!");
-        }
-    }
-
-
-    private void moveToWaitingRoom() {
-        Platform.runLater(() -> {
-            try {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
-                Parent waitViewParent = loader.load();
-
-                // Lấy controller của phòng chờ và truyền serverConnection
-                WaitingRoomController waitingRoomController = loader.getController();
-                waitingRoomController.setPrimaryStage( primaryStage,session,usersessions);;
-
-                Scene scene = new Scene(waitViewParent);
-                primaryStage.setScene(scene);  // Sử dụng primaryStage để chuyển Scene
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     public void ClickRefresh(ActionEvent actionEvent) {
         loadPlayers();
-
     }
 }

@@ -41,6 +41,7 @@ public class ClientHandler extends Thread {
 
         System.out.println("Client connected from: " + clientAddress);
     }
+    // Gọi đến client manager .
     public void handleMessage(String message) {
         if (message.startsWith("Invite:")) {
             String invitedPlayerName = message.split(":")[1];
@@ -70,6 +71,7 @@ public class ClientHandler extends Thread {
             output = new PrintWriter(socket.getOutputStream(), true);
 
             String jsonRequest;
+            // Nhảy vào hàm handleMessage.
             while ((jsonRequest = input.readLine()) != null) {
                 if(jsonRequest.startsWith("Invite:")){
                     handleMessage(jsonRequest);

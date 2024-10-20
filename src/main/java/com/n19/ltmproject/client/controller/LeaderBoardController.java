@@ -50,13 +50,11 @@ public class LeaderBoardController implements Initializable {
     private ObservableList<Player> playerList;
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
-    private UserSession usersessions;
-    private Session session;
+//    private UserSession usersessions;
+//    private Session session;
 
-    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        this.session = session;
-        this.usersessions = usersessions;
     }
 
     public void clickHome(ActionEvent e) throws IOException {
@@ -67,7 +65,7 @@ public class LeaderBoardController implements Initializable {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
+        mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }

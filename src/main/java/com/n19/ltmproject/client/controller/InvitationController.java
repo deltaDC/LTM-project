@@ -17,10 +17,8 @@ public class InvitationController {
 	private Stage primaryStage;
     private UserSession usersessions;
     private Session session;
-    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        this.session = session;
-        this.usersessions = usersessions;
     }
 
 	public void ClickAccept(ActionEvent e) throws IOException {
@@ -31,7 +29,7 @@ public class InvitationController {
         Scene scene = new Scene(WaitingRoomParent);
 
         WaitingRoomController WaitingRoomParentController = loader.getController();
-        WaitingRoomParentController.setPrimaryStage(primaryStage,session,usersessions);
+        WaitingRoomParentController.setPrimaryStage(primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -44,7 +42,7 @@ public class InvitationController {
         Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
+        mainPageController.setPrimaryStage(primaryStage);
         
         primaryStage.setScene(scene);
     }
@@ -57,7 +55,7 @@ public class InvitationController {
         Scene scene = new Scene(trangChuViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage,session,usersessions);
+        mainPageController.setPrimaryStage(primaryStage);
         
         primaryStage.setScene(scene);
     }

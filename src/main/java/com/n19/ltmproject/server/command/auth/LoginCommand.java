@@ -21,7 +21,7 @@ public class LoginCommand implements Command {
     @Override
     public Response execute(Request request) {
         //TODO implement login command
-        System.out.println(request.toString());
+//        System.out.println(request.toString());
         System.out.println("LoginCommand.execute() called");
 
         String username = (String) request.getParams().get("username");

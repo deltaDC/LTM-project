@@ -24,12 +24,12 @@ public class ExitBattleController {
     private int timeLeft;
     private Timeline timeline;
     private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
-    private UserSession usersessions;
-    private Session session;
-    public void setPrimaryStage(Stage stage, Session session, UserSession usersessions) {
+//    private UserSession usersessions;
+//    private Session session;
+    public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        this.session = session;
-        this.usersessions = usersessions;
+//        this.session = session;
+//        this.usersessions = usersessions;
     }
     // Hàm để thiết lập trạng thái của GamePlay
     public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline,  Stage primaryStage) {
@@ -70,7 +70,7 @@ public class ExitBattleController {
         Scene scene = new Scene(mainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage( primaryStage,session,usersessions);
+        mainPageController.setPrimaryStage( primaryStage);
 
         primaryStage.setScene(scene);
     }
@@ -88,7 +88,7 @@ public class ExitBattleController {
         Scene scene = new Scene(gamePlayViewParent);
 
         GamePlayController gamePlayController = loader.getController();
-        gamePlayController.setPrimaryStage(primaryStage,session,usersessions);
+        gamePlayController.setPrimaryStage(primaryStage);
 
         // Ghi đè thời gian còn lại của GamePlay bằng thời gian từ trang Exit Battle
         gamePlayController.setTimeLeft(timeLeft);  // Sử dụng hàm mới setTimeLeft để cập nhật thời gian
