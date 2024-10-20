@@ -52,11 +52,15 @@ public class ServerHandler {
             System.out.println("Error while disconnecting: " + e.getMessage());
         }
     }
+    public void sendInvite(String invitedPlayerName) {
+        String message = "Invite:" + invitedPlayerName;
+        sendMessage(message);
+    }
 
     public void sendMessage(String message) {
         if (out != null) {
             out.println(message);
-            System.out.println("[MessageService] Message sent: " + message);
+            System.out.println("Message sent: " + message);
         }
     }
 
@@ -67,7 +71,7 @@ public class ServerHandler {
         try {
             String message = in.readLine();
             if (message != null) {
-                System.out.println("[MessageService] Received message: " + message);
+                System.out.println("Received message: " + message);
             }
             return message;
         } catch (IOException e) {

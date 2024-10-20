@@ -63,9 +63,7 @@ public class MainPageController implements Initializable {
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService = new MessageService(serverHandler);
-    private Thread listenerThread;
-    private boolean isInvitation = false;
-
+//    private Thread listenerThread;
     private boolean isListening = false;
 
 
@@ -73,6 +71,9 @@ public class MainPageController implements Initializable {
         this.primaryStage = stage;
         this.session = session;
         this.usersessions = usersessions;
+        if (!isListening) {
+            startListeningToServer();
+        }
     }
 
     @Override
@@ -81,10 +82,7 @@ public class MainPageController implements Initializable {
         loadPlayers();
 
 //         Start the listener thread only once
-        if (listenerThread == null || !listenerThread.isAlive()) {
-            startListeningToServer();
 
-        }
     }
 
     private void loadPlayers() {
@@ -122,61 +120,81 @@ public class MainPageController implements Initializable {
     public void startListeningToServer() {
         isListening = true;
 
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    while (isListening && isInvitation) {
-                        String serverMessage = serverHandler.receiveMessage();
-
-                        if (serverMessage != null) {
-                            System.out.println("[MainPageController - startListeningToServer] Received from server: " + serverMessage);
-
-                            // Phân tích JSON thành đối tượng Response
-                            Response response = gson.fromJson(serverMessage, Response.class);
-
-                            // Xử lý các hành động dựa trên response
-                            if ("OK".equalsIgnoreCase(response.getStatus())) {
-                                System.out.println("Bạn đã nhận được lời mời tham gia trò chơi!");
-                                System.out.println(response.getMessage());
-                                System.out.println(response.getData());
-
-                                // Thực hiện cập nhật giao diện trên luồng JavaFX
-                                Platform.runLater(MainPageController.this::moveToInvitationPage);
-                            }
-                        }
-
-                        // Thêm khoảng nghỉ nhỏ để tránh việc đợi bận
-                        Thread.sleep(100);
-                    }
-                } catch (Exception ex) {
-                    System.out.println("Lỗi khi nhận tin nhắn từ server: " + ex.getMessage());
-                }
-                return null;
-            }
-        };
+//        Task<Void> task = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//                try {
+//                    while (isListening && isInvitation) {
+//                        String serverMessage = serverHandler.receiveMessage();
+//
+//                        if (serverMessage != null) {
+//                            System.out.println("[MainPageController - startListeningToServer] Received from server: " + serverMessage);
+//
+//                            // Phân tích JSON thành đối tượng Response
+//                            Response response = gson.fromJson(serverMessage, Response.class);
+//
+//                            // Xử lý các hành động dựa trên response
+//                            if ("OK".equalsIgnoreCase(response.getStatus())) {
+//                                System.out.println("Bạn đã nhận được lời mời tham gia trò chơi!");
+//                                System.out.println(response.getMessage());
+//                                System.out.println(response.getData());
+//
+//                                // Thực hiện cập nhật giao diện trên luồng JavaFX
+//                                Platform.runLater(MainPageController.this::moveToInvitationPage);
+//                            }
+//                        }
+//
+//                        // Thêm khoảng nghỉ nhỏ để tránh việc đợi bận
+//                        Thread.sleep(100);
+//                    }
+//                } catch (Exception ex) {
+//                    System.out.println("Lỗi khi nhận tin nhắn từ server: " + ex.getMessage());
+//                }
+//                return null;
+//            }
+//        };
 
         // Khởi chạy task trong một luồng mới để giữ giao diện không bị đơ
-        listenerThread = new Thread(task);
-        listenerThread.setDaemon(true); // Đảm bảo luồng sẽ dừng khi ứng dụng đóng
-        listenerThread.start();
+//        listenerThread = new Thread(task);
+//        listenerThread.setDaemon(true); // Đảm bảo luồng sẽ dừng khi ứng dụng đóng
+//        listenerThread.start();
+        new Thread(() -> {
+            try {
+                while (true) {
+                    String serverMessage = serverHandler.receiveMessage();  // Nhận tin nhắn từ server
+                    if (serverMessage != null) {
+                        System.out.println("Received from server: " + serverMessage);
+                        if (serverMessage.contains("Invite You Game")) {
+                            System.out.println("You've received an invitation to play a game!");
+                            moveInvitation();  // Chuyển đến màn hình mời
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                System.out.println("Error receiving message from server: " + ex.getMessage());
+            }
+        }).start();
     }
 
 
-    private void moveToInvitationPage() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
-            Parent invitationParent = loader.load();
 
-            InvitationController inviteController = loader.getController();
-            inviteController.setPrimaryStage(primaryStage,session,usersessions);
+    private void moveInvitation() {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
+                Parent invitationParent = loader.load();
 
-            Scene scene = new Scene(invitationParent);
-            primaryStage.setScene(scene);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                // Lấy controller của màn hình mời và truyền serverConnection
+                InvitationController inviteController = loader.getController();
+                inviteController.setPrimaryStage(primaryStage,session,usersessions);
+
+                Scene scene = new Scene(invitationParent);
+                primaryStage.setScene(scene);  // Sử dụng primaryStage để chuyển Scene
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void ClickLogout(ActionEvent e) throws IOException {
@@ -193,7 +211,7 @@ public class MainPageController implements Initializable {
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             // clear user
-            usersessions.removeSession(currentUser.getUsername());
+//            usersessions.removeSession(currentUser.getUsername());
             SessionManager.clearSession();
             AlertController.showInformationAlert("Logout", "Logout successfully!");
 
@@ -238,39 +256,34 @@ public class MainPageController implements Initializable {
 
 
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
-        System.out.println(usersessions.getAllSessions());
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
-
         if (selectedPlayer != null) {
-            Map<String, Object> params = new HashMap<>();
-            //TODO implement real token here to fetch the inviter
-            params.put("inviter", "user1");
-            params.put("invitee", selectedPlayer.getUsername());
-
-            Response response = messageService.sendRequest("invitation", params);
-
-            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-                System.out.println("Invitation sent");
-                moveToWaitingRoom();
-            } else {
-                System.out.println("Invitation failed");
-            }
+            // Gửi lời mời tới người chơi đã chọn
+            serverHandler.sendInvite(selectedPlayer.getUsername());
+            moveToWaitingRoom();
         } else {
             System.out.println("Please choose a player to invite!");
         }
     }
 
 
-    private void moveToWaitingRoom() throws IOException {
-        Stage stage = (Stage) table.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
-        Parent root = loader.load();
+    private void moveToWaitingRoom() {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+                Parent waitViewParent = loader.load();
 
-        WaitingRoomController waitingRoomController = loader.getController();
-        waitingRoomController.setPrimaryStage(primaryStage, session, usersessions);
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+                // Lấy controller của phòng chờ và truyền serverConnection
+                WaitingRoomController waitingRoomController = loader.getController();
+                waitingRoomController.setPrimaryStage( primaryStage,session,usersessions);;
+
+                Scene scene = new Scene(waitViewParent);
+                primaryStage.setScene(scene);  // Sử dụng primaryStage để chuyển Scene
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void ClickRefresh(ActionEvent actionEvent) {

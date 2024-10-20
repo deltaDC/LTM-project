@@ -60,15 +60,15 @@ public class LoginController {
             // Lấy dữ liệu từ response
             Map<String, Object> responseData = (Map<String, Object>) response.getData();
 
-            // Kiểm tra xem responseData có phải là Map không
-            if (responseData instanceof Map) {
-                // Lấy UserSession từ responseData
-                Object userSessionObject = responseData.get("usersession");
-                if (userSessionObject instanceof UserSession) {
-                    UserSession sessionData = (UserSession) userSessionObject;
-                    usersessions.setSession(sessionData);
-
-                }
+//            // Kiểm tra xem responseData có phải là Map không
+//            if (responseData instanceof Map) {
+//                // Lấy UserSession từ responseData
+//                Object userSessionObject = responseData.get("usersession");
+//                if (userSessionObject instanceof UserSession) {
+//                    UserSession sessionData = (UserSession) userSessionObject;
+//                    usersessions.setSession(sessionData);
+//
+//                }
 
 
                 // Lấy Player từ responseData
@@ -81,8 +81,8 @@ public class LoginController {
                     SessionManager.setCurrentUser(loggedInPlayer);
                 }
 
-            }
-            usersessions.addSession(username);
+
+//            usersessions.addSession(username);
             AlertController.showInformationAlert("Login", "Login successful!");
 
             try {

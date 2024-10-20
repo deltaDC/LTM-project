@@ -26,6 +26,7 @@ public class ClientHandler extends Thread {
     private final Gson gson = new Gson();
 
     private final String clientAddress;
+    private String username;
 
     /**
      * Constructor to initialize the ClientHandler with a socket and a reference to the ClientManager.
@@ -39,6 +40,22 @@ public class ClientHandler extends Thread {
         this.clientAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
         System.out.println("Client connected from: " + clientAddress);
+    }
+    public void handleMessage(String message) {
+        if (message.startsWith("Invite:")) {
+            String invitedPlayerName = message.split(":")[1];
+            // Gọi phương thức invitePlayer từ ClientManager
+            clientManager.invitePlayer(invitedPlayerName, "You have been invited to join a game!");
+        } else {
+            // Xử lý các thông điệp khác
+        }
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /**
@@ -54,6 +71,9 @@ public class ClientHandler extends Thread {
 
             String jsonRequest;
             while ((jsonRequest = input.readLine()) != null) {
+                if(jsonRequest.startsWith("Invite:")){
+                    handleMessage(jsonRequest);
+                }
                 Request request = gson.fromJson(jsonRequest, Request.class);
 
                 System.out.println("---------------");
@@ -63,8 +83,10 @@ public class ClientHandler extends Thread {
                     System.out.println("Data: " + request.getParams().toString());
                 }
                 System.out.println("---------------");
+                // Gọi handleMessage để xử lý tin nhắn
 
-                Command command = CommandFactory.getCommand(request.getAction());
+
+                Command command = CommandFactory.getCommand(request.getAction(),this);
                 Response response = command.execute(request);
 
                 output.println(gson.toJson(response));
@@ -100,4 +122,9 @@ public class ClientHandler extends Thread {
             clientManager.removeClient(this);
         }
     }
+
+    public void sendMessage(String message) {
+        output.println(message); // output là PrintWriter kết nối với client
+    }
+
 }
