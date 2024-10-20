@@ -3,6 +3,7 @@ package com.n19.ltmproject.server.command;
 import com.n19.ltmproject.server.command.auth.LogoutCommand;
 import com.n19.ltmproject.server.command.game.InvitationCommand;
 import com.n19.ltmproject.server.command.auth.LoginCommand;
+import com.n19.ltmproject.server.command.auth.LogoutCommand;
 import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.EndGameById;
 import com.n19.ltmproject.server.command.game.GetAllGameDataCommand;

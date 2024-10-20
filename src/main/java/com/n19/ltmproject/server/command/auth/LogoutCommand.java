@@ -3,30 +3,40 @@ package com.n19.ltmproject.server.command.auth;
 import com.n19.ltmproject.server.command.Command;
 import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
-import com.n19.ltmproject.server.command.auth.LoginCommand;
 
-import java.util.HashMap;
-import java.util.Map;
+
+import com.n19.ltmproject.server.service.AuthService;
 
 public class LogoutCommand implements Command {
+    private final AuthService authService;
+
     public LogoutCommand() {
-//        this.authService = new AuthService();
+        this.authService = new AuthService();
     }
+
     @Override
     public Response execute(Request request) {
+        //TODO implement login command
+        System.out.println(request.toString());
+        System.out.println("LogoutCommand.execute() called");
+
         String username = (String) request.getParams().get("username");
 
+        String message = authService.logoutPlayerService(username);
 
-        System.out.println(username + " logged out");
-        LoginCommand.usersession.removeUser(username);
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("activeUsers", LoginCommand.usersession.getActiveUsers()); // Danh sách người dùng đang hoạt động
+        if (message.contains("Logout successfully!")) {
+            // Nếu đăng nhập thành công, trả về đối tượng Player trong response
+            return Response.builder()
+                    .status("OK")
+                    .message("Logout successfully!")
+                    .build();
+        } else {
+            // Nếu đăng nhập thất bại, trả về thông báo lỗi
+            return Response.builder()
+                    .status("FAILED")
+                    .message(message)
+                    .build();
+        }
 
-
-        return Response.builder()
-                .status("OK")
-                .message("Logout successful")
-                .data(responseData) // Trả về dữ liệu chứa thông tin người dùng
-                .build();
     }
 }

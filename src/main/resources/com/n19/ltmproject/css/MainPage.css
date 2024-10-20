@@ -74,7 +74,7 @@
     -fx-max-height: 10px;
     -fx-margin-right: 10px;
 }
-.buttonstartandinvite{
+.button-startand-refresh, .buttonstartandinvite{
     -fx-background-color:  #3B8E26;
     -fx-border-radius: 15;
     -fx-background-radius: 30;

@@ -24,7 +24,12 @@
                <Font name="System Bold" size="20.0" />
             </font>
          </Label>
-         <Button layoutX="65.0" layoutY="275.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="162.0" style="-fx-background-color: #3B8E26;" styleClass="buttonstartandinvite" stylesheets="@css/MainPage.css" text="OnLine" textFill="WHITE">
+         <Button layoutX="12.0" layoutY="275.0" mnemonicParsing="false" onAction="#ClickRefresh" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #3B8E26;" styleClass="button-startand-refresh"  stylesheets="@css/MainPage.css" text="Refresh" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="16.0" />
+            </font>
+         </Button>
+         <Button layoutX="120.0" layoutY="275.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="162.0" style="-fx-background-color: #3B8E26;" styleClass="buttonstartandinvite" stylesheets="@css/MainPage.css" text="OnLine" textFill="WHITE">
             <font>
                <Font name="System Bold Italic" size="16.0" />
             </font>
@@ -44,6 +49,7 @@
                <Font name="System Bold" size="12.0" />
             </font>
          </Label>
+
          <Button layoutX="325.0" layoutY="133.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="173.0" styleClass="button-acthorpane" stylesheets="@css/application.css" text="ONLINE" />
          <Button layoutX="325.0" layoutY="182.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="174.0" styleClass="button-acthorpane" stylesheets="@css/application.css" text="IN-GAME" />
          <Button layoutX="325.0" layoutY="227.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="174.0" styleClass="button-acthorpane" stylesheets="@css/application.css" text="OFFLINE" />
@@ -52,7 +58,7 @@
                <Font name="System Bold Italic" size="16.0" />
             </font>
          </Button>
-         <ImageView fitHeight="26.0" fitWidth="35.0" layoutX="76.0" layoutY="280.0" pickOnBounds="true" preserveRatio="true">
+         <ImageView fitHeight="26.0" fitWidth="35.0" layoutX="140.0" layoutY="280.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/iconrecycle.png" />
          </ImageView>
          <Circle fill="#221e1f" layoutX="356.0" layoutY="79.0" radius="31.0" stroke="BLACK" strokeType="INSIDE" />
