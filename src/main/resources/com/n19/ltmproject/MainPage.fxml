@@ -72,7 +72,6 @@
                <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="97.5999755859375" text="Status" />
             </columns>
          </TableView>
-         <Button layoutX="257.0" layoutY="31.0" mnemonicParsing="false" onAction="#Clicknut" prefHeight="26.0" prefWidth="43.0" text="NÚT" />
       </AnchorPane>
    </AnchorPane>
    <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#ClickLogout" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #0DBC4A;" text="Log out" textFill="WHITE">

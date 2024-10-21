@@ -76,22 +76,25 @@ public class ClientHandler extends Thread {
                 if(jsonRequest.startsWith("Invite:")){
                     handleMessage(jsonRequest);
                 }
-                Request request = gson.fromJson(jsonRequest, Request.class);
+                else{
 
-                System.out.println("---------------");
-                System.out.println("Received request from client: " + clientAddress);
-                if(!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
-                    System.out.println("Action: " + request.getAction());
-                    System.out.println("Data: " + request.getParams().toString());
+                    Request request = gson.fromJson(jsonRequest, Request.class);
+
+                    System.out.println("---------------");
+                    System.out.println("Received request from client: " + clientAddress);
+                    if(!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
+                        System.out.println("Action: " + request.getAction());
+                        System.out.println("Data: " + request.getParams().toString());
+                    }
+                    System.out.println("---------------");
+                    // Gọi handleMessage để xử lý tin nhắn
+
+
+                    Command command = CommandFactory.getCommand(request.getAction(),this);
+                    Response response = command.execute(request);
+
+                    output.println(gson.toJson(response));
                 }
-                System.out.println("---------------");
-                // Gọi handleMessage để xử lý tin nhắn
-
-
-                Command command = CommandFactory.getCommand(request.getAction(),this);
-                Response response = command.execute(request);
-
-                output.println(gson.toJson(response));
             }
         } catch (IOException e) {
             System.out.println("[Error]: " + e.getMessage());

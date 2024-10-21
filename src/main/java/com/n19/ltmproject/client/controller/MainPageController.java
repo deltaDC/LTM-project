@@ -12,8 +12,7 @@ import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
+
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -48,30 +47,24 @@ public class MainPageController implements Initializable {
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService;
-    private boolean isListening = false;
-    private Task<Void> task;
-//    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    public static boolean isListening = true;
 
-//    private ScheduledExecutorService scheduler;
-//private BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(10);
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        handleInvitationEntered();
-//        if (!isListening) {
-//            startListeningToServer();
-//        }
         loadPlayers();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         messageService = new MessageService(serverHandler);
+        startListeningToServer();
         loadPlayers();
     }
 
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
+            isListening = false;
             Response response = messageService.sendRequest("getAllPlayer", params);
 
             Platform.runLater(() -> {
@@ -85,6 +78,7 @@ public class MainPageController implements Initializable {
                     table.setItems(playerList);
                     table.setFocusTraversable(false);
                     table.getSelectionModel().clearSelection();
+                    isListening = true;
                 } else {
                     System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
                 }
@@ -94,30 +88,24 @@ public class MainPageController implements Initializable {
         }
     }
 
-//    public void startListeningToServer() {
-//        isListening = true;
-//        new Thread(() -> {
-//            try {
-//                while (isListening) {
-//                    String serverMessage = serverHandler.receiveMessage();
-//                    if (serverMessage != null) {
-//                        System.out.println("Received from server: " + serverMessage);
-//                        if (serverMessage.contains("Invite You Game")) {
-//                            Platform.runLater(this::moveInvitation);
-//                        }
-//                    }
-//                }
-//            } catch (IOException ex) {
-//                System.out.println("Error receiving message from server: " + ex.getMessage());
-//            }
-//        }).start();
-//    }
-//    private void handleServerMessage(String message) {
-//        System.out.println("Received from server: " + message);
-//        if (message.contains("Invite You Game")) {
-//            moveInvitation();
-//        }
-//    }
+    public void startListeningToServer() {
+        new Thread(() -> {
+            try {
+                while (isListening) {
+                    String serverMessage = serverHandler.receiveMessage();
+                    if (serverMessage != null) {
+                        System.out.println("Received from server: " + serverMessage);
+                        if (serverMessage.contains("Invite You Game")) {
+                            Platform.runLater(this::moveInvitation);
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                System.out.println("Error receiving message from server: " + ex.getMessage());
+            }
+        }).start();
+    }
+
 
     private void moveInvitation() {
         try {
@@ -153,67 +141,6 @@ public class MainPageController implements Initializable {
             System.out.println("Logout failed");
         }
     }
-    public void handleInvitationEntered() {
-        if (task != null) {
-            task.cancel(); // Hủy task khi vào trang invitation
-        }
-    }
-
-
-    public void Clicknut(ActionEvent event) {
-        // Khởi tạo task để lắng nghe lời mời
-        task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    // Bắt đầu vòng lặp lắng nghe từ server
-                    while (true) {
-                        String serverMessage = serverHandler.receiveMessage(); // Nhận thông điệp từ server
-
-                        if (serverMessage != null) {
-                            System.out.println("Received from server: " + serverMessage);
-                            if (serverMessage.contains("Invite You Game")) {
-                                Platform.runLater(() -> {
-                                    // Gọi một phương thức để hiển thị thông báo hoặc cập nhật giao diện
-                                    openInvitation(); // Mở giao diện lời mời
-                                });
-                            }
-                        }
-
-                        // Thêm khoảng nghỉ để giảm tải cho server
-                        Thread.sleep(100);
-                    }
-                } catch (InterruptedException e) {
-                    // Xử lý khi task bị hủy
-                    Thread.currentThread().interrupt();
-                }
-                return null;
-            }
-        };
-
-        // Khởi chạy task trong một luồng riêng
-        Thread thread = new Thread(task);
-        thread.setDaemon(true); // Đảm bảo luồng dừng khi ứng dụng đóng
-        thread.start();
-    }
-
-    private void openInvitation() {
-        // Hiển thị giao diện lời mời
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
-
-            Parent invitationParent = loader.load();
-            Scene scene = new Scene(invitationParent);
-
-            InvitationController invitationController = loader.getController();
-            invitationController.setPrimaryStage(primaryStage); // Truyền Primary Stage cho InvitationController
-
-            primaryStage.setScene(scene);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 
@@ -221,19 +148,20 @@ public class MainPageController implements Initializable {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
         if (selectedPlayer != null){
-//            Player currentUser = SessionManager.getCurrentUser();
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("inviter", currentUser.getUsername());
-//            params.put("invitee", selectedPlayer.getUsername());
-//            Response response = messageService.sendRequest("invitation", params);
-//
-//            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-//                System.out.println(response.getMessage());
+            Player currentUser = SessionManager.getCurrentUser();
+            Map<String, Object> params = new HashMap<>();
+            params.put("inviter", currentUser.getUsername());
+            params.put("invitee", selectedPlayer.getUsername());
+            isListening = false;
+            Response response = messageService.sendRequest("invitation", params);
+            isListening = true;
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                System.out.println(response.getMessage());
                 moveToWaitingRoom();
                 serverHandler.sendInvite(selectedPlayer.getUsername());
-//            } else {
-//                System.out.println("Invitation failed");
-//            }
+            } else {
+                System.out.println("Invitation failed");
+            }
         } else {
             System.out.println("Please choose a player to invite!");
         }

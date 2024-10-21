@@ -31,8 +31,7 @@ public class LoginController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
-//    public static UserSession usersessions = new UserSession();
-//    private Session session;
+
     private Stage primaryStage;
 
     public void setPrimaryStage(Stage stage) {
@@ -48,6 +47,7 @@ public class LoginController {
         params.put("username", username);
         params.put("password", password);
 
+        MainPageController.isListening = false;
         Response response = messageService.sendRequest("login", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
@@ -62,6 +62,7 @@ public class LoginController {
 
             try {
                 loadMainPage();
+                MainPageController.isListening = true;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
