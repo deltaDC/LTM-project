@@ -47,7 +47,7 @@ public class LoginController {
         params.put("username", username);
         params.put("password", password);
 
-        MainPageController.isListening = false;
+//        MainPageController.isListening = false;
         Response response = messageService.sendRequest("login", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
@@ -62,7 +62,7 @@ public class LoginController {
 
             try {
                 loadMainPage();
-                MainPageController.isListening = true;
+//                MainPageController.isListening = true;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -87,9 +87,9 @@ public class LoginController {
 
         MainPageController mainpageController = loader.getController();
         mainpageController.setPrimaryStage( stage);
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        stage.setScene(new Scene(root));
+        mainpageController.setup();
+        mainpageController.setThread();
     }
 
     private void loadScene(String resourcePath) throws IOException {

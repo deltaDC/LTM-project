@@ -66,13 +66,16 @@ public class ExitBattleController {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
-        Parent mainPageViewParent = loader.load();
-        Scene scene = new Scene(mainPageViewParent);
+        Parent MainPageViewParent = loader.load();
+        Scene scene = new Scene(MainPageViewParent);
 
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage( primaryStage);
+        mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
+        // de cho thread bat null ( bug nho )
+        serverHandler.sendMessage("NGATLISTENING");
+        mainPageController.setup2();
     }
 
     // Xử lý khi click nút Cancel

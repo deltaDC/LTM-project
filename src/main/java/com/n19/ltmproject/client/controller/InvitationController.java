@@ -53,14 +53,17 @@ public class InvitationController {
 
     private void moveToMainPage() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml")); // Đường dẫn đến FXML của Main Page
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
-        Parent mainPageParent = loader.load();
-        Scene scene = new Scene(mainPageParent);
-        primaryStage.setScene(scene); // Cập nhật cảnh cho Primary Stage
+        Parent MainPageViewParent = loader.load();
+        Scene scene = new Scene(MainPageViewParent);
 
-        // Nếu cần, bạn có thể thêm mã để khởi tạo lại controller cho MainPage
         MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage); // Truyền Primary Stage cho MainPageController
+        mainPageController.setPrimaryStage(primaryStage);
+
+        primaryStage.setScene(scene);
+        // de cho thread bat null ( bug nho )
+        serverHandler.sendMessage("NGATLISTENING");
+        mainPageController.setup2();
     }
 }

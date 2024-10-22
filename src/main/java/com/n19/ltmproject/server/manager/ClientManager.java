@@ -38,7 +38,6 @@ public class ClientManager {
         }
     }
 
-
     public synchronized void removeClient(ClientHandler clientHandler) {
         clients.remove(clientHandler);
     }

@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public class AchievementController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
@@ -34,5 +35,8 @@ public class AchievementController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
+        // de cho thread bat null ( bug nho )
+        serverHandler.sendMessage("NGATLISTENING");
+        mainPageController.setup2();
     }
 }

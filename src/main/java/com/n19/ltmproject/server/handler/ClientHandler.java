@@ -47,8 +47,6 @@ public class ClientHandler extends Thread {
             String invitedPlayerName = message.split(":")[1];
             // Gọi phương thức invitePlayer từ ClientManager
             clientManager.invitePlayer(invitedPlayerName, "You have been invited to join a game!");
-        } else {
-            // Xử lý các thông điệp khác
         }
     }
     public String getUsername() {
@@ -75,6 +73,9 @@ public class ClientHandler extends Thread {
             while ((jsonRequest = input.readLine()) != null) {
                 if(jsonRequest.startsWith("Invite:")){
                     handleMessage(jsonRequest);
+                }
+                else if(jsonRequest.startsWith("NGATLISTENING")){
+                        output.println(gson.toJson(null));
                 }
                 else{
 

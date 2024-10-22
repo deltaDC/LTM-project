@@ -68,6 +68,11 @@ public class LeaderBoardController implements Initializable {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
+        // de cho thread bat null ( bug nho )
+        serverHandler.sendMessage("NGATLISTENING");
+        mainPageController.setup2();
+
+
     }
 
     @Override

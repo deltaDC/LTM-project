@@ -25,13 +25,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
 
-public class MainPageController implements Initializable {
+public class MainPageController  {
 
     @FXML
     private TableView<Player> table;
@@ -47,27 +49,35 @@ public class MainPageController implements Initializable {
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService;
-    public static boolean isListening = true;
+    private volatile boolean running = true;
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        loadPlayers();
+//        loadPlayers();
+    }
+    public void setThread(){
+        this.running =true;
+        System.out.println("Thread in setThread");
+        startListeningForInvite();
+
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        messageService = new MessageService(serverHandler);
-        startListeningToServer();
-        loadPlayers();
-    }
+//    @Override
+//    public void initialize(URL location, ResourceBundle resources) {
+//        messageService = new MessageService(serverHandler);
+////        startListeningForInvite();;
+//
+//        loadPlayers();
+//    }
 
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
-            isListening = false;
+            this.running = false;
             Response response = messageService.sendRequest("getAllPlayer", params);
 
             Platform.runLater(() -> {
+                System.out.println("Dang tao bang");
                 if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                     List<Player> players = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>() {}.getType());
                     playerList = FXCollections.observableArrayList(players);
@@ -76,57 +86,91 @@ public class MainPageController implements Initializable {
                     statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
                     table.setItems(playerList);
+                    System.out.println("TAO Bang thanh cong");
                     table.setFocusTraversable(false);
                     table.getSelectionModel().clearSelection();
-                    isListening = true;
+                    this.running = true;
+//                    setThread();
+                } else {
+                    System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
+                }
+            });Platform.runLater(() -> {
+                System.out.println("Đang tạo bảng");
+                if (response != null) {
+                    System.out.println("Status từ server: " + response.getStatus());
+                    System.out.println("Dữ liệu nhận được: " + response.getData());
+                }
+
+                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                    List<Player> players = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>() {}.getType());
+                    playerList = FXCollections.observableArrayList(players);
+                    numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
+                    username.setCellValueFactory(new PropertyValueFactory<>("username"));
+                    statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+                    table.setItems(playerList);
+                    System.out.println("Tạo bảng thành công");
+                    table.setFocusTraversable(false);
+                    table.getSelectionModel().clearSelection();
+                    this.running = true;
                 } else {
                     System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
                 }
             });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+//        setThread();;
+
     }
 
-    public void startListeningToServer() {
+
+    public void startListeningForInvite() {
+        System.out.println("Start thread");
         new Thread(() -> {
             try {
-                while (isListening) {
-                    String serverMessage = serverHandler.receiveMessage();
-                    if (serverMessage != null) {
-                        System.out.println("Received from server: " + serverMessage);
-                        if (serverMessage.contains("Invite You Game")) {
-                            Platform.runLater(this::moveInvitation);
-                        }
+
+                while (this.running ) {
+                    System.out.println("running: "+this.running+" IN THREAD");
+                    if(!this.running){
+                        break;
                     }
+                    String serverMessage = serverHandler.receiveMessage();
+                    System.out.println("Received from server: " + serverMessage);
+                    if (serverMessage != null && serverMessage.contains("Invite You Game")) {
+                        Platform.runLater(() -> {
+                            this.running = false;
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
+                                Scene scene = new Scene(loader.load());
+                                InvitationController tes=loader.getController();
+                                tes.setPrimaryStage(primaryStage);
+
+                                primaryStage.setScene(scene);
+                                primaryStage.setTitle("Giao diện phòng chờ");
+                                primaryStage.show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+
                 }
+                System.out.println("END THREAD");
             } catch (IOException ex) {
                 System.out.println("Error receiving message from server: " + ex.getMessage());
             }
         }).start();
     }
 
-
-    private void moveInvitation() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
-            Parent invitationParent = loader.load();
-
-            InvitationController inviteController = loader.getController();
-            inviteController.setPrimaryStage(primaryStage);
-
-            Scene scene = new Scene(invitationParent);
-            primaryStage.setScene(scene);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void ClickLogout(ActionEvent e) throws IOException {
+        this.running=false;
+        serverHandler.sendMessage("NGATLISTENING");
         Player currentUser = SessionManager.getCurrentUser();
         Map<String, Object> params = new HashMap<>();
         params.put("username", currentUser.getUsername());
+        this.running = false;
         Response response = messageService.sendRequest("logout", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
@@ -137,6 +181,7 @@ public class MainPageController implements Initializable {
             Scene scene = new Scene(loginViewParent);
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             stage.setScene(scene);
+            this.running = true;
         } else {
             System.out.println("Logout failed");
         }
@@ -145,29 +190,35 @@ public class MainPageController implements Initializable {
 
 
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
+
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
-        if (selectedPlayer != null){
-            Player currentUser = SessionManager.getCurrentUser();
-            Map<String, Object> params = new HashMap<>();
-            params.put("inviter", currentUser.getUsername());
-            params.put("invitee", selectedPlayer.getUsername());
-            isListening = false;
-            Response response = messageService.sendRequest("invitation", params);
-            isListening = true;
-            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-                System.out.println(response.getMessage());
-                moveToWaitingRoom();
-                serverHandler.sendInvite(selectedPlayer.getUsername());
-            } else {
-                System.out.println("Invitation failed");
-            }
+        if (selectedPlayer != null) {
+            this.running = false;
+//            Player currentUser = SessionManager.getCurrentUser();
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("inviter", currentUser.getUsername());
+//            params.put("invitee", selectedPlayer.getUsername());
+//            this.running =false;
+//            Response response = messageService.sendRequest("invitation", params);
+//
+//            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+//                System.out.println(response.getMessage());
+            moveToWaitingRoom();
+
+
+            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
+
         } else {
-            System.out.println("Please choose a player to invite!");
+            System.out.println("Invitation failed");
         }
+//    }
+////            System.out.println("Please choose a player to invite!");
+//        }
     }
 
     private void moveToWaitingRoom() {
+        this.running=false;
         Platform.runLater(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader();
@@ -186,6 +237,7 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickAchievement(ActionEvent e) throws IOException {
+        this.running=false;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
 
@@ -199,6 +251,7 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
+        this.running=false;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
 
@@ -212,6 +265,29 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickRefresh(ActionEvent actionEvent) {
-        loadPlayers();
+        this.running=false;
+        serverHandler.sendMessage("NGATLISTENING");
+        setup2();
     }
+    @FXML
+    public void setup() {
+        messageService = new MessageService(serverHandler);
+//        this.running = true;
+//        startListeningForInvite();
+//        System.out.println("thread trong setUp");
+//        startListeningForInvite();
+        System.out.println("Load bang trong setUp");
+        loadPlayers();
+
+//        namePlayer.setText(dataUser.getUsername());
+    }
+    @FXML
+    public void setup2() {
+        messageService = new MessageService(serverHandler);
+        System.out.println("Load bang trong setUp");
+        loadPlayers();
+//        namePlayer.setText(dataUser.getUsername());
+        setThread();
+    }
+
 }
