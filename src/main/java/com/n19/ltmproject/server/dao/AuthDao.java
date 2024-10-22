@@ -1,6 +1,7 @@
 package com.n19.ltmproject.server.dao;
 
 import com.n19.ltmproject.server.model.Player;
+import com.n19.ltmproject.server.model.PlayerHistory;
 import com.n19.ltmproject.server.model.enums.PlayerStatus;
 import com.n19.ltmproject.server.util.HibernateUtil;
 import org.hibernate.Session;
@@ -117,6 +118,20 @@ public class AuthDao {
 
             // Lưu người dùng mới vào cơ sở dữ liệu
             session.save(newPlayer);
+
+//            transaction.commit();  // Hoàn tất giao dịch
+
+            PlayerHistory playerHistory = new PlayerHistory();
+            playerHistory.setTotalPoints(0);
+            playerHistory.setTotalGames(0);
+            playerHistory.setWins(0);
+            playerHistory.setLosses(0);
+            playerHistory.setDraws(0);
+            playerHistory.setPlayerId(newPlayer.getId());
+
+            // Lưu player history mới vào cơ sở dữ liệu
+            session.save(playerHistory);
+
             transaction.commit();  // Hoàn tất giao dịch
 
             // Trả về đối tượng người dùng vừa được tạo
