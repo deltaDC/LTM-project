@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" stylesheets="@css/Invitation.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.InvitationController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" stylesheets="@css/Invitation.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.InvitationController">
    <ImageView fitHeight="240.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@images/backgroundhomepage2.png" />
    </ImageView>
@@ -22,7 +22,7 @@
                <Font name="System Bold" size="20.0" />
             </font>
          </Label>
-         <Label layoutX="434.0" layoutY="54.0" prefHeight="44.0" prefWidth="79.0" text="USER1" textFill="#01b861">
+         <Label fx:id="invitationprofile" layoutX="434.0" layoutY="54.0" prefHeight="44.0" prefWidth="79.0" text="USER1" textFill="#01b861">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>
@@ -58,7 +58,7 @@
          </Button>
          <AnchorPane layoutX="18.0" layoutY="88.0" prefHeight="88.0" prefWidth="278.0" styleClass="acthorpanechild-invitation-inviteyou">
             <children>
-               <Button layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
+               <Button fx:id="invitation1" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
             </children>
          </AnchorPane>
       </AnchorPane>

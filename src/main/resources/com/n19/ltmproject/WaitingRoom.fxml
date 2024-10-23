@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" stylesheets="@css/WaitingRoom.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.WaitingRoomController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" stylesheets="@css/WaitingRoom.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.WaitingRoomController">
    <ImageView fitHeight="600.0" fitWidth="600.0" pickOnBounds="true">
       <Image url="@images/backgroundwaitingroom.png" />
    </ImageView>
@@ -27,7 +27,7 @@
    </Button>
    <AnchorPane layoutX="163.0" layoutY="218.0" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #2ECC57;">
       <children>
-         <Label layoutX="21.0" layoutY="8.0" text="USER1" textFill="WHITE">
+         <Label fx:id="waitingroomnamechuphong" layoutX="21.0" layoutY="8.0" text="USER1" textFill="WHITE">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>
@@ -36,7 +36,7 @@
    </AnchorPane>
    <AnchorPane layoutX="345.0" layoutY="218.0" prefHeight="34.0" prefWidth="98.0" style="-fx-background-color: #2ECC57;">
       <children>
-         <Label layoutX="18.0" layoutY="7.0" text="USER2" textFill="WHITE">
+         <Label fx:id="waitingroomnamenguoichoi" layoutX="18.0" layoutY="7.0" text="USER2" textFill="WHITE">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>

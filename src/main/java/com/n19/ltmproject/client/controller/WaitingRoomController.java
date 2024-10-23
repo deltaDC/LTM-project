@@ -8,9 +8,11 @@ import java.io.IOException;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.handler.ServerHandler;
 
@@ -19,6 +21,18 @@ public class WaitingRoomController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
     private volatile boolean running = true;
+    @FXML
+    private Label waitingroomnamechuphong;
+    @FXML
+    private Label waitingroomnamenguoichoi;
+    public void setUpChuPhong(String waitingroomnamechuphong){
+        this.waitingroomnamechuphong.setText(waitingroomnamechuphong);
+        this.waitingroomnamenguoichoi.setText("Waiting");
+    }
+    public void setUpNguoiChoi(String chuphong,String waitingroomnamenguoichoi){
+        this.waitingroomnamechuphong.setText(chuphong);
+        this.waitingroomnamenguoichoi.setText(waitingroomnamenguoichoi);
+    }
 
     public void setPrimaryStage(Stage stage) {
 

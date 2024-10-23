@@ -13,6 +13,8 @@ import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -32,6 +34,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
+import javafx.util.Duration;
 
 public class MainPageController  {
 
@@ -43,6 +46,9 @@ public class MainPageController  {
     private TableColumn<Player, Integer> numberColumn;
     @FXML
     private TableColumn<Player, PlayerStatus> statusColumn;
+
+    @FXML
+    private Label mainpageusername;
 
     private ObservableList<Player> playerList;
     private Stage primaryStage;
@@ -138,15 +144,46 @@ public class MainPageController  {
                     }
                     String serverMessage = serverHandler.receiveMessage();
                     System.out.println("Received from server: " + serverMessage);
-                    if (serverMessage != null && serverMessage.contains("Invite You Game")) {
+
+                    if (serverMessage != null && serverMessage.contains("INVITATION GAME")) {
                         Platform.runLater(() -> {
                             this.running = false;
                             try {
                                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
                                 Scene scene = new Scene(loader.load());
-                                InvitationController tes=loader.getController();
+                                InvitationController tes = loader.getController();
                                 tes.setPrimaryStage(primaryStage);
+                                String userInvite = serverMessage.split(" ")[0];
 
+                                tes.setUpInvitation(userInvite,userInvite);
+
+                                // Tạo một Timeline để quay lại giao diện chính sau 5 giây
+                                Timeline timeline = new Timeline(new KeyFrame(
+                                        Duration.seconds(5),
+                                        event -> {
+                                            try {
+                                                FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+                                                Parent mainPageViewParent = mainLoader.load();
+                                                Scene mainScene = new Scene(mainPageViewParent);
+
+                                                MainPageController mainPageController = mainLoader.getController();
+                                                mainPageController.setPrimaryStage(primaryStage);
+
+                                                primaryStage.setScene(mainScene);
+                                                serverHandler.sendMessage("NGATLISTENING");
+                                                mainPageController.setup2();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                ));
+                                timeline.setCycleCount(1);
+                                timeline.play();
+
+                                // Truyền Timeline vào InvitationController để có thể dừng nếu cần
+                                tes.setTimeline(timeline);
+
+                                // Đặt giao diện hiện tại là giao diện lời mời
                                 primaryStage.setScene(scene);
                                 primaryStage.setTitle("Giao diện phòng chờ");
                                 primaryStage.show();
@@ -207,7 +244,7 @@ public class MainPageController  {
             moveToWaitingRoom();
 
 
-            serverHandler.sendMessage("Invite:" + selectedPlayer.getUsername());
+            serverHandler.sendMessage(SessionManager.getCurrentUser().getUsername()+" Invite:" + selectedPlayer.getUsername());
 
         } else {
             System.out.println("Invitation failed");
@@ -227,6 +264,7 @@ public class MainPageController  {
 
                 WaitingRoomController waitingRoomController = loader.getController();
                 waitingRoomController.setPrimaryStage(primaryStage);
+                waitingRoomController.setUpChuPhong(SessionManager.getCurrentUser().getUsername());
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -271,6 +309,7 @@ public class MainPageController  {
     }
     @FXML
     public void setup() {
+        mainpageusername.setText(SessionManager.getCurrentUser().getUsername());
         messageService = new MessageService(serverHandler);
 //        this.running = true;
 //        startListeningForInvite();
@@ -283,6 +322,7 @@ public class MainPageController  {
     }
     @FXML
     public void setup2() {
+        mainpageusername.setText(SessionManager.getCurrentUser().getUsername());
         messageService = new MessageService(serverHandler);
         System.out.println("Load bang trong setUp");
         loadPlayers();

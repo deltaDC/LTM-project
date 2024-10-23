@@ -29,7 +29,7 @@ public class ClientManager {
         for (ClientHandler client : getClients()) {
             System.out.println("Client username: " + client.getUsername());
             if (client.getUsername().trim().equals(invitedPlayerName.trim())) {
-                client.sendMessage(message + " Invite You Game");
+                client.sendMessage(message + " INVITATION GAME");
                 System.out.println("Invite sent to " + invitedPlayerName);
                 break;
             } else {
