@@ -151,6 +151,7 @@ public class MainPageController  {
                     if (serverMessage != null && serverMessage.contains("INVITATION GAME")) {
                         Platform.runLater(() -> {
                             this.running = false;
+                            serverHandler.sendMessage("NGATLISTENING");
                             try {
                                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
                                 Scene scene = new Scene(loader.load());

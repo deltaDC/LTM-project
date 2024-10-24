@@ -87,7 +87,7 @@ public class InvitationController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        // de cho thread bat null ( bug nho )
+
         mainPageController.setup2();
     }
 }
