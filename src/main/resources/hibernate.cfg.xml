@@ -30,5 +30,6 @@
         <mapping class="com.n19.ltmproject.server.model.Player"/>
         <mapping class="com.n19.ltmproject.server.model.Game"/>
         <mapping class="com.n19.ltmproject.server.model.Reward"/>
+        <mapping class="com.n19.ltmproject.server.model.PlayerHistory"/>
     </session-factory>
 </hibernate-configuration>

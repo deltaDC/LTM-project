@@ -27,7 +27,6 @@ public class Player {
     private String username;
 
     @NotBlank
-//    @Size(min = 8)
     @Column(name = "password", nullable = false)
     private String password;
 

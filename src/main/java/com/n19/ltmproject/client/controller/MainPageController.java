@@ -40,10 +40,13 @@ public class MainPageController  {
 
     @FXML
     private TableView<Player> table;
+
     @FXML
     private TableColumn<Player, String> username;
+
     @FXML
     private TableColumn<Player, Integer> numberColumn;
+
     @FXML
     private TableColumn<Player, PlayerStatus> statusColumn;
 
@@ -292,7 +295,6 @@ public class MainPageController  {
         this.running=false;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
-
         Parent LeaderBoardViewParent = loader.load();
         Scene scene = new Scene(LeaderBoardViewParent);
 
@@ -300,6 +302,7 @@ public class MainPageController  {
         boardController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
+//        stage.setScene(scene);
     }
 
     public void ClickRefresh(ActionEvent actionEvent) {

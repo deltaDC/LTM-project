@@ -39,12 +39,12 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Button layoutX="39.0" layoutY="349.0" mnemonicParsing="false" onAction="#ClickConfirm" prefHeight="46.0" prefWidth="187.0" styleClass="button-confirm-and-cancel" text="Xác nhận" textFill="WHITE">
+            <Button layoutX="39.0" layoutY="349.0" mnemonicParsing="false" onAction="#onConfirmExit" prefHeight="46.0" prefWidth="187.0" styleClass="button-confirm-and-cancel" text="Xác nhận" textFill="WHITE" fx:id="confirmExitButton">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
-            <Button layoutX="258.0" layoutY="349.0" mnemonicParsing="false" onAction="#ClickCancel" prefHeight="46.0" prefWidth="187.0" styleClass="button-confirm-and-cancel" text="Hủy bỏ" textFill="WHITE">
+            <Button layoutX="258.0" layoutY="349.0" mnemonicParsing="false" onAction="#onCancelExit" prefHeight="46.0" prefWidth="187.0" styleClass="button-confirm-and-cancel" text="Hủy bỏ" textFill="WHITE" fx:id="cancelExitButton">
                <font>
                   <Font size="16.0" />
                </font>
