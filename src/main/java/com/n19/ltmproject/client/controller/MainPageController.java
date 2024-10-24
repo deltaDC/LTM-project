@@ -202,16 +202,12 @@ public class MainPageController implements Initializable {
     }
 
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
-
         Parent LeaderBoardViewParent = loader.load();
         Scene scene = new Scene(LeaderBoardViewParent);
-
-        LeaderBoardController boardController = loader.getController();
-        boardController.setServerConnection(serverHandler, primaryStage);
-
-        primaryStage.setScene(scene);
+        stage.setScene(scene);
     }
 
     public void ClickInvitePlayer(ActionEvent event) {

@@ -1,6 +1,7 @@
 package com.n19.ltmproject.server.dao;
 
 import com.n19.ltmproject.server.model.Player;
+import com.n19.ltmproject.server.model.PlayerHistory;
 import com.n19.ltmproject.server.model.enums.PlayerStatus;
 import com.n19.ltmproject.server.util.HibernateUtil;
 import org.hibernate.Session;
@@ -39,7 +40,7 @@ public class AuthDao {
 
             // Thực hiện truy vấn và lấy kết quả duy nhất (nếu có)
             Query q = session.createQuery(query);
-            Player player = null;
+            Player player;
 
             try {
                 player = (Player) q.getSingleResult();
@@ -117,6 +118,19 @@ public class AuthDao {
 
             // Lưu người dùng mới vào cơ sở dữ liệu
             session.save(newPlayer);
+
+            PlayerHistory playerHistory = PlayerHistory.builder()
+                    .playerId(newPlayer.getId())
+                    .totalPoints(0)
+                    .totalGames(0)
+                    .wins(0)
+                    .losses(0)
+                    .draws(0)
+                    .build();
+
+            // Lưu player history mới vào cơ sở dữ liệu
+            session.save(playerHistory);
+
             transaction.commit();  // Hoàn tất giao dịch
 
             // Trả về đối tượng người dùng vừa được tạo
@@ -152,7 +166,7 @@ public class AuthDao {
 
             // Thực hiện truy vấn
             Query q = session.createQuery(query);
-            Player player = null;
+            Player player;
 
             try {
                 player = (Player) q.getSingleResult();
