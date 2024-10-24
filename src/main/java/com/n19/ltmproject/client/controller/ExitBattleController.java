@@ -1,97 +1,73 @@
-// XAC NHAN EXIT
 package com.n19.ltmproject.client.controller;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
-import javafx.fxml.FXMLLoader;
+import com.n19.ltmproject.client.service.MessageService;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.event.ActionEvent;
-import javafx.stage.Stage;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
+import javafx.fxml.FXMLLoader;
 
-import java.io.IOException;
+import java.util.Map;
 
 public class ExitBattleController {
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
+    private GamePlayController gamePlayController;
 
-    private ServerHandler serverHandler;
-    private Stage primaryStage;
-    private int score;
-    private int opponentScore;
-    private int timeLeft;
-    private Timeline timeline;
-    private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
-
-    // Hàm để thiết lập trạng thái của GamePlay
-    public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline, ServerHandler serverHandler, Stage primaryStage) {
-        this.score = score;
-        this.opponentScore = opponentScore;
-        this.timeLeft = timeLeft;
-        this.timeline = timeline;
-        this.serverHandler = serverHandler;
-        this.primaryStage = primaryStage;
-
-        startExitCountdown(); // Bắt đầu đếm ngược trên trang Exit Battle
+    @FXML
+    public void setGamePlayController(GamePlayController gamePlayController) {
+        this.gamePlayController = gamePlayController;
     }
 
-    // Hàm đếm ngược trên trang Exit Battle
-    private void startExitCountdown() {
-        exitTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            if (timeLeft > 0) {
-                timeLeft--;
-            }
-        }));
-        exitTimeline.setCycleCount(Timeline.INDEFINITE);
-        exitTimeline.play();
+    @FXML
+    private void onConfirmExit() {
+        sendResultToServer();
+        goToHomePage(null);
     }
 
-    // Xử lý khi click nút Confirm
-    public void ClickConfirm(ActionEvent e) throws IOException {
-        // Dừng cả hai timeline khi nhấn Confirm
-        if (timeline != null) {
-            timeline.stop();
+    private void sendResultToServer() {
+        boolean isWinner = gamePlayController.getScore() > gamePlayController.getOpponentScore();
+        boolean isDraw = gamePlayController.getScore() == gamePlayController.getOpponentScore();
+
+        try {
+            long gameId = 123; // Dữ liệu cố định
+            System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
+
+            messageService.sendRequest("EXIT_GAME", Map.of(
+                    "gameId", gameId,
+                    "isWinner", isWinner,
+                    "isDraw", isDraw
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Lỗi: Không thể gửi kết quả về server");
         }
-        if (exitTimeline != null) {
-            exitTimeline.stop();
-        }
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-
-        Parent mainPageViewParent = loader.load();
-        Scene scene = new Scene(mainPageViewParent);
-
-        MainPageController mainPageController = loader.getController();
-        mainPageController.setServerConnection(serverHandler, primaryStage);
-
-        primaryStage.setScene(scene);
     }
 
-    // Xử lý khi click nút Cancel
-    public void ClickCancel(ActionEvent e) throws IOException {
-        if (exitTimeline != null) {
-            exitTimeline.stop();  // Dừng bộ đếm ngược của trang Exit Battle
+    private void goToHomePage(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+            Parent mainPageView = loader.load();
+            Scene scene = new Scene(mainPageView);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Lỗi: Không thể tải MainPage.fxml");
         }
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
-
-        Parent gamePlayViewParent = loader.load();
-        Scene scene = new Scene(gamePlayViewParent);
-
-        GamePlayController gamePlayController = loader.getController();
-        gamePlayController.setServerConnection(serverHandler, primaryStage);
-
-        // Ghi đè thời gian còn lại của GamePlay bằng thời gian từ trang Exit Battle
-        gamePlayController.setTimeLeft(timeLeft);  // Sử dụng hàm mới setTimeLeft để cập nhật thời gian
-
-        // Cập nhật lại timer cho trang GamePlay
-//        gamePlayController.timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> gamePlayController.updateTimer()));
-        gamePlayController.timeline.setCycleCount(Timeline.INDEFINITE);
-        gamePlayController.timeline.play();
-
-        primaryStage.setScene(scene);
     }
 
+    @FXML
+    private void onCancelExit(ActionEvent event) {
+        System.out.println("Thoát đã bị hủy");
+        // Đóng modal để quay lại trang GamePlay
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
 }

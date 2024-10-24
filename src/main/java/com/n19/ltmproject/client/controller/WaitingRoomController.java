@@ -40,7 +40,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(GamePlayViewParent);
 
         GamePlayController gameController = loader.getController();
-        gameController.setServerConnection(serverHandler,primaryStage);
+//        gameController.setServerConnection(serverHandler,primaryStage);
 
         primaryStage.setScene(scene);
     }
