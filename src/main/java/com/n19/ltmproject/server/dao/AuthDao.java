@@ -40,7 +40,7 @@ public class AuthDao {
 
             // Thực hiện truy vấn và lấy kết quả duy nhất (nếu có)
             Query q = session.createQuery(query);
-            Player player = null;
+            Player player;
 
             try {
                 player = (Player) q.getSingleResult();
@@ -166,7 +166,7 @@ public class AuthDao {
 
             // Thực hiện truy vấn
             Query q = session.createQuery(query);
-            Player player = null;
+            Player player;
 
             try {
                 player = (Player) q.getSingleResult();
