@@ -81,8 +81,6 @@ public class LeaderBoardController implements Initializable {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        // de cho thread bat null ( bug nho )
-//        serverHandler.sendMessage("NGATLISTENING");
         mainPageController.setup2();
     }
 
@@ -94,7 +92,6 @@ public class LeaderBoardController implements Initializable {
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
-            serverHandler.sendMessage("NGATLISTENING");
             Response response = messageService.sendRequest("getAllPlayerHistory", params);
             System.out.println(response);
             Platform.runLater(() -> {

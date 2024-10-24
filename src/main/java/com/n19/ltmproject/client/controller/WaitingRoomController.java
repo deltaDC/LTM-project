@@ -91,8 +91,6 @@ public class WaitingRoomController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            // de cho thread bat null ( bug nho )
-            serverHandler.sendMessage("NGATLISTENING");
             mainPageController.setup2();
 
 

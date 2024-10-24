@@ -234,6 +234,7 @@ public class MainPageController  {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
         if (selectedPlayer != null) {
+
             this.running = false;
 //            Player currentUser = SessionManager.getCurrentUser();
 //            Map<String, Object> params = new HashMap<>();
@@ -249,6 +250,7 @@ public class MainPageController  {
 
             serverHandler.sendMessage(SessionManager.getCurrentUser().getUsername()+" Invite:" + selectedPlayer.getUsername());
 
+            serverHandler.sendMessage("NGATLISTENING");
         } else {
             System.out.println("Invitation failed");
         }
@@ -259,6 +261,7 @@ public class MainPageController  {
 
     private void moveToWaitingRoom() {
         this.running=false;
+
         Platform.runLater(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader();
@@ -279,6 +282,8 @@ public class MainPageController  {
 
     public void ClickAchievement(ActionEvent e) throws IOException {
         this.running=false;
+        serverHandler.sendMessage("NGATLISTENING");
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
 
@@ -293,6 +298,7 @@ public class MainPageController  {
 
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
         this.running=false;
+        serverHandler.sendMessage("NGATLISTENING");
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
         Parent LeaderBoardViewParent = loader.load();

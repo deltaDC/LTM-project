@@ -33,7 +33,7 @@ public class AchievementController {
 
         primaryStage.setScene(scene);
         // de cho thread bat null ( bug nho )
-        serverHandler.sendMessage("NGATLISTENING");
+//        serverHandler.sendMessage("NGATLISTENING");
         mainPageController.setup2();
     }
 }
