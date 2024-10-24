@@ -1,19 +1,15 @@
 package com.n19.ltmproject.client.model.auth;
 
 import com.n19.ltmproject.client.model.Player;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SessionManager {
-    private static Player currentUser;
-
     // Lấy thông tin người dùng hiện tại
-    public static Player getCurrentUser() {
-        return currentUser;
-    }
-
     // Đặt thông tin người dùng hiện tại
-    public static void setCurrentUser(Player user) {
-        currentUser = user;
-    }
+    @Getter
+    @Setter
+    private static Player currentUser;
 
     // Xóa thông tin người dùng (đăng xuất)
     public static void clearSession() {

@@ -1,5 +1,8 @@
 package com.n19.ltmproject.client.controller;
 
+import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.model.dto.Response;
+import com.n19.ltmproject.client.service.MessageService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,43 +11,79 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResultController {
 
     @FXML
-    private Label scoreTextArea;
+    private Label resultLabel;
 
     @FXML
-    private Label resultLabel;
+    private Label scoreLabel;
+
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
 
     private boolean isWinner;
     private boolean isDraw;
     private String opponent;
+    private long gameId; // Thay đổi để lưu gameId
 
-    public void setResults(String results, boolean isWinner, boolean isDraw, String opponent) {
+    public void setResults(String results, String score, boolean isWinner, boolean isDraw, String opponent) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
         this.opponent = opponent;
-        scoreTextArea.setText(results);
-
-        if (isDraw) {
-            resultLabel.setText("Trận đấu hòa!");
-        } else if (isWinner) {
-            resultLabel.setText("Bạn đã thắng!");
-        } else {
-            resultLabel.setText("Bạn đã thua!");
-        }
+        this.gameId = 123; // Gán gameId ở đây (hoặc truyền từ bên ngoài)
+        scoreLabel.setText(score);
+        resultLabel.setText(isDraw ? "Trận đấu hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!"));
     }
 
     @FXML
     private void handleExit() {
+        sendResultToServer();
+        sendExitNotification();
+        loadMainPage();
+    }
+
+    @FXML
+    private void handlePlayAgain() {
+        sendResultToServer();
+//        loadMainPage();
+    }
+
+    private void sendResultToServer() {
+        boolean isWinner = this.isWinner;
+        boolean isDraw = this.isDraw;
+
+        try {
+            System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
+
+            messageService.sendRequest("EXIT_GAME", Map.of(
+                    "gameId", gameId,
+                    "isWinner", isWinner,
+                    "isDraw", isDraw
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Lỗi: Không thể gửi kết quả về server");
+        }
+    }
+
+    private void sendExitNotification() {
+        Map<String, Object> params = createParams("exitResult", opponent);
+        Response response = messageService.sendRequest("exitResult", params);
+        System.out.println(response != null && "OK".equalsIgnoreCase(response.getStatus())
+                ? "Kết quả thoát đã được xác nhận"
+                : "Xác nhận kết quả thoát thất bại");
+    }
+
+    private void loadMainPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
             Parent mainPage = loader.load();
-            Scene scene = new Scene(mainPage);
-
-            Stage stage = (Stage) scoreTextArea.getScene().getWindow();
-            stage.setScene(scene);
+            Stage stage = (Stage) scoreLabel.getScene().getWindow();
+            stage.setScene(new Scene(mainPage));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,15 +91,12 @@ public class ResultController {
         }
     }
 
-    @FXML
-    private void handlePlayAgain() {
-        sendRematchInvitation(opponent);
 
-        Stage stage = (Stage) scoreTextArea.getScene().getWindow();
-        stage.close();
-    }
 
-    private void sendRematchInvitation(String opponent) {
-        System.out.println("Sending rematch invitation to " + opponent);
+    private Map<String, Object> createParams(String action, String opponent) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("action", action);
+        params.put("opponent", opponent);
+        return params;
     }
 }

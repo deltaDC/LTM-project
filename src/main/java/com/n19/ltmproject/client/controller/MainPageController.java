@@ -59,13 +59,7 @@ public class MainPageController implements Initializable {
 
     //DEPRECATED
     public void setServerConnection(ServerHandler serverHandler, Stage stage) {
-//        this.serverHandler = ServerHandler.getInstance();
         this.primaryStage = stage;
-//        this.messageService = new MessageService(serverHandler);
-
-//        if (!isListening) {
-//            startListeningToServer();
-//        }
     }
 
     @Override
@@ -73,10 +67,6 @@ public class MainPageController implements Initializable {
         messageService = new MessageService(serverHandler);
 
         loadPlayers();
-
-        if (!isListening) {
-//            startListeningToServer();
-        }
     }
 
     private void loadPlayers() {
@@ -110,6 +100,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    @Deprecated
     public void startListeningToServer() {
         isListening = true;
 
@@ -173,6 +164,7 @@ public class MainPageController implements Initializable {
             System.out.println("Current logged-in user: " + currentUser);
         } else {
             System.out.println("No user is currently logged in.");
+            return;
         }
 
         Map<String, Object> params = new HashMap<>();
