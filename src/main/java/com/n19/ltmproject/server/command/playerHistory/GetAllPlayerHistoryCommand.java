@@ -17,8 +17,9 @@ public class GetAllPlayerHistoryCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        //TODO change to playerDto, not include password
+
         List<PlayerHistoryDto> players = playerHistoryService.getAllPlayerHistory();
+
         return Response.builder()
                 .status("OK")
                 .message("All players history retrieved successfully")

@@ -119,15 +119,14 @@ public class AuthDao {
             // Lưu người dùng mới vào cơ sở dữ liệu
             session.save(newPlayer);
 
-//            transaction.commit();  // Hoàn tất giao dịch
-
-            PlayerHistory playerHistory = new PlayerHistory();
-            playerHistory.setTotalPoints(0);
-            playerHistory.setTotalGames(0);
-            playerHistory.setWins(0);
-            playerHistory.setLosses(0);
-            playerHistory.setDraws(0);
-            playerHistory.setPlayerId(newPlayer.getId());
+            PlayerHistory playerHistory = PlayerHistory.builder()
+                    .playerId(newPlayer.getId())
+                    .totalPoints(0)
+                    .totalGames(0)
+                    .wins(0)
+                    .losses(0)
+                    .draws(0)
+                    .build();
 
             // Lưu player history mới vào cơ sở dữ liệu
             session.save(playerHistory);

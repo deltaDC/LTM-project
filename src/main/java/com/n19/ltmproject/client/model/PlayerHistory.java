@@ -2,7 +2,9 @@ package com.n19.ltmproject.client.model;
 import lombok.*;
 
 @Data
+@Deprecated
 public class PlayerHistory {
+
     private long id;
     private int totalPoints;
     private int totalGames;
@@ -10,6 +12,7 @@ public class PlayerHistory {
     private int losses;
     private int draws;
     private long playerId;
+
     public PlayerHistory(long id, int totalPoints, int totalGames, int wins, int losses, int draws, long playerId) {
         this.id = id;
         this.totalPoints = totalPoints;

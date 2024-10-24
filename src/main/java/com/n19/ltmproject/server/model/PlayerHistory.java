@@ -2,18 +2,22 @@ package com.n19.ltmproject.server.model;
 
 import lombok.*;
 import javax.persistence.*;
+
+
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
+@Builder
 @Table(name = "player_history")
 public class PlayerHistory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(name = "player_id")
+    private long playerId;
 
     @Column(name = "total_points")
     private int totalPoints;
@@ -29,7 +33,4 @@ public class PlayerHistory {
 
     @Column(name = "draws")
     private int draws = 0;
-
-    @Column(name = "player_id")
-    private long playerId;
 }

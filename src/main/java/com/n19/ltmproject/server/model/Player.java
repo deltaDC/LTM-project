@@ -16,6 +16,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "player")
 public class Player {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -26,7 +27,6 @@ public class Player {
     private String username;
 
     @NotBlank
-//    @Size(min = 8)
     @Column(name = "password", nullable = false)
     private String password;
 
