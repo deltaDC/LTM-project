@@ -1,10 +1,12 @@
 // XAC NHAN EXIT
 package com.n19.ltmproject.client.controller;
 
+import com.almasb.fxgl.app.GameController;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.service.MessageService;
 import com.n19.ltmproject.server.service.Session;
 import com.n19.ltmproject.server.service.UserSession;
+import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,17 +20,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class ExitBattleController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private MessageService messageService = new MessageService(serverHandler);
     private Stage primaryStage;
     private int score;
     private int opponentScore;
     private int timeLeft;
     private Timeline timeline;
     private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
+    private GamePlayController gamePlayController;
 //    private UserSession usersessions;
 //    private Session session;
     public void setPrimaryStage(Stage stage) {
@@ -44,7 +49,7 @@ public class ExitBattleController {
         this.timeline = timeline;
         this.primaryStage = primaryStage;
 
-        startExitCountdown(); // Bắt đầu đếm ngược trên trang Exit Battle
+//        startExitCountdown(); // Bắt đầu đếm ngược trên trang Exit Battle
     }
 
     @FXML
@@ -53,9 +58,23 @@ public class ExitBattleController {
     }
 
     @FXML
-    private void onConfirmExit() {
-        sendResultToServer();
-        goToHomePage(null);
+    private void onConfirmExit() throws IOException {
+//        serverHandler.sendMessage("NGATLISTENING");
+//        sendResultToServer();
+//        goToHomePage();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+        Parent MainPageViewParent = loader.load();
+        Scene scene = new Scene(MainPageViewParent);
+
+        MainPageController mainPageController = loader.getController();
+        mainPageController.setPrimaryStage(primaryStage);
+
+        primaryStage.setScene(scene);
+        // de cho thread bat null ( bug nho )
+        serverHandler.sendMessage("NGATLISTENING");
+        mainPageController.setup2();
     }
 
     private void sendResultToServer() {
@@ -79,12 +98,19 @@ public class ExitBattleController {
 
     private void goToHomePage(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-            Parent mainPageView = loader.load();
-            Scene scene = new Scene(mainPageView);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+            Parent MainPageViewParent = loader.load();
+            Scene scene = new Scene(MainPageViewParent);
+
+            MainPageController mainPageController = loader.getController();
+            mainPageController.setPrimaryStage(primaryStage);
+
+            primaryStage.setScene(scene);
+            // de cho thread bat null ( bug nho )
+            serverHandler.sendMessage("NGATLISTENING");
+            mainPageController.setup2();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Lỗi: Không thể tải MainPage.fxml");

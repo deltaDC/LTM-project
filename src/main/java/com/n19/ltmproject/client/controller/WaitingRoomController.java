@@ -109,7 +109,7 @@ public class WaitingRoomController {
         Scene scene = new Scene(GamePlayViewParent);
 
         GamePlayController gameController = loader.getController();
-        gameController.setPrimaryStage(primaryStage);
+        gameController.setStage(primaryStage);
 
         primaryStage.setScene(scene);
     }

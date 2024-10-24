@@ -29,6 +29,7 @@ public class ResultController {
     private boolean isDraw;
     private String opponent;
     private long gameId; // Thay đổi để lưu gameId
+    private Stage primaryStage;
 
     public void setResults(String results, String score, boolean isWinner, boolean isDraw, String opponent) {
         this.isWinner = isWinner;
@@ -41,8 +42,8 @@ public class ResultController {
 
     @FXML
     private void handleExit() {
-        sendResultToServer();
-        sendExitNotification();
+//        sendResultToServer();
+//        sendExitNotification();
         loadMainPage();
     }
 
@@ -50,6 +51,12 @@ public class ResultController {
     private void handlePlayAgain() {
         sendResultToServer();
 //        loadMainPage();
+    }
+    public void setPrimaryStage(Stage stage) {
+
+        this.primaryStage = stage;
+//        running = true;
+//        startListeningForInvite();
     }
 
     private void sendResultToServer() {
@@ -80,11 +87,19 @@ public class ResultController {
 
     private void loadMainPage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-            Parent mainPage = loader.load();
-            Stage stage = (Stage) scoreLabel.getScene().getWindow();
-            stage.setScene(new Scene(mainPage));
-            stage.show();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+            Parent MainPageViewParent = loader.load();
+            Scene scene = new Scene(MainPageViewParent);
+
+            MainPageController mainPageController = loader.getController();
+            mainPageController.setPrimaryStage(primaryStage);
+
+            primaryStage.setScene(scene);
+            // de cho thread bat null ( bug nho )
+            serverHandler.sendMessage("NGATLISTENING");
+            mainPageController.setup2();
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error: Unable to load MainPage.fxml");

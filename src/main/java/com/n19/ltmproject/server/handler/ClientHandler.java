@@ -35,7 +35,7 @@ public class ClientHandler extends Thread {
     /**
      * Constructor to initialize the ClientHandler with a socket and a reference to the ClientManager.
      *
-     * @param socket the socket connected to the client
+     * @param socket        the socket connected to the client
      * @param clientManager the manager that handles all connected clients
      */
     public ClientHandler(Socket socket, ClientManager clientManager) {
@@ -45,14 +45,16 @@ public class ClientHandler extends Thread {
 
         System.out.println("Client connected from: " + clientAddress);
     }
+
     // Gọi đến client manager .
     public void handleMessage(String message) {
         if (message.contains("Invite:")) {
             String invitedPlayerName = message.split(":")[1];
             // Gọi phương thức invitePlayer từ ClientManager
-            clientManager.invitePlayer(invitedPlayerName, message+" Đã gửi thành công");
+            clientManager.invitePlayer(invitedPlayerName, message + " Đã gửi thành công");
         }
     }
+
     public String getUsername() {
         return username;
     }
@@ -75,19 +77,17 @@ public class ClientHandler extends Thread {
             String jsonRequest;
             // Nhảy vào hàm handleMessage.
             while ((jsonRequest = input.readLine()) != null) {
-                if(jsonRequest.contains("Invite:")){
+                if (jsonRequest.contains("Invite:")) {
                     handleMessage(jsonRequest);
-                }
-                else if(jsonRequest.startsWith("NGATLISTENING")){
-                        output.println(gson.toJson(null));
-                }
-                else{
+                } else if (jsonRequest.startsWith("NGATLISTENING")) {
+                    output.println(gson.toJson(null));
+                } else {
 
                     Request request = gson.fromJson(jsonRequest, Request.class);
 
                     System.out.println("---------------");
                     System.out.println("Received request from client: " + clientAddress);
-                    if(!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
+                    if (!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
                         System.out.println("Action: " + request.getAction());
                         System.out.println("Data: " + request.getParams().toString());
                     }
@@ -95,7 +95,7 @@ public class ClientHandler extends Thread {
                     // Gọi handleMessage để xử lý tin nhắn
 
 
-                    Command command = CommandFactory.getCommand(request.getAction(),this);
+                    Command command = CommandFactory.getCommand(request.getAction(), this);
                     Response response = command.execute(request);
 
                     output.println(gson.toJson(response));

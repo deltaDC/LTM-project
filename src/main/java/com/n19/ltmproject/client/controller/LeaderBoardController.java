@@ -35,7 +35,7 @@ import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
 
 public class LeaderBoardController implements Initializable {
-
+    private Stage primaryStage;
     @FXML
     private TableView<PlayerHistoryDto> rankboard;
 
@@ -60,18 +60,30 @@ public class LeaderBoardController implements Initializable {
     @FXML
     private TableColumn<PlayerHistoryDto, Integer> pointColumn;
 
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
+    }
+
     private ObservableList<PlayerHistoryDto> playerList;
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
 
     public void clickHome(ActionEvent e) throws IOException {
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-        Parent LeaderBoardViewParent = loader.load();
-        Scene scene = new Scene(LeaderBoardViewParent);
-        stage.setScene(scene);
+
+        Parent MainPageViewParent = loader.load();
+        Scene scene = new Scene(MainPageViewParent);
+
+        MainPageController mainPageController = loader.getController();
+        mainPageController.setPrimaryStage(primaryStage);
+
+        primaryStage.setScene(scene);
+        // de cho thread bat null ( bug nho )
+//        serverHandler.sendMessage("NGATLISTENING");
+        mainPageController.setup2();
     }
 
     @Override
@@ -82,8 +94,9 @@ public class LeaderBoardController implements Initializable {
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
+            serverHandler.sendMessage("NGATLISTENING");
             Response response = messageService.sendRequest("getAllPlayerHistory", params);
-
+            System.out.println(response);
             Platform.runLater(() -> {
                 if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                     List<PlayerHistoryDto> playerHistoriesDto = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<PlayerHistoryDto>>() {}.getType());
