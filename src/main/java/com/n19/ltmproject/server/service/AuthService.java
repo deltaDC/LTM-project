@@ -16,4 +16,8 @@ public class AuthService {
     public String signUpPlayerService(String username, String password, String confirmPassword) {
         return authDao.signUpPlayerDao(username, password, confirmPassword);
     }
+
+    public String logoutPlayerService(String username) {
+        return authDao.logoutPlayerDao(username);
+    }
 }

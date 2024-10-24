@@ -3,9 +3,12 @@ package com.n19.ltmproject.server.handler;
 import com.google.gson.Gson;
 import com.n19.ltmproject.server.command.Command;
 import com.n19.ltmproject.server.command.CommandFactory;
+import com.n19.ltmproject.server.command.auth.LoginCommand;
 import com.n19.ltmproject.server.manager.ClientManager;
+import com.n19.ltmproject.server.model.Player;
 import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
+import lombok.Getter;
 
 import java.io.*;
 import java.net.Socket;
@@ -24,6 +27,8 @@ public class ClientHandler extends Thread {
     private PrintWriter output;
     private final ClientManager clientManager;
     private final Gson gson = new Gson();
+    @Getter
+    private String username;
 
     private final String clientAddress;
 
@@ -67,6 +72,16 @@ public class ClientHandler extends Thread {
                 Command command = CommandFactory.getCommand(request.getAction());
                 Response response = command.execute(request);
 
+                if (command instanceof LoginCommand) {
+                    if (response.getStatus().equalsIgnoreCase("OK")) {
+                        Player player = (Player) response.getData();
+                        clientManager.addPlayer(player);
+                        this.username = player.getUsername();
+                    }
+                }
+
+                System.out.println("Player " + username + " is requesting " + request.getAction());
+
                 output.println(gson.toJson(response));
             }
         } catch (IOException e) {
@@ -100,4 +115,9 @@ public class ClientHandler extends Thread {
             clientManager.removeClient(this);
         }
     }
+
+    public void sendMessage(String message) {
+        output.println(message);
+    }
+
 }
