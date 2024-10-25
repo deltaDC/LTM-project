@@ -42,21 +42,15 @@ public class ResultController {
 
     @FXML
     private void handleExit() {
-//        sendResultToServer();
-//        sendExitNotification();
         loadMainPage();
     }
 
     @FXML
     private void handlePlayAgain() {
         sendResultToServer();
-//        loadMainPage();
     }
     public void setPrimaryStage(Stage stage) {
-
         this.primaryStage = stage;
-//        running = true;
-//        startListeningForInvite();
     }
 
     private void sendResultToServer() {
@@ -105,7 +99,6 @@ public class ResultController {
             System.out.println("Error: Unable to load MainPage.fxml");
         }
     }
-
 
 
     private Map<String, Object> createParams(String action, String opponent) {

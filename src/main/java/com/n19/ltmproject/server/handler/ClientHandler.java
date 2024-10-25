@@ -3,12 +3,11 @@ package com.n19.ltmproject.server.handler;
 import com.google.gson.Gson;
 import com.n19.ltmproject.server.command.Command;
 import com.n19.ltmproject.server.command.CommandFactory;
-import com.n19.ltmproject.server.command.auth.LoginCommand;
 import com.n19.ltmproject.server.manager.ClientManager;
-import com.n19.ltmproject.server.model.Player;
 import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,6 +26,7 @@ public class ClientHandler extends Thread {
     private PrintWriter output;
     private final ClientManager clientManager;
     private final Gson gson = new Gson();
+    @Setter
     @Getter
     private String username;
 
@@ -47,20 +47,11 @@ public class ClientHandler extends Thread {
     }
 
     // Gọi đến client manager .
-    public void handleMessage(String message) {
+    public void handleGameInvitation(String message) {
         if (message.contains("Invite:")) {
             String invitedPlayerName = message.split(":")[1];
-            // Gọi phương thức invitePlayer từ ClientManager
             clientManager.invitePlayer(invitedPlayerName, message + " Đã gửi thành công");
         }
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     /**
@@ -75,10 +66,11 @@ public class ClientHandler extends Thread {
             output = new PrintWriter(socket.getOutputStream(), true);
 
             String jsonRequest;
-            // Nhảy vào hàm handleMessage.
             while ((jsonRequest = input.readLine()) != null) {
                 if (jsonRequest.contains("Invite:")) {
-                    handleMessage(jsonRequest);
+                    handleGameInvitation(jsonRequest);
+
+                    //TODO change "NGATLISTENING" to a another string
                 } else if (jsonRequest.startsWith("NGATLISTENING")) {
                     output.println(gson.toJson(null));
                 } else {
@@ -92,8 +84,6 @@ public class ClientHandler extends Thread {
                         System.out.println("Data: " + request.getParams().toString());
                     }
                     System.out.println("---------------");
-                    // Gọi handleMessage để xử lý tin nhắn
-
 
                     Command command = CommandFactory.getCommand(request.getAction(), this);
                     Response response = command.execute(request);

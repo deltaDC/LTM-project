@@ -42,12 +42,15 @@ public class GamePlayController {
     @FXML
     private ImageView trashCan5;
 
+    //TODO rename for better readability
     @FXML
     private ImageView humangameplay;
     @FXML
     private ImageView messagegameplay;
     @FXML
     private Label feedbackLabel;
+
+    //TODO rename for better readability
     @FXML
     private ImageView humangameplay1;
     @FXML
@@ -65,8 +68,6 @@ public class GamePlayController {
     public void setPrimaryStage(Stage stage) {
 
         this.primaryStage = stage;
-//        running = true;
-//        startListeningForInvite();
     }
 
     private boolean isListening = false;
@@ -286,7 +287,6 @@ public class GamePlayController {
     }
 
     private void endGame() {
-//        isGameActive = false;
         timeline.stop();
         showResultScreen();
     }

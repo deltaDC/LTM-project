@@ -34,13 +34,11 @@ public class ExitBattleController {
     private Timeline timeline;
     private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
     private GamePlayController gamePlayController;
-//    private UserSession usersessions;
-//    private Session session;
+
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-//        this.session = session;
-//        this.usersessions = usersessions;
     }
+
     // Hàm để thiết lập trạng thái của GamePlay
     public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline,  Stage primaryStage) {
         this.score = score;
@@ -48,8 +46,6 @@ public class ExitBattleController {
         this.timeLeft = timeLeft;
         this.timeline = timeline;
         this.primaryStage = primaryStage;
-
-//        startExitCountdown(); // Bắt đầu đếm ngược trên trang Exit Battle
     }
 
     @FXML
@@ -59,9 +55,6 @@ public class ExitBattleController {
 
     @FXML
     private void onConfirmExit() throws IOException {
-//        serverHandler.sendMessage("NGATLISTENING");
-//        sendResultToServer();
-//        goToHomePage();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
 
@@ -72,7 +65,6 @@ public class ExitBattleController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        // de cho thread bat null ( bug nho )
         serverHandler.sendMessage("NGATLISTENING");
         mainPageController.setup2();
     }
@@ -85,6 +77,7 @@ public class ExitBattleController {
             long gameId = 123; // Dữ liệu cố định
             System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
 
+            //TODO change action to EndGameById, and send player history
             messageService.sendRequest("EXIT_GAME", Map.of(
                     "gameId", gameId,
                     "isWinner", isWinner,
@@ -120,7 +113,6 @@ public class ExitBattleController {
     @FXML
     private void onCancelExit(ActionEvent event) {
         System.out.println("Thoát đã bị hủy");
-        // Đóng modal để quay lại trang GamePlay
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }

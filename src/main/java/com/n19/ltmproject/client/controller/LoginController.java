@@ -11,13 +11,10 @@ import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 
 
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -47,7 +44,6 @@ public class LoginController {
         params.put("username", username);
         params.put("password", password);
 
-//        MainPageController.isListening = false;
         Response response = messageService.sendRequest("login", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
@@ -62,7 +58,6 @@ public class LoginController {
 
             try {
                 loadMainPage();
-//                MainPageController.isListening = true;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

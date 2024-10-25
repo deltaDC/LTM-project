@@ -27,11 +27,14 @@ public class InvitationController {
     private Stage primaryStage;
     private Timeline timeline;
 
+    //TODO rename for better readability
     @FXML
     private Button invitation1;
     @FXML
     private Label invitationprofile;
+
     private String nguoimoi;
+
     public void setUpInvitation(String invitation1,String invitationprofile){
         this.nguoimoi = invitation1;
         this.invitation1.setText(invitation1.toUpperCase() + " INVITE YOU");
@@ -41,6 +44,7 @@ public class InvitationController {
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
+
     public void setTimeline(Timeline timeline) {
         this.timeline = timeline;
     }

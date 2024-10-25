@@ -25,6 +25,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class SignUpController {
+
+	//TODO change to use MessageService
 	private static final String SERVER_ADDRESS = "localhost";
 	private static final int SERVER_PORT = 1234;
 	private static final Gson gson = new Gson();

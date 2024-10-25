@@ -21,10 +21,14 @@ public class WaitingRoomController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
     private volatile boolean running = true;
+
+    //TODO rename for better readability
     @FXML
     private Label waitingroomnamechuphong;
     @FXML
     private Label waitingroomnamenguoichoi;
+
+    //TODO rename method
     public void setUpChuPhong(String waitingroomnamechuphong){
         this.waitingroomnamechuphong.setText(waitingroomnamechuphong);
         this.waitingroomnamenguoichoi.setText("Waiting");
@@ -35,49 +39,8 @@ public class WaitingRoomController {
     }
 
     public void setPrimaryStage(Stage stage) {
-
         this.primaryStage = stage;
-//        running = true;
-//        startListeningForInvite();
     }
-//    private void startListeningForInvite() {
-//        new Thread(() -> {
-//            try {
-//                while (running) {
-//                    String serverMessage = serverHandler.receiveMessage();
-//                    System.out.println(serverMessage);
-//                    if (serverMessage != null && "playgamenow".equals(serverMessage)) {
-//                        running=false;
-////                        String idMatch=serverConnection.receiveMessage();
-////                        String player1=serverConnection.receiveMessage();
-////                        String player2=serverConnection.receiveMessage();
-//
-//                        Platform.runLater(() -> {
-//                            try {
-////                                Match newMatch=new Match(Integer.parseInt(idMatch), player1, player2, timeBegin);
-//                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
-//                                Scene scene = new Scene(loader.load());
-//                                GamePlayController gController = loader.getController();
-//                                gController.setPrimaryStage(primaryStage);
-////                                gController.setUser(dataUser);
-////                                gController.setMatch(newMatch);
-////                                gController.startCountdown();
-//                                // Lấy stage hiện tại từ nút "exit"
-////                                Stage stage = (Stage) exit.getScene().getWindow();
-//                                primaryStage.setScene(scene);
-//                                primaryStage.setTitle("Giao diện Game");
-//                                primaryStage.show();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        });
-//                    }
-//                }
-//            } catch (IOException ex) {
-//                System.out.println("Error receiving message from server: " + ex.getMessage());
-//            }
-//        }).start();
-//    }
 
     public void ClickExit() {
         try {

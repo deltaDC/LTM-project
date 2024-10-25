@@ -10,6 +10,9 @@ import com.n19.ltmproject.server.service.AuthService;
 import java.util.*;
 
 public class LoginCommand implements Command {
+
+    //TODO need another approach to handle player's username
+
     private final AuthService authService;
     private final ClientHandler clientHandler; // Tham chiếu đến ClientHandler
 
@@ -20,8 +23,6 @@ public class LoginCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        //TODO implement login command
-//        System.out.println(request.toString());
         System.out.println("LoginCommand.execute() called");
 
         String username = (String) request.getParams().get("username");

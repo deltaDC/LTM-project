@@ -1,9 +1,7 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
-import java.util.concurrent.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,15 +17,12 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -51,33 +46,44 @@ public class MainPageController  {
     private TableColumn<Player, PlayerStatus> statusColumn;
 
     @FXML
-    private Label mainpageusername;
+    private Label mainPageUsername;
 
     private ObservableList<Player> playerList;
     private Stage primaryStage;
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService;
+
+    //TODO rename for better readability
     private volatile boolean running = true;
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-//        loadPlayers();
     }
+
+    @FXML
+    public void setup() {
+        mainPageUsername.setText(SessionManager.getCurrentUser().getUsername());
+        messageService = new MessageService(serverHandler);
+        System.out.println("Load bang trong setUp");
+        loadPlayers();
+    }
+
+    //TODO rename function for better understanding
+    @FXML
+    public void setup2() {
+        mainPageUsername.setText(SessionManager.getCurrentUser().getUsername());
+        messageService = new MessageService(serverHandler);
+        System.out.println("Load bang trong setUp");
+        loadPlayers();
+        setThread();
+    }
+
     public void setThread(){
-        this.running =true;
+        this.running = true;
         System.out.println("Thread in setThread");
         startListeningForInvite();
-
     }
-
-//    @Override
-//    public void initialize(URL location, ResourceBundle resources) {
-//        messageService = new MessageService(serverHandler);
-////        startListeningForInvite();;
-//
-//        loadPlayers();
-//    }
 
     private void loadPlayers() {
         try {
@@ -86,25 +92,6 @@ public class MainPageController  {
             Response response = messageService.sendRequest("getAllPlayer", params);
 
             Platform.runLater(() -> {
-                System.out.println("Dang tao bang");
-                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-                    List<Player> players = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>() {}.getType());
-                    playerList = FXCollections.observableArrayList(players);
-                    numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
-                    username.setCellValueFactory(new PropertyValueFactory<>("username"));
-                    statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-                    table.setItems(playerList);
-                    System.out.println("TAO Bang thanh cong");
-                    table.setFocusTraversable(false);
-                    table.getSelectionModel().clearSelection();
-                    this.running = true;
-//                    setThread();
-                } else {
-                    System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
-                }
-            });Platform.runLater(() -> {
-                System.out.println("Đang tạo bảng");
                 if (response != null) {
                     System.out.println("Status từ server: " + response.getStatus());
                     System.out.println("Dữ liệu nhận được: " + response.getData());
@@ -130,83 +117,78 @@ public class MainPageController  {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        setThread();;
-
     }
-
 
     public void startListeningForInvite() {
         System.out.println("Start thread");
-        new Thread(() -> {
-            try {
+        new Thread(this::listenForServerMessages).start();
+    }
 
-                while (this.running ) {
-                    System.out.println("running: "+this.running+" IN THREAD");
-                    if(!this.running){
-                        break;
-                    }
-                    String serverMessage = serverHandler.receiveMessage();
-                    System.out.println("Received from server: " + serverMessage);
-
-                    if (serverMessage != null && serverMessage.contains("INVITATION GAME")) {
-                        Platform.runLater(() -> {
-                            this.running = false;
-                            serverHandler.sendMessage("NGATLISTENING");
-                            try {
-                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
-                                Scene scene = new Scene(loader.load());
-                                InvitationController tes = loader.getController();
-                                tes.setPrimaryStage(primaryStage);
-                                String userInvite = serverMessage.split(" ")[0];
-
-                                tes.setUpInvitation(userInvite,userInvite);
-
-                                // Tạo một Timeline để quay lại giao diện chính sau 5 giây
-                                Timeline timeline = new Timeline(new KeyFrame(
-                                        Duration.seconds(5),
-                                        event -> {
-                                            try {
-                                                FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-                                                Parent mainPageViewParent = mainLoader.load();
-                                                Scene mainScene = new Scene(mainPageViewParent);
-
-                                                MainPageController mainPageController = mainLoader.getController();
-                                                mainPageController.setPrimaryStage(primaryStage);
-
-                                                primaryStage.setScene(mainScene);
-                                                serverHandler.sendMessage("NGATLISTENING");
-                                                mainPageController.setup2();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                ));
-                                timeline.setCycleCount(1);
-                                timeline.play();
-
-                                // Truyền Timeline vào InvitationController để có thể dừng nếu cần
-                                tes.setTimeline(timeline);
-
-                                // Đặt giao diện hiện tại là giao diện lời mời
-                                primaryStage.setScene(scene);
-                                primaryStage.setTitle("Giao diện phòng chờ");
-                                primaryStage.show();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-
+    private void listenForServerMessages() {
+        try {
+            while (this.running) {
+                if (!this.running) {
+                    break;
                 }
-                System.out.println("END THREAD");
-            } catch (IOException ex) {
-                System.out.println("Error receiving message from server: " + ex.getMessage());
+                String serverMessage = serverHandler.receiveMessage();
+                System.out.println("Received from server: " + serverMessage);
+
+                if (serverMessage != null && serverMessage.contains("INVITATION GAME")) {
+                    Platform.runLater(() -> handleInvitation(serverMessage));
+                }
             }
-        }).start();
+            System.out.println("END THREAD");
+        } catch (IOException ex) {
+            System.out.println("Error receiving message from server: " + ex.getMessage());
+        }
+    }
+
+    private void handleInvitation(String serverMessage) {
+        this.running = false;
+        serverHandler.sendMessage("NGATLISTENING");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
+            Scene invitationScene = new Scene(loader.load());
+
+            InvitationController invitationController = loader.getController();
+            invitationController.setPrimaryStage(primaryStage);
+
+            String userInvite = serverMessage.split(" ")[0];
+            invitationController.setUpInvitation(userInvite, userInvite);
+
+            Timeline timeline = createReturnToMainPageTimeline();
+            invitationController.setTimeline(timeline);
+
+            primaryStage.setScene(invitationScene);
+            primaryStage.setTitle("Giao diện phòng chờ");
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Timeline createReturnToMainPageTimeline() {
+        return new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+            try {
+                FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+                Parent mainPageViewParent = mainLoader.load();
+                Scene mainScene = new Scene(mainPageViewParent);
+
+                MainPageController mainPageController = mainLoader.getController();
+                mainPageController.setPrimaryStage(primaryStage);
+
+                primaryStage.setScene(mainScene);
+                serverHandler.sendMessage("NGATLISTENING");
+                mainPageController.setup2();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     public void ClickLogout(ActionEvent e) throws IOException {
-        this.running=false;
+        this.running = false;
         serverHandler.sendMessage("NGATLISTENING");
         Player currentUser = SessionManager.getCurrentUser();
         Map<String, Object> params = new HashMap<>();
@@ -229,7 +211,6 @@ public class MainPageController  {
     }
 
 
-
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
 
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
@@ -237,17 +218,7 @@ public class MainPageController  {
         if (selectedPlayer != null) {
 
             this.running = false;
-//            Player currentUser = SessionManager.getCurrentUser();
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("inviter", currentUser.getUsername());
-//            params.put("invitee", selectedPlayer.getUsername());
-//            this.running =false;
-//            Response response = messageService.sendRequest("invitation", params);
-//
-//            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-//                System.out.println(response.getMessage());
             moveToWaitingRoom();
-
 
             serverHandler.sendMessage(SessionManager.getCurrentUser().getUsername()+" Invite:" + selectedPlayer.getUsername());
 
@@ -255,13 +226,10 @@ public class MainPageController  {
         } else {
             System.out.println("Invitation failed");
         }
-//    }
-////            System.out.println("Please choose a player to invite!");
-//        }
     }
 
     private void moveToWaitingRoom() {
-        this.running=false;
+        this.running = false;
 
         Platform.runLater(() -> {
             try {
@@ -282,7 +250,7 @@ public class MainPageController  {
     }
 
     public void ClickAchievement(ActionEvent e) throws IOException {
-        this.running=false;
+        this.running = false;
         serverHandler.sendMessage("NGATLISTENING");
 
         FXMLLoader loader = new FXMLLoader();
@@ -298,7 +266,7 @@ public class MainPageController  {
     }
 
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
-        this.running=false;
+        this.running = false;
         serverHandler.sendMessage("NGATLISTENING");
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
@@ -309,35 +277,11 @@ public class MainPageController  {
         boardController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-//        stage.setScene(scene);
     }
 
     public void ClickRefresh(ActionEvent actionEvent) {
-        this.running=false;
+        this.running = false;
         serverHandler.sendMessage("NGATLISTENING");
         setup2();
     }
-    @FXML
-    public void setup() {
-        mainpageusername.setText(SessionManager.getCurrentUser().getUsername());
-        messageService = new MessageService(serverHandler);
-//        this.running = true;
-//        startListeningForInvite();
-//        System.out.println("thread trong setUp");
-//        startListeningForInvite();
-        System.out.println("Load bang trong setUp");
-        loadPlayers();
-
-//        namePlayer.setText(dataUser.getUsername());
-    }
-    @FXML
-    public void setup2() {
-        mainpageusername.setText(SessionManager.getCurrentUser().getUsername());
-        messageService = new MessageService(serverHandler);
-        System.out.println("Load bang trong setUp");
-        loadPlayers();
-//        namePlayer.setText(dataUser.getUsername());
-        setThread();
-    }
-
 }

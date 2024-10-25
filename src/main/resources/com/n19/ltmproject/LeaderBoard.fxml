@@ -17,7 +17,7 @@
       </ImageView>
       <AnchorPane layoutX="52.0" layoutY="194.0" prefHeight="298.0" prefWidth="496.0">
          <children>
-            <TableView fx:id="rankboard" prefHeight="298.0" prefWidth="496.0">
+            <TableView fx:id="rankBoard" prefHeight="298.0" prefWidth="496.0">
               <columns>
                 <TableColumn fx:id="rankColumn" prefWidth="60.0" text="HẠNG" />
                 <TableColumn fx:id="nameColumn" prefWidth="110.4000244140625" text="TÊN" />

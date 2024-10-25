@@ -2,8 +2,6 @@
 package com.n19.ltmproject.client.controller;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,7 +9,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 public class AchievementController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
@@ -32,8 +29,6 @@ public class AchievementController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        // de cho thread bat null ( bug nho )
-//        serverHandler.sendMessage("NGATLISTENING");
         mainPageController.setup2();
     }
 }

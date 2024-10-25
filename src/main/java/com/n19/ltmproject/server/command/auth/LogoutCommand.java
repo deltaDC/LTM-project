@@ -16,8 +16,7 @@ public class LogoutCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        //TODO implement login command
-        System.out.println(request.toString());
+
         System.out.println("LogoutCommand.execute() called");
 
         String username = (String) request.getParams().get("username");

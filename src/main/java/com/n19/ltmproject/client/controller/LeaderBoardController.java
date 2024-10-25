@@ -2,7 +2,6 @@ package com.n19.ltmproject.client.controller;
 // GET BXH
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -10,9 +9,6 @@ import java.util.ResourceBundle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
-import com.n19.ltmproject.client.model.PlayerHistory;
 import com.n19.ltmproject.client.model.dto.PlayerHistoryDto;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
@@ -24,20 +20,18 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import com.n19.ltmproject.client.model.Player;
 
 public class LeaderBoardController implements Initializable {
     private Stage primaryStage;
+
     @FXML
-    private TableView<PlayerHistoryDto> rankboard;
+    private TableView<PlayerHistoryDto> rankBoard;
 
     @FXML
     private TableColumn<PlayerHistoryDto, String> nameColumn;
@@ -100,7 +94,7 @@ public class LeaderBoardController implements Initializable {
 
                     playerList = FXCollections.observableArrayList(playerHistoriesDto);
 
-                    rankColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(rankboard.getItems().indexOf(cellData.getValue()) + 1));
+                    rankColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(rankBoard.getItems().indexOf(cellData.getValue()) + 1));
                     nameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
                     matchColumn.setCellValueFactory(new PropertyValueFactory<>("totalGames"));
                     winColumn.setCellValueFactory(new PropertyValueFactory<>("wins"));
@@ -108,11 +102,11 @@ public class LeaderBoardController implements Initializable {
                     lossColumn.setCellValueFactory(new PropertyValueFactory<>("losses"));
                     pointColumn.setCellValueFactory(new PropertyValueFactory<>("totalPoints"));
 
-                    rankboard.setItems(playerList);
-                    rankboard.setFocusTraversable(false);
-                    rankboard.getSelectionModel().clearSelection();
+                    rankBoard.setItems(playerList);
+                    rankBoard.setFocusTraversable(false);
+                    rankBoard.getSelectionModel().clearSelection();
 
-                    rankboard.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                    rankBoard.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
                         if (newSelection != null) {
                             System.out.println("Selected items: " + newSelection.getUsername());
                         }

@@ -72,7 +72,7 @@
                <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="97.5999755859375" text="Status" />
             </columns>
          </TableView>
-         <Label fx:id="mainpageusername" layoutX="242.0" layoutY="14.0" prefHeight="18.0" prefWidth="79.0" text="Label" textFill="RED">
+         <Label fx:id="mainPageUsername" layoutX="242.0" layoutY="14.0" prefHeight="18.0" prefWidth="79.0" text="Label" textFill="RED">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>
