@@ -3,6 +3,8 @@ package com.n19.ltmproject.server.command.auth;
 import com.n19.ltmproject.server.command.Command;
 import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
+
+
 import com.n19.ltmproject.server.service.AuthService;
 
 public class LogoutCommand implements Command {
@@ -14,8 +16,7 @@ public class LogoutCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        //TODO implement login command
-        System.out.println(request.toString());
+
         System.out.println("LogoutCommand.execute() called");
 
         String username = (String) request.getParams().get("username");
@@ -35,5 +36,6 @@ public class LogoutCommand implements Command {
                     .message(message)
                     .build();
         }
+
     }
 }

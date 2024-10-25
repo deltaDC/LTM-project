@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" stylesheets="@css/LeaderBoard.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.LeaderBoardController">
+<AnchorPane prefHeight="600.0" prefWidth="600.0" stylesheets="@css/LeaderBoard.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.LeaderBoardController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="600.0" pickOnBounds="true">
          <image>
@@ -17,7 +17,7 @@
       </ImageView>
       <AnchorPane layoutX="52.0" layoutY="194.0" prefHeight="298.0" prefWidth="496.0">
          <children>
-            <TableView fx:id="rankboard" prefHeight="298.0" prefWidth="496.0">
+            <TableView fx:id="rankBoard" prefHeight="298.0" prefWidth="496.0">
               <columns>
                 <TableColumn fx:id="rankColumn" prefWidth="60.0" text="HẠNG" />
                 <TableColumn fx:id="nameColumn" prefWidth="110.4000244140625" text="TÊN" />

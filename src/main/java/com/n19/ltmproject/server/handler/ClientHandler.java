@@ -3,12 +3,11 @@ package com.n19.ltmproject.server.handler;
 import com.google.gson.Gson;
 import com.n19.ltmproject.server.command.Command;
 import com.n19.ltmproject.server.command.CommandFactory;
-import com.n19.ltmproject.server.command.auth.LoginCommand;
 import com.n19.ltmproject.server.manager.ClientManager;
-import com.n19.ltmproject.server.model.Player;
 import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,6 +26,7 @@ public class ClientHandler extends Thread {
     private PrintWriter output;
     private final ClientManager clientManager;
     private final Gson gson = new Gson();
+    @Setter
     @Getter
     private String username;
 
@@ -35,7 +35,7 @@ public class ClientHandler extends Thread {
     /**
      * Constructor to initialize the ClientHandler with a socket and a reference to the ClientManager.
      *
-     * @param socket the socket connected to the client
+     * @param socket        the socket connected to the client
      * @param clientManager the manager that handles all connected clients
      */
     public ClientHandler(Socket socket, ClientManager clientManager) {
@@ -44,6 +44,14 @@ public class ClientHandler extends Thread {
         this.clientAddress = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
 
         System.out.println("Client connected from: " + clientAddress);
+    }
+
+    // Gọi đến client manager .
+    public void handleGameInvitation(String message) {
+        if (message.contains("Invite:")) {
+            String invitedPlayerName = message.split(":")[1];
+            clientManager.invitePlayer(invitedPlayerName, message + " Đã gửi thành công");
+        }
     }
 
     /**
@@ -59,30 +67,29 @@ public class ClientHandler extends Thread {
 
             String jsonRequest;
             while ((jsonRequest = input.readLine()) != null) {
-                Request request = gson.fromJson(jsonRequest, Request.class);
+                if (jsonRequest.contains("Invite:")) {
+                    handleGameInvitation(jsonRequest);
 
-                System.out.println("---------------");
-                System.out.println("Received request from client: " + clientAddress);
-                if(!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
-                    System.out.println("Action: " + request.getAction());
-                    System.out.println("Data: " + request.getParams().toString());
-                }
-                System.out.println("---------------");
+                    //TODO change "NGATLISTENING" to a another string
+                } else if (jsonRequest.startsWith("NGATLISTENING")) {
+                    output.println(gson.toJson(null));
+                } else {
 
-                Command command = CommandFactory.getCommand(request.getAction());
-                Response response = command.execute(request);
+                    Request request = gson.fromJson(jsonRequest, Request.class);
 
-                if (command instanceof LoginCommand) {
-                    if (response.getStatus().equalsIgnoreCase("OK")) {
-                        Player player = (Player) response.getData();
-                        clientManager.addPlayer(player);
-                        this.username = player.getUsername();
+                    System.out.println("---------------");
+                    System.out.println("Received request from client: " + clientAddress);
+                    if (!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
+                        System.out.println("Action: " + request.getAction());
+                        System.out.println("Data: " + request.getParams().toString());
                     }
+                    System.out.println("---------------");
+
+                    Command command = CommandFactory.getCommand(request.getAction(), this);
+                    Response response = command.execute(request);
+
+                    output.println(gson.toJson(response));
                 }
-
-                System.out.println("Player " + username + " is requesting " + request.getAction());
-
-                output.println(gson.toJson(response));
             }
         } catch (IOException e) {
             System.out.println("[Error]: " + e.getMessage());
@@ -117,7 +124,6 @@ public class ClientHandler extends Thread {
     }
 
     public void sendMessage(String message) {
-        output.println(message);
+        output.println(message); // output là PrintWriter kết nối với client
     }
-
 }

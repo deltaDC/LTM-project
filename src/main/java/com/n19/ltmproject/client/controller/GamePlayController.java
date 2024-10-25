@@ -1,8 +1,11 @@
 package com.n19.ltmproject.client.controller;
-
+// CLICK EXIT
+// SEND KET QUA TRAN DAU (UPDATE WIN , LOSS)
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
+import com.n19.ltmproject.server.service.Session;
+import com.n19.ltmproject.server.service.UserSession;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -39,12 +42,15 @@ public class GamePlayController {
     @FXML
     private ImageView trashCan5;
 
+    //TODO rename for better readability
     @FXML
     private ImageView humangameplay;
     @FXML
     private ImageView messagegameplay;
     @FXML
     private Label feedbackLabel;
+
+    //TODO rename for better readability
     @FXML
     private ImageView humangameplay1;
     @FXML
@@ -59,13 +65,23 @@ public class GamePlayController {
 
     @FXML
     private Label timerLabel;
+    public void setPrimaryStage(Stage stage) {
+
+        this.primaryStage = stage;
+    }
 
     private boolean isListening = false;
 
     private final Random random = new Random();
     private final int[] trashImagesCount = {21, 22};
 
-    private final ServerHandler serverHandler = ServerHandler.getInstance();
+	private final ServerHandler serverHandler = ServerHandler.getInstance();
+	private UserSession usersessions;
+	private Session session;
+
+	private final boolean isGameActive = true;
+	Timeline timeline;
+
     private final MessageService messageService = new MessageService(serverHandler);
     @Getter
     private Stage primaryStage;
@@ -78,8 +94,7 @@ public class GamePlayController {
     private int opponentScore = 0;
 
     private int timeLeft = 10;
-    private boolean isGameActive = true;
-    private Timeline timeline;
+
 
     private final String[] trashTypes = {"organic", "metal"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
@@ -261,6 +276,7 @@ public class GamePlayController {
         params.put("scoreUser1", scoreUser1);
         params.put("scoreUser2", scoreUser2);
 
+
         Response response = messageService.sendRequest("updateScore", params);
 
         if (response != null && "OK".equals(response.getStatus())) {
@@ -271,7 +287,6 @@ public class GamePlayController {
     }
 
     private void endGame() {
-        isGameActive = false;
         timeline.stop();
         showResultScreen();
     }

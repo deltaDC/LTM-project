@@ -5,10 +5,12 @@ import com.n19.ltmproject.server.command.auth.LogoutCommand;
 import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.EndGameById;
 import com.n19.ltmproject.server.command.game.GetAllGameDataCommand;
+import com.n19.ltmproject.server.command.game.InvitationCommand;
 import com.n19.ltmproject.server.command.game.StartNewGame;
 import com.n19.ltmproject.server.command.game.UpdateGameScoreCommand;
 import com.n19.ltmproject.server.command.player.GetAllPlayerCommand;
 import com.n19.ltmproject.server.command.playerHistory.GetAllPlayerHistoryCommand;
+import com.n19.ltmproject.server.handler.ClientHandler;
 
 
 /**
@@ -18,9 +20,9 @@ import com.n19.ltmproject.server.command.playerHistory.GetAllPlayerHistoryComman
  */
 public class CommandFactory {
 
-    public static Command getCommand(String action) {
+    public static Command getCommand(String action, ClientHandler clientHandle) {
         return switch (action) {
-            case "login" -> new LoginCommand();
+            case "login" -> new LoginCommand(clientHandle);
             case "signUp" -> new SignupCommand();
             case "getAllGameData" -> new GetAllGameDataCommand();
             case "startNewGame" -> new StartNewGame();
@@ -29,6 +31,7 @@ public class CommandFactory {
             case "getAllPlayerHistory" -> new GetAllPlayerHistoryCommand();
             case "updateScore" -> new UpdateGameScoreCommand();
             case "logout" -> new LogoutCommand();
+            case "invitation" -> new InvitationCommand();
             default -> throw new IllegalArgumentException("Unknown action: " + action);
         };
     }

@@ -1,8 +1,7 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
@@ -10,11 +9,12 @@ import com.n19.ltmproject.client.model.Player;
 import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
+
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -28,6 +28,12 @@ public class LoginController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+
+    private Stage primaryStage;
+
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
+    }
 
     @FXML
     public void ClickLogin() {
@@ -60,7 +66,6 @@ public class LoginController {
         }
     }
 
-
     @FXML
     public void ClickSignUp() {
         try {
@@ -75,9 +80,11 @@ public class LoginController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        MainPageController mainpageController = loader.getController();
+        mainpageController.setPrimaryStage( stage);
+        stage.setScene(new Scene(root));
+        mainpageController.setup();
+        mainpageController.setThread();
     }
 
     private void loadScene(String resourcePath) throws IOException {

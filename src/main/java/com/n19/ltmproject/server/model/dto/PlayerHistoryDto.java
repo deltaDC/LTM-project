@@ -4,6 +4,8 @@ import lombok.*;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerHistoryDto {
 
     private long id;
