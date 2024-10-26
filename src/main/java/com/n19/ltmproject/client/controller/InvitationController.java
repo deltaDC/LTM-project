@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
+import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -79,10 +80,17 @@ public class InvitationController {
         HashMap<String, Object> params = new HashMap<>();
         params.put("invitee", SessionManager.getCurrentUser().getUsername());
         params.put("inviter", inviterName);
-        String refuseMessage = createMessage("refuseInvitation", params);
-        serverHandler.sendMessage(refuseMessage);
+//        String refuseMessage = createMessage("refuseInvitation", params);
+        Response response = messageService.sendRequest("refuseInvitation", params);
 
-        moveToMainPage();
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+//            this.running = false;
+//            serverHandler.sendMessage("STOP_LISTENING");
+//            moveToWaitingRoom(selectedPlayer);
+            moveToMainPage();
+        } else {
+            System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
+        }
     }
 
     public void CloseInvitation(ActionEvent e) throws IOException {

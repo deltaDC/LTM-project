@@ -24,6 +24,7 @@ public class WaitingRoomController {
     private Stage primaryStage;
     private volatile boolean running = true;
     private Thread listenerThread;
+    private volatile boolean isCountdownRunning = true;
 
     @FXML
     private Label waitingRoomHostName;
@@ -75,7 +76,6 @@ public class WaitingRoomController {
                             } else if ("REFUSED".equals(response.getStatus())) {
                                 Platform.runLater(() -> {
                                     System.out.println("Player declined the invitation.");
-                                    stopListening();
                                     try {
                                         ClickExit();
                                     } catch (IOException e) {
@@ -117,15 +117,17 @@ public class WaitingRoomController {
 
     private void stopListening() {
         running = false;
-        if (listenerThread != null && listenerThread.isAlive()) {
-            listenerThread.interrupt();
-        }
+        serverHandler.sendMessage("STOP_LISTENING");
+//        if (listenerThread != null && listenerThread.isAlive()) {
+//            listenerThread.interrupt();
+//        }
     }
 
     private void startCountdown() {
         countdownLabel.setText(String.valueOf(countdownTime));
+        isCountdownRunning = true; // Bắt đầu đếm ngược
         new Thread(() -> {
-            while (countdownTime > 0) {
+            while (countdownTime > 0 && isCountdownRunning) {
                 try {
                     Thread.sleep(1000);
                     countdownTime--;
@@ -135,7 +137,10 @@ public class WaitingRoomController {
                     return;
                 }
             }
-            Platform.runLater(this::startGame);
+            // Chỉ khi đếm ngược kết thúc một cách tự nhiên mới bắt đầu trò chơi
+            if (isCountdownRunning) {
+                Platform.runLater(this::startGame);
+            }
         }).start();
     }
 
@@ -151,8 +156,21 @@ public class WaitingRoomController {
 
     @FXML
     void ClickExit() throws IOException {
+        // Dừng đếm ngược khi người dùng nhấn "Exit"
+        isCountdownRunning = false;
         stopListening();
-        primaryStage.setScene(new Scene(new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml")).load()));
+        // Điều hướng về MainPage
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+        Parent MainPageViewParent = loader.load();
+        Scene scene = new Scene(MainPageViewParent);
+
+        MainPageController mainPageController = loader.getController();
+        mainPageController.setPrimaryStage(primaryStage);
+
+        primaryStage.setScene(scene);
+        mainPageController.setupMainPage();
     }
 
     @FXML

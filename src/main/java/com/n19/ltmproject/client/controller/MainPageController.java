@@ -161,6 +161,7 @@ public class MainPageController {
             invitationController.setUpInvitation(userInvite, userInvite);
 
             Timeline timeline = createReturnToMainPageTimeline();
+            timeline.play();
             invitationController.setTimeline(timeline);
 
             primaryStage.setScene(invitationScene);
@@ -182,7 +183,6 @@ public class MainPageController {
                 mainPageController.setPrimaryStage(primaryStage);
 
                 primaryStage.setScene(mainScene);
-                serverHandler.sendMessage("STOP_LISTENING");
                 mainPageController.setupMainPage();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -238,7 +238,7 @@ public class MainPageController {
 
     private void moveToWaitingRoom(Player selectedPlayer) {
         this.running = false;
-
+        serverHandler.sendMessage("STOP_LISTENING");
         Platform.runLater(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader();
