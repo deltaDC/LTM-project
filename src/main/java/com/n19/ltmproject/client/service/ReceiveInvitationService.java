@@ -6,6 +6,7 @@ import com.n19.ltmproject.client.model.dto.Response;
 
 import java.io.IOException;
 
+@Deprecated
 public class ReceiveInvitationService {
     private final ServerHandler serverHandler;
     private final Gson gson = new Gson();

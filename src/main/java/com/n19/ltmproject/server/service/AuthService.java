@@ -4,6 +4,7 @@ import com.n19.ltmproject.server.dao.AuthDao;
 import com.n19.ltmproject.server.model.Player;
 
 public class AuthService {
+
     private final AuthDao authDao;
     public AuthService() {
         this.authDao = new AuthDao();

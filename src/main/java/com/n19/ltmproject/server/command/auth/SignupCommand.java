@@ -1,7 +1,6 @@
 package com.n19.ltmproject.server.command.auth;
 
 import com.n19.ltmproject.server.command.Command;
-import com.n19.ltmproject.server.model.Player;
 import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
 import com.n19.ltmproject.server.service.AuthService;
@@ -22,7 +21,6 @@ public class SignupCommand implements Command {
         String password = (String) request.getParams().get("password");
         String confirmPassword = (String) request.getParams().get("confirmPassword");
 
-
         String message = authService.signUpPlayerService(username, password, confirmPassword);
 
         if (message.contains("Đăng ký thành công!")) {
@@ -31,12 +29,11 @@ public class SignupCommand implements Command {
                     .status("OK")
                     .message("Đăng ký thành công!")
                     .build();
-        } else {
-            // Nếu đăng nhập thất bại, trả về thông báo lỗi
-            return Response.builder()
-                    .status("FAILED")
-                    .message(message)
-                    .build();
         }
+
+        return Response.builder()
+                .status("FAILED")
+                .message(message)
+                .build();
     }
 }

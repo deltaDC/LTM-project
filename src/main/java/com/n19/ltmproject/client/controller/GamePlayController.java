@@ -4,8 +4,6 @@ package com.n19.ltmproject.client.controller;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -28,6 +26,9 @@ import java.util.Random;
 
 public class GamePlayController {
 
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
+
     @FXML
     private ImageView trashImage;
 
@@ -44,17 +45,17 @@ public class GamePlayController {
 
     //TODO rename for better readability
     @FXML
-    private ImageView humangameplay;
+    private ImageView humanGameplay;
     @FXML
-    private ImageView messagegameplay;
+    private ImageView messageGameplay;
     @FXML
     private Label feedbackLabel;
 
     //TODO rename for better readability
     @FXML
-    private ImageView humangameplay1;
+    private ImageView humanGameplay1;
     @FXML
-    private ImageView messagegameplay1;
+    private ImageView messageGameplay1;
     @FXML
     private Label feedbackLabel1;
 
@@ -65,24 +66,14 @@ public class GamePlayController {
 
     @FXML
     private Label timerLabel;
-    public void setPrimaryStage(Stage stage) {
-
-        this.primaryStage = stage;
-    }
 
     private boolean isListening = false;
 
     private final Random random = new Random();
     private final int[] trashImagesCount = {21, 22};
 
-	private final ServerHandler serverHandler = ServerHandler.getInstance();
-	private UserSession usersessions;
-	private Session session;
-
-	private final boolean isGameActive = true;
 	Timeline timeline;
 
-    private final MessageService messageService = new MessageService(serverHandler);
     @Getter
     private Stage primaryStage;
 
@@ -95,7 +86,6 @@ public class GamePlayController {
 
     private int timeLeft = 10;
 
-
     private final String[] trashTypes = {"organic", "metal"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
     private final String[] incorrectFeedback = {"Wrong!", "Try next time!"};
@@ -106,6 +96,11 @@ public class GamePlayController {
     private double offsetY;
     private double initialX;
     private double initialY;
+
+    public void setPrimaryStage(Stage stage) {
+
+        this.primaryStage = stage;
+    }
 
     public void setStage(Stage stage) {
         this.primaryStage = stage;
@@ -131,6 +126,7 @@ public class GamePlayController {
                         System.out.println("Received from server: " + serverMessage);
                         if (serverMessage.startsWith("updateScore")) {
                             String[] parts = serverMessage.split(":");
+                            //TODO refactor this to use a more readable way
                             if (parts.length == 3) {
                                 int updatedOpponentScore = Integer.parseInt(parts[2].trim());
                                 updateOpponentScore(updatedOpponentScore);
@@ -252,24 +248,23 @@ public class GamePlayController {
     }
 
     private void showFeedback(boolean isCorrect) {
-        if (isCorrect) {
-            humangameplay1.setVisible(false);
-            messagegameplay1.setVisible(false);
-            humangameplay.setVisible(true);
-            messagegameplay.setVisible(true);
-            feedbackLabel1.setText("");
-            feedbackLabel.setText(correctFeedback[random.nextInt(correctFeedback.length)]);
-            feedbackLabel.setStyle("-fx-text-fill: green;");
-        } else {
-            humangameplay.setVisible(false);
-            messagegameplay.setVisible(false);
-            humangameplay1.setVisible(true);
-            messagegameplay1.setVisible(true);
-            feedbackLabel.setText("");
-            feedbackLabel1.setText(incorrectFeedback[random.nextInt(incorrectFeedback.length)]);
-            feedbackLabel1.setStyle("-fx-text-fill: red;");
-        }
+        // Set visibility based on whether the feedback is correct
+        humanGameplay.setVisible(isCorrect);
+        messageGameplay.setVisible(isCorrect);
+        humanGameplay1.setVisible(!isCorrect);
+        messageGameplay1.setVisible(!isCorrect);
+
+        // Update feedback labels
+        Label activeFeedbackLabel = isCorrect ? feedbackLabel : feedbackLabel1;
+        Label inactiveFeedbackLabel = isCorrect ? feedbackLabel1 : feedbackLabel;
+        String[] feedbackMessages = isCorrect ? correctFeedback : incorrectFeedback;
+        String color = isCorrect ? "green" : "red";
+
+        activeFeedbackLabel.setText(feedbackMessages[random.nextInt(feedbackMessages.length)]);
+        activeFeedbackLabel.setStyle("-fx-text-fill: " + color + ";");
+        inactiveFeedbackLabel.setText("");
     }
+
 
     private void sendScoreUpdateToServer(int scoreUser1, int scoreUser2) {
         Map<String, Object> params = new HashMap<>();
@@ -298,18 +293,20 @@ public class GamePlayController {
             ResultController resultController = loader.getController();
 
             String resultMessage;
+            boolean isWin = score > opponentScore;
+            boolean isDraw = score == opponentScore;
             String scoreMessage = score + " - " + opponentScore;
 
-            if (score > opponentScore) {
+            // Set result message and call setResults based on game outcome
+            if (isWin) {
                 resultMessage = "Bạn đã thắng!";
-                resultController.setResults(resultMessage, scoreMessage, true, false, "Đối thủ");
-            } else if (score < opponentScore) {
-                resultMessage = "Bạn đã thua!";
-                resultController.setResults(resultMessage, scoreMessage, false, false, "Đối thủ");
-            } else {
+            } else if (isDraw) {
                 resultMessage = "Trận đấu hòa!";
-                resultController.setResults(resultMessage, scoreMessage, false, true, "Đối thủ");
+            } else {
+                resultMessage = "Bạn đã thua!";
             }
+
+            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, "Đối thủ");
 
             Stage stage = (Stage) timerLabel.getScene().getWindow();
             stage.setScene(new Scene(resultScreen));
@@ -319,6 +316,7 @@ public class GamePlayController {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     private void handleExit() {

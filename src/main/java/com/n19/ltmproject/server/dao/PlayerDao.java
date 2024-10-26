@@ -18,10 +18,9 @@ public class PlayerDao {
     }
 
     public void updatePlayerStatusById(long playerId, PlayerStatus playerStatus) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
 
-        try {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = null;
             transaction = session.beginTransaction();
             Player player = session.get(Player.class, playerId);
             if (player == null) {
@@ -30,31 +29,20 @@ public class PlayerDao {
             player.setStatus(playerStatus);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             e.printStackTrace();
-        } finally {
-            session.close();
         }
     }
 
     public List<Player> getAllPlayers() {
         List<Player> players = null;
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
 
-        try {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = null;
             transaction = session.beginTransaction();
             players = session.createQuery("from Player", Player.class).list();
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             e.printStackTrace();
-        } finally {
-            session.close();
         }
         return players;
     }

@@ -21,11 +21,15 @@ public class StartNewGame implements Command {
     @Override
     public Response execute(Request request) {
         System.out.println(request.toString());
+
         long player1Id = ((Number) request.getParams().get("player1Id")).longValue();
         long player2Id = ((Number) request.getParams().get("player2Id")).longValue();
+
         Game game = gameService.createNewGame(player1Id, player2Id);
+
         playerService.updatePlayerStatusById(player1Id, PlayerStatus.IN_GAME);
         playerService.updatePlayerStatusById(player2Id, PlayerStatus.IN_GAME);
+
         return Response.builder()
                 .status("OK")
                 .message("New game started successfully")

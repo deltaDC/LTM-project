@@ -1,24 +1,18 @@
 package com.n19.ltmproject.client.controller;
 // SIGN UP
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.client.model.dto.Request;
 import com.n19.ltmproject.client.model.dto.Response;
+import com.n19.ltmproject.client.service.MessageService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -26,72 +20,59 @@ import javafx.stage.Stage;
 
 public class SignUpController {
 
-	//TODO change to use MessageService
-	private static final String SERVER_ADDRESS = "localhost";
-	private static final int SERVER_PORT = 1234;
-	private static final Gson gson = new Gson();
+	@FXML
+	private TextField userText;
+	@FXML
+	private PasswordField passText, confirmPassText;
+
+	private final ServerHandler serverHandler = ServerHandler.getInstance();
+	private final MessageService messageService = new MessageService(serverHandler);
 
 	@FXML
-	TextField userText ;
-	@FXML
-	PasswordField passText, confirmPassText;
-
 	public void ClickLogin(MouseEvent e) throws IOException {
-		Stage stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
-		
-		Parent loginViewParent = loader.load();
-		Scene scene = new Scene(loginViewParent);
-		stage.setScene(scene);
+		loadScene("/com/n19/ltmproject/Login.fxml");
 	}
 
-	public void ClickSignUp(ActionEvent e) throws IOException {
-		Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-		BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
-		ServerHandler serverHandler = new ServerHandler();
-		serverHandler.connect("localhost", 1234);
-
+	@FXML
+	public void ClickSignUp(ActionEvent e) {
 		String username = userText.getText();
 		String password = passText.getText();
 		String confirmPassword = confirmPassText.getText();
 
-		Request request = new Request();
-		request.setAction("signUp");
-		Map<String, Object> params = Map.of("username", username, "password", password, "confirmPassword", confirmPassword);
-		request.setParams(params);
-
-		String toJson = gson.toJson(request);
-		output.println(toJson);
-
-		String jsonResponse = input.readLine();
-		Response response = gson.fromJson(jsonResponse, Response.class);
-
-		System.out.println("Response from server: " + response.getMessage());
-
-		if (response.getMessage().contains("Đăng ký thành công!")) {
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Signup");
-			alert.setAlertType(Alert.AlertType.INFORMATION);
-			alert.setContentText("Đăng ký thành công!");
-			alert.showAndWait();
-
-			// Điều hướng về trang đăng nhập sau khi đăng ký thành công
-			Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/com/n19/ltmproject/Login.fxml"));
-
-			Parent loginViewParent = loader.load();
-			Scene scene = new Scene(loginViewParent);
-			stage.setScene(scene);
+		if(username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+			AlertController.showErrorAlert("Signup", "Vui lòng nhập đầy đủ thông tin.");
+			return;
 		}
-		else {
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Signup");
-			alert.setAlertType(Alert.AlertType.ERROR);
-			alert.setContentText(response.getMessage());
-			alert.showAndWait();
+
+		if(!password.equals(confirmPassword)) {
+			AlertController.showErrorAlert("Signup", "Mật khẩu không khớp.");
+			return;
+		}
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("username", username);
+		params.put("password", password);
+		params.put("confirmPassword", confirmPassword);
+
+		Response response = messageService.sendRequest("signUp", params);
+
+		if (response != null && response.getMessage().contains("Đăng ký thành công!")) {
+			AlertController.showInformationAlert("Signup", "Đăng ký thành công!");
+			try {
+				loadScene("/com/n19/ltmproject/Login.fxml");
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		} else {
+			AlertController.showErrorAlert("Signup", response != null ? response.getMessage() : "Đăng ký thất bại.");
 		}
 	}
+
+	private void loadScene(String resourcePath) throws IOException {
+		Stage stage = (Stage) userText.getScene().getWindow();
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
+		Parent view = loader.load();
+		stage.setScene(new Scene(view));
+	}
 }
+

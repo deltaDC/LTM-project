@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class AchievementController {
-    private final ServerHandler serverHandler = ServerHandler.getInstance();
+
     private Stage primaryStage;
 
     public void setPrimaryStage(Stage stage) {
@@ -29,6 +29,6 @@ public class AchievementController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        mainPageController.setup2();
+        mainPageController.setupMainPage();
     }
 }

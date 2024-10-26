@@ -41,7 +41,8 @@ public class PlayerHistoryDao {
             Root<PlayerHistory> playerHistoryRoot = cq.from(PlayerHistory.class);
 
             // Define join condition on playerId
-            cq.select(cb.construct(
+            cq.select(cb.construct
+                        (
                             PlayerHistoryDto.class,
                             playerRoot.get("id"),
                             playerRoot.get("username"),
@@ -50,7 +51,8 @@ public class PlayerHistoryDao {
                             playerHistoryRoot.get("totalGames"),
                             playerHistoryRoot.get("totalPoints"),
                             playerHistoryRoot.get("wins")
-                    ))
+                        )
+                    )
                     .where(cb.equal(playerRoot.get("id"), playerHistoryRoot.get("playerId")));
 
             // Execute the query and get results

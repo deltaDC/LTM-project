@@ -1,11 +1,8 @@
 // XAC NHAN EXIT
 package com.n19.ltmproject.client.controller;
 
-import com.almasb.fxgl.app.GameController;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.service.MessageService;
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
 import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,12 +10,7 @@ import javafx.scene.Scene;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,13 +18,14 @@ import java.util.Map;
 public class ExitBattleController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
-    private MessageService messageService = new MessageService(serverHandler);
+    private final MessageService messageService = new MessageService(serverHandler);
     private Stage primaryStage;
+
     private int score;
     private int opponentScore;
     private int timeLeft;
     private Timeline timeline;
-    private Timeline exitTimeline;  // Thêm timeline cho trang Exit Battle
+    private Timeline exitTimeline;
     private GamePlayController gamePlayController;
 
     public void setPrimaryStage(Stage stage) {
@@ -40,6 +33,7 @@ public class ExitBattleController {
     }
 
     // Hàm để thiết lập trạng thái của GamePlay
+    //TODO remove this method if not used
     public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline,  Stage primaryStage) {
         this.score = score;
         this.opponentScore = opponentScore;
@@ -65,8 +59,8 @@ public class ExitBattleController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        serverHandler.sendMessage("NGATLISTENING");
-        mainPageController.setup2();
+        serverHandler.sendMessage("STOP_LISTENING");
+        mainPageController.setupMainPage();
     }
 
     private void sendResultToServer() {
@@ -101,9 +95,8 @@ public class ExitBattleController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            // de cho thread bat null ( bug nho )
-            serverHandler.sendMessage("NGATLISTENING");
-            mainPageController.setup2();
+            serverHandler.sendMessage("STOP_LISTENING");
+            mainPageController.setupMainPage();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Lỗi: Không thể tải MainPage.fxml");

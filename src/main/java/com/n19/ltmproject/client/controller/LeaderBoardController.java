@@ -28,6 +28,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class LeaderBoardController implements Initializable {
+
+    private ObservableList<PlayerHistoryDto> playerList;
+    private final Gson gson = new Gson();
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
     private Stage primaryStage;
 
     @FXML
@@ -58,11 +63,6 @@ public class LeaderBoardController implements Initializable {
         this.primaryStage = stage;
     }
 
-    private ObservableList<PlayerHistoryDto> playerList;
-    private final Gson gson = new Gson();
-    private final ServerHandler serverHandler = ServerHandler.getInstance();
-    private final MessageService messageService = new MessageService(serverHandler);
-
     public void clickHome(ActionEvent e) throws IOException {
 
         FXMLLoader loader = new FXMLLoader();
@@ -75,7 +75,7 @@ public class LeaderBoardController implements Initializable {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-        mainPageController.setup2();
+        mainPageController.setupMainPage();
     }
 
     @Override
@@ -88,6 +88,7 @@ public class LeaderBoardController implements Initializable {
             Map<String, Object> params = Map.of();
             Response response = messageService.sendRequest("getAllPlayerHistory", params);
             System.out.println(response);
+
             Platform.runLater(() -> {
                 if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                     List<PlayerHistoryDto> playerHistoriesDto = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<PlayerHistoryDto>>() {}.getType());

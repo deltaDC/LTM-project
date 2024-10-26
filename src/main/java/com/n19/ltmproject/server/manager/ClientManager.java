@@ -22,20 +22,21 @@ public class ClientManager {
     }
 
     public synchronized List<ClientHandler> getClients() {
-        return new ArrayList<>(clients); // Trả về một bản sao của danh sách để tránh các vấn đề đồng bộ
+        return new ArrayList<>(clients);
     }
 
     public void invitePlayer(String invitedPlayerName, String message) {
         System.out.println("Inviting player: " + invitedPlayerName);
 
         for (ClientHandler client : getClients()) {
-            System.out.println("Client username: " + client.getUsername());
-            if (client.getUsername().trim().equals(invitedPlayerName.trim())) {
+            String clientUsername = client.getUsername().trim();
+
+            if (clientUsername.equalsIgnoreCase(invitedPlayerName.trim())) {
                 client.sendMessage(message + " INVITATION GAME");
                 System.out.println("Invite sent to " + invitedPlayerName);
-                break;
+                return;
             } else {
-                System.out.println("No match for: " + client.getUsername());
+                System.out.println("No match for: " + clientUsername);
             }
         }
     }

@@ -22,7 +22,7 @@
                <Font name="System Bold" size="20.0" />
             </font>
          </Label>
-         <Label fx:id="invitationprofile" layoutX="434.0" layoutY="54.0" prefHeight="44.0" prefWidth="79.0" text="USER1" textFill="#01b861">
+         <Label fx:id="invitationProfile" layoutX="434.0" layoutY="54.0" prefHeight="44.0" prefWidth="79.0" text="USER1" textFill="#01b861">
             <font>
                <Font name="System Bold" size="20.0" />
             </font>
@@ -58,7 +58,7 @@
          </Button>
          <AnchorPane layoutX="18.0" layoutY="88.0" prefHeight="88.0" prefWidth="278.0" styleClass="acthorpanechild-invitation-inviteyou">
             <children>
-               <Button fx:id="invitation1" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
+               <Button fx:id="invitationButton" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
             </children>
          </AnchorPane>
       </AnchorPane>

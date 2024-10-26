@@ -69,9 +69,8 @@ public class MainPageController  {
         loadPlayers();
     }
 
-    //TODO rename function for better understanding
     @FXML
-    public void setup2() {
+    public void setupMainPage() {
         mainPageUsername.setText(SessionManager.getCurrentUser().getUsername());
         messageService = new MessageService(serverHandler);
         System.out.println("Load bang trong setUp");
@@ -145,7 +144,7 @@ public class MainPageController  {
 
     private void handleInvitation(String serverMessage) {
         this.running = false;
-        serverHandler.sendMessage("NGATLISTENING");
+        serverHandler.sendMessage("STOP_LISTENING");
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Invitation.fxml"));
@@ -179,8 +178,8 @@ public class MainPageController  {
                 mainPageController.setPrimaryStage(primaryStage);
 
                 primaryStage.setScene(mainScene);
-                serverHandler.sendMessage("NGATLISTENING");
-                mainPageController.setup2();
+                serverHandler.sendMessage("STOP_LISTENING");
+                mainPageController.setupMainPage();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -189,7 +188,7 @@ public class MainPageController  {
 
     public void ClickLogout(ActionEvent e) throws IOException {
         this.running = false;
-        serverHandler.sendMessage("NGATLISTENING");
+        serverHandler.sendMessage("STOP_LISTENING");
         Player currentUser = SessionManager.getCurrentUser();
         Map<String, Object> params = new HashMap<>();
         params.put("username", currentUser.getUsername());
@@ -222,7 +221,7 @@ public class MainPageController  {
 
             serverHandler.sendMessage(SessionManager.getCurrentUser().getUsername()+" Invite:" + selectedPlayer.getUsername());
 
-            serverHandler.sendMessage("NGATLISTENING");
+            serverHandler.sendMessage("STOP_LISTENING");
         } else {
             System.out.println("Invitation failed");
         }
@@ -239,7 +238,7 @@ public class MainPageController  {
 
                 WaitingRoomController waitingRoomController = loader.getController();
                 waitingRoomController.setPrimaryStage(primaryStage);
-                waitingRoomController.setUpChuPhong(SessionManager.getCurrentUser().getUsername());
+                waitingRoomController.setUpHost(SessionManager.getCurrentUser().getUsername());
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -251,7 +250,7 @@ public class MainPageController  {
 
     public void ClickAchievement(ActionEvent e) throws IOException {
         this.running = false;
-        serverHandler.sendMessage("NGATLISTENING");
+        serverHandler.sendMessage("STOP_LISTENING");
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
@@ -267,7 +266,7 @@ public class MainPageController  {
 
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
         this.running = false;
-        serverHandler.sendMessage("NGATLISTENING");
+        serverHandler.sendMessage("STOP_LISTENING");
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/LeaderBoard.fxml"));
         Parent LeaderBoardViewParent = loader.load();
@@ -281,7 +280,7 @@ public class MainPageController  {
 
     public void ClickRefresh(ActionEvent actionEvent) {
         this.running = false;
-        serverHandler.sendMessage("NGATLISTENING");
-        setup2();
+        serverHandler.sendMessage("STOP_LISTENING");
+        setupMainPage();
     }
 }

@@ -1,13 +1,17 @@
 package com.n19.ltmproject.server.service;
 
-public class Session {
-    private static String username;
-    public Session(){
 
-    }
+@Deprecated
+public class Session {
+
+    private static String username;
+
+    public Session(){}
+
     public Session(String username){
         this.username=username;
     }
+
     public static String getUsername() {
         return username;
     }

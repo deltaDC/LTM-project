@@ -56,12 +56,12 @@
             <Image url="@images/trashbin/trashbin_plastic.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="humangameplay" fitHeight="128.0" fitWidth="100.0" layoutX="2.0" layoutY="234.0" pickOnBounds="true" preserveRatio="true" visible="false">
+      <ImageView fx:id="humanGameplay" fitHeight="128.0" fitWidth="100.0" layoutX="2.0" layoutY="234.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@images/smilegameplay.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="messagegameplay" fitHeight="72.0" fitWidth="126.0" layoutX="77.0" layoutY="163.0" pickOnBounds="true" preserveRatio="true" visible="false">
+      <ImageView fx:id="messageGameplay" fitHeight="72.0" fitWidth="126.0" layoutX="77.0" layoutY="163.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@images/messagegameplay.png" />
          </image>
@@ -79,12 +79,12 @@
 
       <!-- Exit Button -->
       <Button fx:id="exitButton" layoutX="10.0" layoutY="130.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" />
-      <ImageView fx:id="humangameplay1" fitHeight="128.0" fitWidth="110.0" layoutX="485.0" layoutY="234.0" pickOnBounds="true" preserveRatio="true" visible="false">
+      <ImageView fx:id="humanGameplay1" fitHeight="128.0" fitWidth="110.0" layoutX="485.0" layoutY="234.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@images/crygameplay.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="messagegameplay1" fitHeight="72.0" fitWidth="126.0" layoutX="360.0" layoutY="163.0" pickOnBounds="true" preserveRatio="true" visible="false">
+      <ImageView fx:id="messageGameplay1" fitHeight="72.0" fitWidth="126.0" layoutX="360.0" layoutY="163.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@images/messagegameplayreverse.png" />
          </image>

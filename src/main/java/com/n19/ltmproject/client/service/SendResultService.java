@@ -5,6 +5,7 @@ import com.n19.ltmproject.client.handler.ServerHandler;
 import java.io.IOException;
 import java.util.Map;
 
+@Deprecated
 public class SendResultService {
     private final SendRequestMessage sendRequestMessage;
     private final ReceiveResponseMessage receiveResponseMessage;

@@ -11,19 +11,18 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ResultController {
+
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
 
     @FXML
     private Label resultLabel;
 
     @FXML
     private Label scoreLabel;
-
-    private final ServerHandler serverHandler = ServerHandler.getInstance();
-    private final MessageService messageService = new MessageService(serverHandler);
 
     private boolean isWinner;
     private boolean isDraw;
@@ -49,6 +48,7 @@ public class ResultController {
     private void handlePlayAgain() {
         sendResultToServer();
     }
+
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
@@ -72,11 +72,13 @@ public class ResultController {
     }
 
     private void sendExitNotification() {
-        Map<String, Object> params = createParams("exitResult", opponent);
+        Map<String, Object> params = Map.of("exitResult", opponent);
         Response response = messageService.sendRequest("exitResult", params);
-        System.out.println(response != null && "OK".equalsIgnoreCase(response.getStatus())
+        System.out.println(
+                response != null && "OK".equalsIgnoreCase(response.getStatus())
                 ? "Kết quả thoát đã được xác nhận"
-                : "Xác nhận kết quả thoát thất bại");
+                : "Xác nhận kết quả thoát thất bại"
+        );
     }
 
     private void loadMainPage() {
@@ -91,20 +93,11 @@ public class ResultController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            // de cho thread bat null ( bug nho )
-            serverHandler.sendMessage("NGATLISTENING");
-            mainPageController.setup2();
+            serverHandler.sendMessage("STOP_LISTENING");
+            mainPageController.setupMainPage();
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error: Unable to load MainPage.fxml");
         }
-    }
-
-
-    private Map<String, Object> createParams(String action, String opponent) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("action", action);
-        params.put("opponent", opponent);
-        return params;
     }
 }

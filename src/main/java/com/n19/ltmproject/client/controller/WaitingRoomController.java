@@ -6,7 +6,6 @@ package com.n19.ltmproject.client.controller;
 //  CAN THEM 1 LISTENING TUONG TU MAINPAGE DE LANG NGHE SU KIEN USER2 VAO PHONG
 import java.io.IOException;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,28 +13,24 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import com.n19.ltmproject.client.handler.ServerHandler;
 
 public class WaitingRoomController {
 
-    private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
-    private volatile boolean running = true;
 
-    //TODO rename for better readability
     @FXML
-    private Label waitingroomnamechuphong;
+    private Label waitingRoomHostName;
     @FXML
-    private Label waitingroomnamenguoichoi;
+    private Label waitingRoomPlayerName;
 
-    //TODO rename method
-    public void setUpChuPhong(String waitingroomnamechuphong){
-        this.waitingroomnamechuphong.setText(waitingroomnamechuphong);
-        this.waitingroomnamenguoichoi.setText("Waiting");
+    public void setUpHost(String waitingRoomHostName){
+        this.waitingRoomHostName.setText(waitingRoomHostName);
+        this.waitingRoomPlayerName.setText("Waiting");
     }
-    public void setUpNguoiChoi(String chuphong,String waitingroomnamenguoichoi){
-        this.waitingroomnamechuphong.setText(chuphong);
-        this.waitingroomnamenguoichoi.setText(waitingroomnamenguoichoi);
+
+    public void setUpPlayer(String host, String waitingRoomPlayerName){
+        this.waitingRoomHostName.setText(host);
+        this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
     }
 
     public void setPrimaryStage(Stage stage) {
@@ -54,7 +49,7 @@ public class WaitingRoomController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            mainPageController.setup2();
+            mainPageController.setupMainPage();
 
 
         } catch (Exception e) {

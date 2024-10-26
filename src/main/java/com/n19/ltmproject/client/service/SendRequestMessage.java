@@ -8,6 +8,7 @@ import com.n19.ltmproject.client.model.dto.Response;
 import java.io.IOException;
 import java.util.Map;
 
+@Deprecated
 public class SendRequestMessage {
 
     private final ServerHandler serverHandler;

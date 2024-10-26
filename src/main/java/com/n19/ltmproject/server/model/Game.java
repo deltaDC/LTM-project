@@ -18,16 +18,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long gameId;
 
-//    TODO add foreign key constraints if needed
-//    @ManyToOne
-//    @JoinColumn(name = "player_1_id", insertable = false, updatable = false)
-//    private Player player1;
-
     private long player1Id;
-
-//    @ManyToOne
-//    @JoinColumn(name = "player_2_id", insertable = false, updatable = false)
-//    private Player player2;
 
     private long player2Id;
 

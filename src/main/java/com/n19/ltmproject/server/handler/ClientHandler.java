@@ -46,6 +46,40 @@ public class ClientHandler extends Thread {
         System.out.println("Client connected from: " + clientAddress);
     }
 
+    /**
+     * The main method of the thread that handles the client's communication.
+     * It reads the client's credentials, processes them, and sends appropriate responses.
+     */
+    @Override
+    public void run() {
+        try {
+            setupStreams();
+            listenForRequests();
+        } catch (IOException e) {
+            System.out.println("[Error]: " + e.getMessage());
+        } finally {
+            closeConnection();
+        }
+    }
+
+    private void setupStreams() throws IOException {
+        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        output = new PrintWriter(socket.getOutputStream(), true);
+    }
+
+    private void listenForRequests() throws IOException {
+        String jsonRequest;
+        while ((jsonRequest = input.readLine()) != null) {
+            if (jsonRequest.contains("Invite:")) {
+                handleGameInvitation(jsonRequest);
+            } else if (jsonRequest.startsWith("STOP_LISTENING")) {
+                output.println(gson.toJson(null));
+            } else {
+                processRequest(jsonRequest);
+            }
+        }
+    }
+
     // Gọi đến client manager .
     public void handleGameInvitation(String message) {
         if (message.contains("Invite:")) {
@@ -54,48 +88,23 @@ public class ClientHandler extends Thread {
         }
     }
 
-    /**
-     * The main method of the thread that handles the client's communication.
-     * It reads the client's credentials, processes them, and sends appropriate responses.
-     */
-    @Override
-    public void run() {
-        try {
+    private void processRequest(String jsonRequest) {
+        Request request = gson.fromJson(jsonRequest, Request.class);
+        logRequest(request);
 
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new PrintWriter(socket.getOutputStream(), true);
+        Command command = CommandFactory.getCommand(request.getAction(), this);
+        Response response = command.execute(request);
+        output.println(gson.toJson(response));
+    }
 
-            String jsonRequest;
-            while ((jsonRequest = input.readLine()) != null) {
-                if (jsonRequest.contains("Invite:")) {
-                    handleGameInvitation(jsonRequest);
-
-                    //TODO change "NGATLISTENING" to a another string
-                } else if (jsonRequest.startsWith("NGATLISTENING")) {
-                    output.println(gson.toJson(null));
-                } else {
-
-                    Request request = gson.fromJson(jsonRequest, Request.class);
-
-                    System.out.println("---------------");
-                    System.out.println("Received request from client: " + clientAddress);
-                    if (!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
-                        System.out.println("Action: " + request.getAction());
-                        System.out.println("Data: " + request.getParams().toString());
-                    }
-                    System.out.println("---------------");
-
-                    Command command = CommandFactory.getCommand(request.getAction(), this);
-                    Response response = command.execute(request);
-
-                    output.println(gson.toJson(response));
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("[Error]: " + e.getMessage());
-        } finally {
-            closeConnection();
+    private void logRequest(Request request) {
+        System.out.println("---------------");
+        System.out.println("Received request from client: " + clientAddress);
+        if (!request.getAction().isEmpty() && !request.getParams().isEmpty()) {
+            System.out.println("Action: " + request.getAction());
+            System.out.println("Data: " + request.getParams());
         }
+        System.out.println("---------------");
     }
 
     /**
@@ -124,6 +133,6 @@ public class ClientHandler extends Thread {
     }
 
     public void sendMessage(String message) {
-        output.println(message); // output là PrintWriter kết nối với client
+        output.println(message);
     }
 }

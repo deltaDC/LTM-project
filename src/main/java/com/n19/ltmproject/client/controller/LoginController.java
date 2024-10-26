@@ -40,6 +40,11 @@ public class LoginController {
         String username = userText.getText();
         String password = passText.getText();
 
+        if(username.isEmpty() || password.isEmpty()) {
+            AlertController.showErrorAlert("Login", "Please enter your username and password.");
+            return;
+        }
+
         Map<String, Object> params = new HashMap<>();
         params.put("username", username);
         params.put("password", password);

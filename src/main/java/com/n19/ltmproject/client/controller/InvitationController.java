@@ -4,14 +4,9 @@ package com.n19.ltmproject.client.controller;
 
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import com.n19.ltmproject.client.handler.ServerHandler;
+
 import com.n19.ltmproject.client.model.auth.SessionManager;
-import com.n19.ltmproject.server.service.Session;
-import com.n19.ltmproject.server.service.UserSession;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,22 +18,20 @@ import javafx.stage.Stage;
 
 public class InvitationController {
 
-    private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
     private Timeline timeline;
 
-    //TODO rename for better readability
     @FXML
-    private Button invitation1;
+    private Button invitationButton;
     @FXML
-    private Label invitationprofile;
+    private Label invitationProfile;
 
-    private String nguoimoi;
+    private String newPlayer;
 
-    public void setUpInvitation(String invitation1,String invitationprofile){
-        this.nguoimoi = invitation1;
-        this.invitation1.setText(invitation1.toUpperCase() + " INVITE YOU");
-        this.invitationprofile.setText(invitationprofile);
+    public void setUpInvitation(String invitationButton, String invitationProfile){
+        this.newPlayer = invitationButton;
+        this.invitationButton.setText(invitationButton.toUpperCase() + " INVITE YOU");
+        this.invitationProfile.setText(invitationProfile);
     }
 
     public void setPrimaryStage(Stage stage) {
@@ -51,7 +44,7 @@ public class InvitationController {
 
     public void ClickAccept(ActionEvent e) throws IOException {
         if (timeline != null) {
-            timeline.stop(); // Dừng việc tự động quay về trang chính
+            timeline.stop();
         }
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
@@ -61,23 +54,24 @@ public class InvitationController {
 
         WaitingRoomController WaitingRoomParentController = loader.getController();
         WaitingRoomParentController.setPrimaryStage(primaryStage);
-        WaitingRoomParentController.setUpNguoiChoi(this.nguoimoi, SessionManager.getCurrentUser().getUsername());
+        WaitingRoomParentController.setUpPlayer(this.newPlayer, SessionManager.getCurrentUser().getUsername());
 
         primaryStage.setScene(scene);
     }
 
     public void ClickRefuse(ActionEvent e) throws IOException {
         if (timeline != null) {
-            timeline.stop(); // Dừng việc tự động quay về trang chính
+            timeline.stop();
         }
-        moveToMainPage(); // Chuyển về MainPage ngay lập tức
+        moveToMainPage();
     }
 
+    //TODO refactor method name
     public void ClickInviteX(ActionEvent e) throws IOException {
         if (timeline != null) {
-            timeline.stop(); // Dừng việc tự động quay về trang chính
+            timeline.stop();
         }
-        moveToMainPage(); // Chuyển về MainPage ngay lập tức
+        moveToMainPage();
     }
 
     private void moveToMainPage() throws IOException {
@@ -92,6 +86,6 @@ public class InvitationController {
 
         primaryStage.setScene(scene);
 
-        mainPageController.setup2();
+        mainPageController.setupMainPage();
     }
 }
