@@ -1,6 +1,7 @@
 package com.n19.ltmproject.server.handler;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.n19.ltmproject.server.command.Command;
 import com.n19.ltmproject.server.command.CommandFactory;
 import com.n19.ltmproject.server.manager.ClientManager;
@@ -11,7 +12,6 @@ import lombok.Setter;
 
 import java.io.*;
 import java.net.Socket;
-
 
 /**
  * Handles communication with a single client.
@@ -69,28 +69,21 @@ public class ClientHandler extends Thread {
 
     private void listenForRequests() throws IOException {
         String jsonRequest;
-
         while ((jsonRequest = input.readLine()) != null) {
+            System.out.println("Received raw message from client: " + jsonRequest);
 
-            //TODO redesign this part to be more clean and readable
             if (jsonRequest.contains("Invite:")) {
                 handleGameInvitation(jsonRequest);
-            } else if(jsonRequest.contains("ACCEPT_INVITATION")) {
-                //TODO remove hard code
-                String[] split = jsonRequest.split(" ");
-                String inviter = split[1];
-                String accepter = split[2];
-                handleAcceptInvitation(inviter, accepter);
-            }
-            else if (jsonRequest.startsWith("STOP_LISTENING")) {
+            } else if (jsonRequest.startsWith("STOP_LISTENING")) {
                 output.println(gson.toJson(null));
-            } else {
+            } else if (isValidJson(jsonRequest)) {
                 processRequest(jsonRequest);
+            } else {
+                handleInvalidJson();
             }
         }
     }
 
-    // Gọi đến client manager .
     public void handleGameInvitation(String message) {
         if (message.contains("Invite:")) {
             String invitedPlayerName = message.split(":")[1];
@@ -98,17 +91,20 @@ public class ClientHandler extends Thread {
         }
     }
 
-    public void handleAcceptInvitation(String inviter, String accepter) {
-        System.out.println("Inviter: " + inviter);
-        System.out.println("Accepter: " + accepter);
-        clientManager.acceptInvitation(inviter, accepter);
+    private boolean isValidJson(String json) {
+        try {
+            gson.fromJson(json, Object.class);
+            return true;
+        } catch (JsonSyntaxException e) {
+            return false;
+        }
     }
 
     private void processRequest(String jsonRequest) {
         Request request = gson.fromJson(jsonRequest, Request.class);
         logRequest(request);
 
-        Command command = CommandFactory.getCommand(request.getAction(), this);
+        Command command = CommandFactory.getCommand(request.getAction(), this, clientManager);
         Response response = command.execute(request);
         output.println(gson.toJson(response));
     }
@@ -121,6 +117,14 @@ public class ClientHandler extends Thread {
             System.out.println("Data: " + request.getParams());
         }
         System.out.println("---------------");
+    }
+
+    private void handleInvalidJson() {
+        System.out.println("[Error]: Received invalid JSON format.");
+        output.println(gson.toJson(Response.builder()
+                .status("error")
+                .message("Invalid JSON format.")
+                .build()));
     }
 
     /**

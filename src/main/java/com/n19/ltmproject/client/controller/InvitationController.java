@@ -1,10 +1,9 @@
 package com.n19.ltmproject.client.controller;
-// ACCEPT INVITATION
-// REFUSE INVITATION
-
 
 import java.io.IOException;
+import java.util.HashMap;
 
+import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.service.MessageService;
@@ -17,12 +16,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import lombok.Setter;
 
 public class InvitationController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+    @Setter
     private Stage primaryStage;
+    @Setter
     private Timeline timeline;
 
     @FXML
@@ -32,18 +34,10 @@ public class InvitationController {
 
     private String inviterName;
 
-    public void setUpInvitation(String inviterName, String invitationProfile){
+    public void setUpInvitation(String inviterName, String invitationProfile) {
         this.inviterName = inviterName;
         this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
-    }
-
-    public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
-    }
-
-    public void setTimeline(Timeline timeline) {
-        this.timeline = timeline;
     }
 
     public void ClickAccept(ActionEvent e) throws IOException {
@@ -52,13 +46,15 @@ public class InvitationController {
         }
 
         sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername());
-
         loadWaitingRoom();
     }
 
     private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer) {
-
-        serverHandler.sendMessage("ACCEPT_INVITATION " + inviterPlayer + " " + currentAccepterPlayer);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("username", currentAccepterPlayer);
+        params.put("inviterName", inviterPlayer);
+        String message = createMessage("userJoinedRoom", params);
+        serverHandler.sendMessage(message);
     }
 
     private void loadWaitingRoom() throws IOException {
@@ -79,10 +75,16 @@ public class InvitationController {
         if (timeline != null) {
             timeline.stop();
         }
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("invitee", SessionManager.getCurrentUser().getUsername());
+        params.put("inviter", inviterName);
+        String refuseMessage = createMessage("refuseInvitation", params);
+        serverHandler.sendMessage(refuseMessage);
+
         moveToMainPage();
     }
 
-    //TODO refactor method name
     public void CloseInvitation(ActionEvent e) throws IOException {
         if (timeline != null) {
             timeline.stop();
@@ -101,7 +103,10 @@ public class InvitationController {
         mainPageController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
-
         mainPageController.setupMainPage();
+    }
+
+    private String createMessage(String action, HashMap<String, Object> params) {
+        return "{\"action\":\"" + action + "\", \"params\":" + new Gson().toJson(params) + "}";
     }
 }

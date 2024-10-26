@@ -1,94 +1,166 @@
 package com.n19.ltmproject.client.controller;
 
-// CLICK STARTGAME ( XAC NHAN DA READY CHUA)
-
-
-//  CAN THEM 1 LISTENING TUONG TU MAINPAGE DE LANG NGHE SU KIEN USER2 VAO PHONG
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.n19.ltmproject.client.handler.ServerHandler;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.n19.ltmproject.client.model.dto.Response;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import com.n19.ltmproject.client.handler.ServerHandler;
 
 public class WaitingRoomController {
 
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
     private Stage primaryStage;
+    private volatile boolean running = true;
+    private Thread listenerThread;
 
     @FXML
     private Label waitingRoomHostName;
     @FXML
     private Label waitingRoomPlayerName;
+    @FXML
+    private Button inviterButton;
+    @FXML
+    private Button inviteeButton;
+    @FXML
+    private Label countdownLabel;
 
-    public void setUpHost(String waitingRoomHostName){
+    private int countdownTime = 10;
+
+    public void setUpHost(String waitingRoomHostName, String waitingRoomPlayerName) {
         this.waitingRoomHostName.setText(waitingRoomHostName);
-        this.waitingRoomPlayerName.setText("Waiting");
-
-        startListeningForAccepter();
+        this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
     }
 
-    private void startListeningForAccepter() {
-        Thread listenerThread = new Thread(() -> {
-            try {
-                String message;
-                while ((message = ServerHandler.getInstance().receiveMessage()) != null) {
-                    String accepterName = message.trim();
-                    Platform.runLater(() -> waitingRoomPlayerName.setText(accepterName));
-                }
-            } catch (Exception e) {
-                System.out.println("Error while receiving message: " + e.getMessage());
-            }
-        });
-        listenerThread.setDaemon(true);
-        listenerThread.start();
-    }
-
-    public void setUpPlayer(String host, String waitingRoomPlayerName){
+    public void setUpPlayer(String host, String waitingRoomPlayerName) {
         this.waitingRoomHostName.setText(host);
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
     }
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
+        inviterButton.setText("READY");
+        inviteeButton.setText("WAITING");
+        startListeningForInvitee();
     }
 
-    public void ClickExit() {
+    public void startListeningForInvitee() {
+        System.out.println("Listening for player 2 to join room...");
+
+        listenerThread = new Thread(() -> {
+            try {
+                System.out.println(running);
+                while (running) {
+                    String serverMessage = serverHandler.receiveMessage();
+                    System.out.println("Received from server: " + serverMessage);
+
+                    if (serverMessage.startsWith("{")) {
+                        try {
+                            Response response = new Gson().fromJson(serverMessage, Response.class);
+
+                            if ("SUCCESS".equals(response.getStatus())) {
+                                updateUIWithJoinMessage(response.getMessage());
+
+                            } else if ("REFUSED".equals(response.getStatus())) {
+                                Platform.runLater(() -> {
+                                    System.out.println("Player declined the invitation.");
+                                    stopListening();
+                                    try {
+                                        ClickExit();
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                            }
+                        } catch (JsonSyntaxException e) {
+                            System.out.println("Invalid JSON format: " + e.getMessage());
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                System.out.println("Error receiving message from server: " + ex.getMessage());
+            }
+        });
+        listenerThread.start();
+    }
+
+    private void updateUIWithJoinMessage(String message) {
+        String regex = "\\[JOINED\\] User (\\w+) đã tham gia phòng với (\\w+)\\.";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(message);
+
+        if (matcher.find()) {
+            String inviteeUsername = matcher.group(1);
+//            String inviterUsername = matcher.group(2);
+
+            Platform.runLater(() -> {
+                inviteeButton.setText("READY");
+                waitingRoomPlayerName.setText(inviteeUsername);
+                startCountdown();
+                stopListening();
+            });
+        } else {
+            System.out.println("Could not extract usernames from message.");
+        }
+    }
+
+    private void stopListening() {
+        running = false;
+        if (listenerThread != null && listenerThread.isAlive()) {
+            listenerThread.interrupt();
+        }
+    }
+
+    private void startCountdown() {
+        countdownLabel.setText(String.valueOf(countdownTime));
+        new Thread(() -> {
+            while (countdownTime > 0) {
+                try {
+                    Thread.sleep(1000);
+                    countdownTime--;
+                    Platform.runLater(() -> countdownLabel.setText(String.valueOf(countdownTime)));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+            Platform.runLater(this::startGame);
+        }).start();
+    }
+
+    private void startGame() {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-
-            Parent MainPageViewParent = loader.load();
-            Scene scene = new Scene(MainPageViewParent);
-
-            MainPageController mainPageController = loader.getController();
-            mainPageController.setPrimaryStage(primaryStage);
-
-            primaryStage.setScene(scene);
-            mainPageController.setupMainPage();
-
-
-        } catch (Exception e) {
+            Parent root = FXMLLoader.load(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
+            primaryStage.setScene(new Scene(root));
+            primaryStage.show();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void ClickStart(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
-
-        Parent GamePlayViewParent = loader.load();
-        Scene scene = new Scene(GamePlayViewParent);
-
-        GamePlayController gameController = loader.getController();
-        gameController.setStage(primaryStage);
-
-        primaryStage.setScene(scene);
+    @FXML
+    void ClickExit() throws IOException {
+        stopListening();
+        primaryStage.setScene(new Scene(new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml")).load()));
     }
 
+    @FXML
+    void ClickStart(ActionEvent event) {
+        if ("READY".equals(inviteeButton.getText())) {
+            startGame();
+        } else {
+            System.out.println("Both players need to be ready.");
+        }
+    }
 }
-

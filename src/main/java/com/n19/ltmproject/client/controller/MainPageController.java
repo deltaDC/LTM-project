@@ -1,12 +1,15 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
+import java.util.concurrent.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
+import com.n19.ltmproject.client.model.dto.Request;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
@@ -17,12 +20,15 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -31,7 +37,7 @@ import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
 import javafx.util.Duration;
 
-public class MainPageController  {
+public class MainPageController {
 
     @FXML
     private TableView<Player> table;
@@ -53,8 +59,6 @@ public class MainPageController  {
     private final Gson gson = new Gson();
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private MessageService messageService;
-
-    //TODO rename for better readability
     private volatile boolean running = true;
 
     public void setPrimaryStage(Stage stage) {
@@ -132,7 +136,7 @@ public class MainPageController  {
                 String serverMessage = serverHandler.receiveMessage();
                 System.out.println("Received from server: " + serverMessage);
 
-                if (serverMessage != null && serverMessage.contains("INVITATION GAME")) {
+                if (serverMessage != null && serverMessage.contains("INVITATION")) {
                     Platform.runLater(() -> handleInvitation(serverMessage));
                 }
             }
@@ -153,7 +157,7 @@ public class MainPageController  {
             InvitationController invitationController = loader.getController();
             invitationController.setPrimaryStage(primaryStage);
 
-            String userInvite = serverMessage.split(" ")[0];
+            String userInvite = serverMessage.split(" ")[1];
             invitationController.setUpInvitation(userInvite, userInvite);
 
             Timeline timeline = createReturnToMainPageTimeline();
@@ -192,7 +196,6 @@ public class MainPageController  {
         Player currentUser = SessionManager.getCurrentUser();
         Map<String, Object> params = new HashMap<>();
         params.put("username", currentUser.getUsername());
-        this.running = false;
         Response response = messageService.sendRequest("logout", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
@@ -203,31 +206,37 @@ public class MainPageController  {
             Scene scene = new Scene(loginViewParent);
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             stage.setScene(scene);
-            this.running = true;
         } else {
             System.out.println("Logout failed");
         }
     }
 
-
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
-
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
         if (selectedPlayer != null) {
+            String inviter = SessionManager.getCurrentUser().getUsername();
+            String invitee = selectedPlayer.getUsername();
 
-            this.running = false;
-            moveToWaitingRoom();
+            Map<String, Object> params = new HashMap<>();
+            params.put("inviter", inviter);
+            params.put("invitee", invitee);
 
-            serverHandler.sendMessage(SessionManager.getCurrentUser().getUsername()+" Invite:" + selectedPlayer.getUsername());
+            Response response = messageService.sendRequest("invitation", params);
 
-            serverHandler.sendMessage("STOP_LISTENING");
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                this.running = false;
+                serverHandler.sendMessage("STOP_LISTENING");
+                moveToWaitingRoom(selectedPlayer);
+            } else {
+                System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+            }
         } else {
-            System.out.println("Invitation failed");
+            System.out.println("Please choose a player to invite!");
         }
     }
 
-    private void moveToWaitingRoom() {
+    private void moveToWaitingRoom(Player selectedPlayer) {
         this.running = false;
 
         Platform.runLater(() -> {
@@ -238,7 +247,7 @@ public class MainPageController  {
 
                 WaitingRoomController waitingRoomController = loader.getController();
                 waitingRoomController.setPrimaryStage(primaryStage);
-                waitingRoomController.setUpHost(SessionManager.getCurrentUser().getUsername());
+                waitingRoomController.setUpHost(SessionManager.getCurrentUser().getUsername(), selectedPlayer.getUsername());
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -247,6 +256,7 @@ public class MainPageController  {
             }
         });
     }
+
 
     public void ClickAchievement(ActionEvent e) throws IOException {
         this.running = false;

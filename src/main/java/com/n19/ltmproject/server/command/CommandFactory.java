@@ -5,13 +5,13 @@ import com.n19.ltmproject.server.command.auth.LogoutCommand;
 import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.EndGameById;
 import com.n19.ltmproject.server.command.game.GetAllGameDataCommand;
-import com.n19.ltmproject.server.command.game.InvitationCommand;
 import com.n19.ltmproject.server.command.game.StartNewGame;
 import com.n19.ltmproject.server.command.game.UpdateGameScoreCommand;
 import com.n19.ltmproject.server.command.player.GetAllPlayerCommand;
 import com.n19.ltmproject.server.command.playerHistory.GetAllPlayerHistoryCommand;
+import com.n19.ltmproject.server.command.status.*;
 import com.n19.ltmproject.server.handler.ClientHandler;
-
+import com.n19.ltmproject.server.manager.ClientManager;
 
 /**
  * CommandFactory class is a factory class that creates Command objects based on the action string.
@@ -20,7 +20,7 @@ import com.n19.ltmproject.server.handler.ClientHandler;
  */
 public class CommandFactory {
 
-    public static Command getCommand(String action, ClientHandler clientHandle) {
+    public static Command getCommand(String action, ClientHandler clientHandle, ClientManager clientManager) {
         return switch (action) {
             case "login" -> new LoginCommand(clientHandle);
             case "signUp" -> new SignupCommand();
@@ -31,7 +31,9 @@ public class CommandFactory {
             case "getAllPlayerHistory" -> new GetAllPlayerHistoryCommand();
             case "updateScore" -> new UpdateGameScoreCommand();
             case "logout" -> new LogoutCommand();
-            case "invitation" -> new InvitationCommand();
+            case "invitation" -> new InvitationCommand(clientManager);
+            case "refuseInvitation" -> new RefuseInvitationCommand(clientHandle, clientManager);
+            case "userJoinedRoom" -> new UserJoinedRoomCommand(clientHandle, clientManager);
             default -> throw new IllegalArgumentException("Unknown action: " + action);
         };
     }

@@ -25,6 +25,17 @@ public class ClientManager {
         return new ArrayList<>(clients);
     }
 
+    public synchronized ClientHandler getClientByUsername(String username) {
+        for (ClientHandler client : clients) {
+            if (client.getUsername() != null && client.getUsername().equals(username)) {
+                return client;
+            }
+        }
+        return null;
+    }
+
+
+    // Mời người chơi được mời
     public void invitePlayer(String invitedPlayerName, String message) {
         System.out.println("Inviting player: " + invitedPlayerName);
 
@@ -32,7 +43,7 @@ public class ClientManager {
             String clientUsername = client.getUsername().trim();
 
             if (clientUsername.equalsIgnoreCase(invitedPlayerName.trim())) {
-                client.sendMessage(message + " INVITATION GAME");
+                client.sendMessage(message + " INVITATION");
                 System.out.println("Invite sent to " + invitedPlayerName);
                 return;
             } else {
