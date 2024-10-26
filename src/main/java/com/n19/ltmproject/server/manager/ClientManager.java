@@ -41,6 +41,18 @@ public class ClientManager {
         }
     }
 
+    public void acceptInvitation(String inviter, String accepter) {
+        for (ClientHandler client : getClients()) {
+            String clientUsername = client.getUsername().trim();
+
+            if (clientUsername.equalsIgnoreCase(inviter.trim())) {
+                client.sendMessage(accepter);
+                System.out.println(accepter + " ACCEPTED YOUR INVITATION");
+                return;
+            }
+        }
+    }
+
     public synchronized void removeClient(ClientHandler clientHandler) {
         clients.remove(clientHandler);
     }

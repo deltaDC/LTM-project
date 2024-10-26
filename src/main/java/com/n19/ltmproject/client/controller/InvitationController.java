@@ -5,7 +5,9 @@ package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
 
+import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
+import com.n19.ltmproject.client.service.MessageService;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,19 +20,21 @@ import javafx.stage.Stage;
 
 public class InvitationController {
 
+    private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
     private Stage primaryStage;
     private Timeline timeline;
 
     @FXML
-    private Button invitationButton;
+    private Button inviter;
     @FXML
     private Label invitationProfile;
 
-    private String newPlayer;
+    private String inviterName;
 
-    public void setUpInvitation(String invitationButton, String invitationProfile){
-        this.newPlayer = invitationButton;
-        this.invitationButton.setText(invitationButton.toUpperCase() + " INVITE YOU");
+    public void setUpInvitation(String inviterName, String invitationProfile){
+        this.inviterName = inviterName;
+        this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
     }
 
@@ -46,15 +50,27 @@ public class InvitationController {
         if (timeline != null) {
             timeline.stop();
         }
+
+        sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername());
+
+        loadWaitingRoom();
+    }
+
+    private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer) {
+
+        serverHandler.sendMessage("ACCEPT_INVITATION " + inviterPlayer + " " + currentAccepterPlayer);
+    }
+
+    private void loadWaitingRoom() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
 
         Parent WaitingRoomParent = loader.load();
         Scene scene = new Scene(WaitingRoomParent);
 
-        WaitingRoomController WaitingRoomParentController = loader.getController();
-        WaitingRoomParentController.setPrimaryStage(primaryStage);
-        WaitingRoomParentController.setUpPlayer(this.newPlayer, SessionManager.getCurrentUser().getUsername());
+        WaitingRoomController waitingRoomController = loader.getController();
+        waitingRoomController.setPrimaryStage(primaryStage);
+        waitingRoomController.setUpPlayer(this.inviterName, SessionManager.getCurrentUser().getUsername());
 
         primaryStage.setScene(scene);
     }
@@ -67,7 +83,7 @@ public class InvitationController {
     }
 
     //TODO refactor method name
-    public void ClickInviteX(ActionEvent e) throws IOException {
+    public void CloseInvitation(ActionEvent e) throws IOException {
         if (timeline != null) {
             timeline.stop();
         }

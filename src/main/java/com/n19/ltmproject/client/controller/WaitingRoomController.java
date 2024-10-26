@@ -6,6 +6,8 @@ package com.n19.ltmproject.client.controller;
 //  CAN THEM 1 LISTENING TUONG TU MAINPAGE DE LANG NGHE SU KIEN USER2 VAO PHONG
 import java.io.IOException;
 
+import com.n19.ltmproject.client.handler.ServerHandler;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +28,24 @@ public class WaitingRoomController {
     public void setUpHost(String waitingRoomHostName){
         this.waitingRoomHostName.setText(waitingRoomHostName);
         this.waitingRoomPlayerName.setText("Waiting");
+
+        startListeningForAccepter();
+    }
+
+    private void startListeningForAccepter() {
+        Thread listenerThread = new Thread(() -> {
+            try {
+                String message;
+                while ((message = ServerHandler.getInstance().receiveMessage()) != null) {
+                    String accepterName = message.trim();
+                    Platform.runLater(() -> waitingRoomPlayerName.setText(accepterName));
+                }
+            } catch (Exception e) {
+                System.out.println("Error while receiving message: " + e.getMessage());
+            }
+        });
+        listenerThread.setDaemon(true);
+        listenerThread.start();
     }
 
     public void setUpPlayer(String host, String waitingRoomPlayerName){

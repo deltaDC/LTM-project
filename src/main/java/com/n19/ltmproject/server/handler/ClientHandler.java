@@ -69,10 +69,20 @@ public class ClientHandler extends Thread {
 
     private void listenForRequests() throws IOException {
         String jsonRequest;
+
         while ((jsonRequest = input.readLine()) != null) {
+
+            //TODO redesign this part to be more clean and readable
             if (jsonRequest.contains("Invite:")) {
                 handleGameInvitation(jsonRequest);
-            } else if (jsonRequest.startsWith("STOP_LISTENING")) {
+            } else if(jsonRequest.contains("ACCEPT_INVITATION")) {
+                //TODO remove hard code
+                String[] split = jsonRequest.split(" ");
+                String inviter = split[1];
+                String accepter = split[2];
+                handleAcceptInvitation(inviter, accepter);
+            }
+            else if (jsonRequest.startsWith("STOP_LISTENING")) {
                 output.println(gson.toJson(null));
             } else {
                 processRequest(jsonRequest);
@@ -86,6 +96,12 @@ public class ClientHandler extends Thread {
             String invitedPlayerName = message.split(":")[1];
             clientManager.invitePlayer(invitedPlayerName, message + " Đã gửi thành công");
         }
+    }
+
+    public void handleAcceptInvitation(String inviter, String accepter) {
+        System.out.println("Inviter: " + inviter);
+        System.out.println("Accepter: " + accepter);
+        clientManager.acceptInvitation(inviter, accepter);
     }
 
     private void processRequest(String jsonRequest) {

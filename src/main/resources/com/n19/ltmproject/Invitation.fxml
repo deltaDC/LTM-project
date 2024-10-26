@@ -34,7 +34,7 @@
          <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="361.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/iconrecycle2.png" />
          </ImageView>
-         <Button layoutX="524.0" mnemonicParsing="false" onAction="#ClickInviteX" style="-fx-background-color: #fdf2db;" text="X" textFill="#f85a37">
+         <Button layoutX="524.0" mnemonicParsing="false" onAction="#CloseInvitation" style="-fx-background-color: #fdf2db;" text="X" textFill="#f85a37">
             <font>
                <Font name="System Bold" size="15.0" />
             </font>
@@ -58,7 +58,7 @@
          </Button>
          <AnchorPane layoutX="18.0" layoutY="88.0" prefHeight="88.0" prefWidth="278.0" styleClass="acthorpanechild-invitation-inviteyou">
             <children>
-               <Button fx:id="invitationButton" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
+               <Button fx:id="inviter" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
             </children>
          </AnchorPane>
       </AnchorPane>
