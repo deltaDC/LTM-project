@@ -28,8 +28,10 @@ public class LoginCommand implements Command {
 
         Player player = authService.loginPlayerService(username, password);
 
+
         if (player != null) {
             clientHandler.setUsername(username);
+            clientHandler.setPlayerId(player.getId());
             return Response.builder()
                     .status("OK")
                     .message("Login successful")

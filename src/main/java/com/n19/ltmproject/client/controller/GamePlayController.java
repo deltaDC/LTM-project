@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.HashMap;

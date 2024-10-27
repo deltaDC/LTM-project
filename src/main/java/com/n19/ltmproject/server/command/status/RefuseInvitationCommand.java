@@ -26,26 +26,46 @@ public class RefuseInvitationCommand implements Command {
 
         String invitee = (String) request.getParams().get("invitee");
         String inviter = (String) request.getParams().get("inviter");
+        long inviterId = ((Number) request.getParams().get("inviterId")).longValue();
+        long inviteeId = ((Number) request.getParams().get("inviteeId")).longValue();
 
-        ClientHandler inviterHandler = clientManager.getClientByUsername(inviter);
+        ClientHandler inviterHandler = clientManager.getClientByPlayerIdAndUsername(inviterId, inviter);
+        ClientHandler inviteeHandler = clientManager.getClientByPlayerIdAndUsername(inviteeId, invitee);
 
         if (inviterHandler != null) {
-            String jsonMessageToInviter = createJsonMessage("REFUSED",
-                    "[REFUSED] User " + invitee + " has declined your invitation.",
+            String jsonMessageToInviter = createJsonMessage("OK",
+                    "[REFUSED] User " + invitee + " playerId " + inviteeId + " has declined your invitation.",
                     new HashMap<String, Object>() {{
                         put("invitee", invitee);
+                        put("inviteeId", inviteeId);
                         put("inviter", inviter);
+                        put("inviterId", inviterId);
                     }});
 
             inviterHandler.sendMessage(jsonMessageToInviter);
         }
 
+        if (inviteeHandler != null) {
+            String jsonMessageToInvitee = createJsonMessage("REFUSED",
+                    "[REFUSED] User " + inviter + " playerId " + inviterId + " has declined invitation.",
+                    new HashMap<String, Object>() {{
+                        put("invitee", invitee);
+                        put("inviteeId", inviteeId);
+                        put("inviter", inviter);
+                        put("inviterId", inviterId);
+                    }});
+
+            inviteeHandler.sendMessage(jsonMessageToInvitee);
+        }
+
         return Response.builder()
                 .status("OK")
-                .message("User " + invitee + " has declined the invitation from " + inviter + ".")
+                .message("User " + inviter + " ID " + inviterId + " has declined the invitation from " + inviter + " ID " + inviterId + ".")
                 .data(new HashMap<String, Object>() {{
                     put("inviter", inviter);
+                    put("inviterId", inviterId);
                     put("invitee", invitee);
+                    put("inviteeId", inviteeId);
                 }})
                 .build();
     }

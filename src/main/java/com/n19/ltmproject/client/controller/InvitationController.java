@@ -23,20 +23,27 @@ public class InvitationController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+
     @Setter
     private Stage primaryStage;
+
     @Setter
     private Timeline timeline;
 
     @FXML
     private Button inviter;
+
     @FXML
     private Label invitationProfile;
 
     private String inviterName;
+    private long inviterId;
+    private long inviteeId;
 
-    public void setUpInvitation(String inviterName, String invitationProfile) {
+    public void setUpInvitation(String inviterName, long inviterId, long inviteeId, String invitationProfile) {
         this.inviterName = inviterName;
+        this.inviterId = inviterId;
+        this.inviteeId = inviteeId;
         this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
     }
@@ -46,14 +53,17 @@ public class InvitationController {
             timeline.stop();
         }
 
-        sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername());
+        sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername(), inviterId, inviteeId);
         loadWaitingRoom();
     }
 
-    private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer) {
+    private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer, long inviterId, long inviteeId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("username", currentAccepterPlayer);
         params.put("inviterName", inviterPlayer);
+        params.put("inviterId", inviterId);
+        params.put("inviteeId", inviteeId);
+
         String message = createMessage("userJoinedRoom", params);
         serverHandler.sendMessage(message);
     }
@@ -67,7 +77,7 @@ public class InvitationController {
 
         WaitingRoomController waitingRoomController = loader.getController();
         waitingRoomController.setPrimaryStage(primaryStage);
-        waitingRoomController.setUpPlayer(this.inviterName, SessionManager.getCurrentUser().getUsername());
+        waitingRoomController.setUpPlayer(this.inviterName, SessionManager.getCurrentUser().getUsername(), this.inviterId, SessionManager.getCurrentUser().getId());
 
         primaryStage.setScene(scene);
     }
@@ -78,15 +88,14 @@ public class InvitationController {
         }
 
         HashMap<String, Object> params = new HashMap<>();
-        params.put("invitee", SessionManager.getCurrentUser().getUsername());
-        params.put("inviter", inviterName);
-//        String refuseMessage = createMessage("refuseInvitation", params);
+        params.put("inviter", SessionManager.getCurrentUser().getUsername());
+        params.put("invitee", inviterName);
+        params.put("inviteeId", inviterId);
+        params.put("inviterId", inviteeId);
+
         Response response = messageService.sendRequest("refuseInvitation", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-//            this.running = false;
-//            serverHandler.sendMessage("STOP_LISTENING");
-//            moveToWaitingRoom(selectedPlayer);
             moveToMainPage();
         } else {
             System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));

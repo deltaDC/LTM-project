@@ -1,6 +1,16 @@
+//Known bug:
+//Khi trong thoi gian dem nguoc ma click ve trang main thi user con lai van chua back ve
+//
+//Click invitee click refuse invitation thi back lai main chua load lai dc bang
+//
+//Tao idGame moi khi countdown kethuc (done)
+
+
+
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,14 +27,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.service.MessageService;
 
 public class WaitingRoomController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
+    private final MessageService messageService = new MessageService(serverHandler);
+
     private Stage primaryStage;
     private volatile boolean running = true;
     private Thread listenerThread;
     private volatile boolean isCountdownRunning = true;
+    private boolean isInviter; // true nếu là chủ phòng, false nếu là người được mời
 
     @FXML
     private Label waitingRoomHostName;
@@ -37,16 +51,24 @@ public class WaitingRoomController {
     @FXML
     private Label countdownLabel;
 
-    private int countdownTime = 10;
+    private int countdownTime = 3;
+    private long inviterId;
+    private long inviteeId;
 
-    public void setUpHost(String waitingRoomHostName, String waitingRoomPlayerName) {
+    public void setUpHost(String waitingRoomHostName, long inviterId, long inviteeId, String waitingRoomPlayerName) {
         this.waitingRoomHostName.setText(waitingRoomHostName);
+        this.inviterId = inviterId;
+        this.inviteeId = inviteeId;
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
+        this.isInviter = true;
     }
 
-    public void setUpPlayer(String host, String waitingRoomPlayerName) {
+    public void setUpPlayer(String host, String waitingRoomPlayerName, long inviterId, long inviteeId) {
         this.waitingRoomHostName.setText(host);
+        this.inviterId = inviterId;
+        this.inviteeId = inviteeId;
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
+        this.isInviter = false;
     }
 
     public void setPrimaryStage(Stage stage) {
@@ -61,7 +83,6 @@ public class WaitingRoomController {
 
         listenerThread = new Thread(() -> {
             try {
-                System.out.println(running);
                 while (running) {
                     String serverMessage = serverHandler.receiveMessage();
                     System.out.println("Received from server: " + serverMessage);
@@ -96,13 +117,16 @@ public class WaitingRoomController {
     }
 
     private void updateUIWithJoinMessage(String message) {
-        String regex = "\\[JOINED\\] User (\\w+) đã tham gia phòng với (\\w+)\\.";
+        String regex = "\\[JOINED\\] User (\\w+) với playerId (\\d+) đã tham gia phòng với (\\w+) playerId (\\d+)\\.";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(message);
 
         if (matcher.find()) {
             String inviteeUsername = matcher.group(1);
-//            String inviterUsername = matcher.group(2);
+            long inviteePlayerId = Long.parseLong(matcher.group(2));
+
+            this.inviterId = Long.parseLong(matcher.group(4));
+            this.inviteeId = inviteePlayerId;
 
             Platform.runLater(() -> {
                 inviteeButton.setText("READY");
@@ -118,14 +142,11 @@ public class WaitingRoomController {
     private void stopListening() {
         running = false;
         serverHandler.sendMessage("STOP_LISTENING");
-//        if (listenerThread != null && listenerThread.isAlive()) {
-//            listenerThread.interrupt();
-//        }
     }
 
     private void startCountdown() {
         countdownLabel.setText(String.valueOf(countdownTime));
-        isCountdownRunning = true; // Bắt đầu đếm ngược
+        isCountdownRunning = true;
         new Thread(() -> {
             while (countdownTime > 0 && isCountdownRunning) {
                 try {
@@ -137,7 +158,7 @@ public class WaitingRoomController {
                     return;
                 }
             }
-            // Chỉ khi đếm ngược kết thúc một cách tự nhiên mới bắt đầu trò chơi
+            // Only start game when countdown finishes
             if (isCountdownRunning) {
                 Platform.runLater(this::startGame);
             }
@@ -145,13 +166,38 @@ public class WaitingRoomController {
     }
 
     private void startGame() {
+        // Send start game command to server with inviter and invitee IDs
+        sendStartGameCommand();
+
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
-            primaryStage.setScene(new Scene(root));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
+            Parent root = loader.load();
+
+            GamePlayController gamePlayController = loader.getController();
+            gamePlayController.setStage(primaryStage);
+
+            Scene scene = new Scene(root);
+
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Game Interface");
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendStartGameCommand() {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("player1Id", inviterId);
+        params.put("player2Id", inviteeId);
+
+        String message = createMessage("startNewGame", params);
+        serverHandler.sendMessage(message);
+    }
+
+
+    private String createMessage(String action, HashMap<String, Object> params) {
+        return "{\"action\":\"" + action + "\", \"params\":" + new Gson().toJson(params) + "}";
     }
 
     @FXML

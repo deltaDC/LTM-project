@@ -25,15 +25,17 @@ public class ClientManager {
         return new ArrayList<>(clients);
     }
 
-    public synchronized ClientHandler getClientByUsername(String username) {
+    public synchronized ClientHandler getClientByPlayerIdAndUsername(long playerId, String username) {
         for (ClientHandler client : clients) {
-            if (client.getUsername() != null && client.getUsername().equals(username)) {
+            System.out.println("Checking client with ID: " + client.getPlayerId() + " and Username: " + client.getUsername());
+            if (client.getPlayerId() == playerId && client.getUsername() != null && client.getUsername().equals(username)) {
+                System.out.println("Match found for player ID " + playerId + " and username " + username);
                 return client;
             }
         }
+        System.out.println("No match found for player ID " + playerId + " and username " + username);
         return null;
     }
-
 
     // Mời người chơi được mời
     public void invitePlayer(String invitedPlayerName, String message) {

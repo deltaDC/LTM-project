@@ -24,15 +24,22 @@ public class UserJoinedRoomCommand implements Command {
     public Response execute(Request request) {
         String invitedPlayerName = (String) request.getParams().get("username");
         String inviterName = (String) request.getParams().get("inviterName");
+        long invitedPlayerId = ((Number) request.getParams().get("inviteeId")).longValue();
+        long inviterId = ((Number) request.getParams().get("inviterId")).longValue();
 
-        ClientHandler invitee = clientManager.getClientByUsername(invitedPlayerName);
-        ClientHandler inviter = clientManager.getClientByUsername(inviterName);
+        ClientHandler invitee = clientManager.getClientByPlayerIdAndUsername(invitedPlayerId, invitedPlayerName);
+        ClientHandler inviter = clientManager.getClientByPlayerIdAndUsername(inviterId, inviterName);
 
         if (inviter != null && invitee != null) {
-            // Create JSON messages for both inviter and invitee
             String inviteMessage = createJsonMessage("SUCCESS",
-                    "[JOINED] User " + invitedPlayerName + " đã tham gia phòng với " + inviterName + ".",
-                    null);
+                    "[JOINED] User " + invitedPlayerName + " với playerId " + invitedPlayerId +
+                            " đã tham gia phòng với " + inviterName + " playerId " + inviterId + ".",
+                    new HashMap<String, Object>() {{
+                        put("inviteeName", invitedPlayerName);
+                        put("inviteeId", invitedPlayerId);
+                        put("inviterName", inviterName);
+                        put("inviterId", inviterId);
+                    }});
 
             inviter.sendMessage(inviteMessage);
             invitee.sendMessage(inviteMessage);
@@ -43,6 +50,9 @@ public class UserJoinedRoomCommand implements Command {
                 .message("Thành công!")
                 .data(new HashMap<String, Object>() {{
                     put("username", invitedPlayerName);
+                    put("inviteeId", invitedPlayerId);
+                    put("inviterName", inviterName);
+                    put("inviterId", inviterId);
                 }})
                 .build();
     }

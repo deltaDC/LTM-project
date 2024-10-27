@@ -30,6 +30,10 @@ public class ClientHandler extends Thread {
     @Getter
     private String username;
 
+    @Setter
+    @Getter
+    private long playerId;
+
     private final String clientAddress;
 
     /**
