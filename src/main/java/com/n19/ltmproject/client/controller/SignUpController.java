@@ -54,7 +54,7 @@ public class SignUpController {
 		params.put("password", password);
 		params.put("confirmPassword", confirmPassword);
 
-		Response response = messageService.sendRequest("signUp", params);
+		Response response = messageService.sendRequestAndReceiveResponse("signUp", params);
 
 		if (response != null && response.getMessage().contains("Đăng ký thành công!")) {
 			AlertController.showInformationAlert("Signup", "Đăng ký thành công!");

@@ -25,6 +25,19 @@ public class ClientManager {
         return new ArrayList<>(clients);
     }
 
+    public synchronized ClientHandler getClientByPlayerIdAndUsername(long playerId, String username) {
+        for (ClientHandler client : clients) {
+            System.out.println("Checking client with ID: " + client.getPlayerId() + " and Username: " + client.getUsername());
+            if (client.getPlayerId() == playerId && client.getUsername() != null && client.getUsername().equals(username)) {
+                System.out.println("Match found for player ID " + playerId + " and username " + username);
+                return client;
+            }
+        }
+        System.out.println("No match found for player ID " + playerId + " and username " + username);
+        return null;
+    }
+
+    // Mời người chơi được mời
     public void invitePlayer(String invitedPlayerName, String message) {
         System.out.println("Inviting player: " + invitedPlayerName);
 
@@ -32,7 +45,7 @@ public class ClientManager {
             String clientUsername = client.getUsername().trim();
 
             if (clientUsername.equalsIgnoreCase(invitedPlayerName.trim())) {
-                client.sendMessage(message + " INVITATION GAME");
+                client.sendMessage(message + " INVITATION");
                 System.out.println("Invite sent to " + invitedPlayerName);
                 return;
             } else {

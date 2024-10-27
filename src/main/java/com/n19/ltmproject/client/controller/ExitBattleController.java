@@ -72,7 +72,7 @@ public class ExitBattleController {
             System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
 
             //TODO change action to EndGameById, and send player history
-            messageService.sendRequest("EXIT_GAME", Map.of(
+            messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
                     "gameId", gameId,
                     "isWinner", isWinner,
                     "isDraw", isDraw

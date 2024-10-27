@@ -16,15 +16,18 @@
          <Font name="System Bold" size="24.0" />
       </font>
    </Label>
-   <Button layoutY="1.0" mnemonicParsing="false" onAction="#ClickExit" prefHeight="43.0" prefWidth="62.0" styleClass="button-waiting-exit" stylesheets="@css/WaitingRoom.css" text="EXIT" textFill="WHITE">
+   <Button layoutY="1.0" mnemonicParsing="false" onAction="#ClickExit" prefHeight="43.0" prefWidth="62.0" styleClass="button-waiting-exit" text="EXIT" textFill="WHITE">
       <font>
          <Font name="System Bold" size="18.0" />
-      </font></Button>
+      </font>
+   </Button>
    <Button layoutX="204.0" layoutY="381.0" mnemonicParsing="false" onAction="#ClickStart" prefHeight="43.0" prefWidth="192.0" styleClass="button-waiting-start" text="START" textFill="WHITE">
       <font>
          <Font name="System Bold" size="20.0" />
       </font>
    </Button>
+
+   <!-- Host and Player Names -->
    <AnchorPane layoutX="163.0" layoutY="218.0" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #2ECC57;">
       <children>
          <Label fx:id="waitingRoomHostName" layoutX="21.0" layoutY="8.0" text="USER1" textFill="WHITE">
@@ -43,14 +46,23 @@
          </Label>
       </children>
    </AnchorPane>
-   <Button layoutX="146.0" layoutY="264.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="138.0" styleClass="button-waiting-ready" text="READY" textFill="WHITE">
+
+   <!-- Buttons to Show Inviter/Invitee Status -->
+   <Button fx:id="inviterButton" layoutX="146.0" layoutY="264.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="138.0" styleClass="button-waiting-ready" text="READY" textFill="WHITE">
       <font>
          <Font name="System Bold" size="18.0" />
       </font>
    </Button>
-   <Button layoutX="317.0" layoutY="264.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="138.0" styleClass="button-waiting-ready2" text="READY" textFill="WHITE">
+   <Button fx:id="inviteeButton" layoutX="317.0" layoutY="264.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="138.0" styleClass="button-waiting-ready2" text="WAITING" textFill="WHITE">
       <font>
          <Font name="System Bold" size="18.0" />
       </font>
    </Button>
+
+   <!-- Countdown Timer -->
+   <Label fx:id="countdownLabel" layoutX="270.0" layoutY="320.0" prefHeight="30.0" prefWidth="60.0" text="10" textFill="WHITE" style="-fx-font-size: 24px;">
+      <font>
+         <Font name="System Bold" size="24.0" />
+      </font>
+   </Label>
 </AnchorPane>

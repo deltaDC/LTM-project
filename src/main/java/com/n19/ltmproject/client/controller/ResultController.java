@@ -60,7 +60,7 @@ public class ResultController {
         try {
             System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
 
-            messageService.sendRequest("EXIT_GAME", Map.of(
+            messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
                     "gameId", gameId,
                     "isWinner", isWinner,
                     "isDraw", isDraw
@@ -73,7 +73,7 @@ public class ResultController {
 
     private void sendExitNotification() {
         Map<String, Object> params = Map.of("exitResult", opponent);
-        Response response = messageService.sendRequest("exitResult", params);
+        Response response = messageService.sendRequestAndReceiveResponse("exitResult", params);
         System.out.println(
                 response != null && "OK".equalsIgnoreCase(response.getStatus())
                 ? "Kết quả thoát đã được xác nhận"
