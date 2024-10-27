@@ -86,7 +86,7 @@ public class LeaderBoardController implements Initializable {
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
-            Response response = messageService.sendRequest("getAllPlayerHistory", params);
+            Response response = messageService.sendRequestAndReceiveResponse("getAllPlayerHistory", params);
             System.out.println(response);
 
             Platform.runLater(() -> {

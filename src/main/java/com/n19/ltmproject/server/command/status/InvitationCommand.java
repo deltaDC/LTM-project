@@ -7,6 +7,7 @@ import com.n19.ltmproject.server.model.dto.Request;
 import com.n19.ltmproject.server.model.dto.Response;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class InvitationCommand implements Command {
 
@@ -28,25 +29,35 @@ public class InvitationCommand implements Command {
         ClientHandler inviterHandler = clientManager.getClientByPlayerIdAndUsername(inviterId, inviter);
         ClientHandler inviteeHandler = clientManager.getClientByPlayerIdAndUsername(inviteeId, invitee);
 
-        if (inviteeHandler != null) {
-            inviteeHandler.sendMessage("[INVITATION] " + inviter + " với playerId " + inviterId + " đã mời bạn tham gia thi đấu.");
-        }
-        else System.out.println(inviteeHandler);
+        handleSendMessageToInvitee(inviteeHandler, inviter, inviterId);
+        handleSendMessageToInviter(inviterHandler, invitee, inviteeId);
 
-        if (inviterHandler != null) {
-            inviterHandler.sendMessage("Bạn đã gửi lời mời đến " + invitee + " với playerId " + inviteeId + " .");
-        }
-        else System.out.println(inviterHandler);
+        Map<String, Object> data = new HashMap<>();
+        data.put("inviter", inviter);
+        data.put("inviterId", inviterId);
+        data.put("invitee", invitee);
+        data.put("inviteeId", inviteeId);
 
         return Response.builder()
                 .status("OK")
                 .message("Lời mời từ " + inviter + " đến " + invitee + " đã được gửi thành công.")
-                .data(new HashMap<String, Object>() {{
-                    put("inviter", inviter);
-                    put("inviterId", inviterId);
-                    put("invitee", invitee);
-                    put("inviteeId", inviteeId);
-                }})
+                .data(data)
                 .build();
+    }
+
+    private void handleSendMessageToInvitee(ClientHandler inviteeHandler, String inviter, long inviterId) {
+        if (inviteeHandler != null) {
+            inviteeHandler.sendMessage("[INVITATION] " + inviter + " với playerId " + inviterId + " đã mời bạn tham gia thi đấu.");
+        } else {
+            System.out.println("Invitee handler is null.");
+        }
+    }
+
+    private void handleSendMessageToInviter(ClientHandler inviterHandler, String invitee, long inviteeId) {
+        if (inviterHandler != null) {
+            inviterHandler.sendMessage("Bạn đã gửi lời mời đến " + invitee + " với playerId " + inviteeId + " .");
+        } else {
+            System.out.println("Inviter handler is null.");
+        }
     }
 }

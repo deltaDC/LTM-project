@@ -1,15 +1,12 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
-import java.util.concurrent.*;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
-import com.n19.ltmproject.client.model.dto.Request;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
@@ -20,15 +17,12 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -66,14 +60,6 @@ public class MainPageController {
     }
 
     @FXML
-    public void setup() {
-        mainPageUsername.setText(SessionManager.getCurrentUser().getUsername());
-        messageService = new MessageService(serverHandler);
-        System.out.println("Load bang trong setUp");
-        loadPlayers();
-    }
-
-    @FXML
     public void setupMainPage() {
         mainPageUsername.setText(SessionManager.getCurrentUser().getUsername());
         messageService = new MessageService(serverHandler);
@@ -97,7 +83,7 @@ public class MainPageController {
         try {
             Map<String, Object> params = Map.of();
             this.running = false;
-            Response response = messageService.sendRequest("getAllPlayer", params);
+            Response response = messageService.sendRequestAndReceiveResponse("getAllPlayer", params);
 
             Platform.runLater(() -> {
                 if (response != null) {
@@ -166,7 +152,6 @@ public class MainPageController {
             long inviteeId = SessionManager.getCurrentUser().getId();
 
             String inviterProfile = "Default";
-//            String inviterProfile = fetchUserProfile(inviterId);
             invitationController.setUpInvitation(userInvite, inviterId, inviteeId, inviterProfile);
 
             Timeline timeline = createReturnToMainPageTimeline(userInvite);
@@ -183,7 +168,7 @@ public class MainPageController {
 
 
     private Timeline createReturnToMainPageTimeline(String serverMessage) {
-    return new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+    return new Timeline(new KeyFrame(Duration.seconds(10), event -> {
         try {
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
             Parent mainPageViewParent = mainLoader.load();
@@ -198,14 +183,14 @@ public class MainPageController {
                 long inviteeId = selectedPlayer.getId();
                 String inviterName = SessionManager.getCurrentUser().getUsername();
                 String inviteeName = selectedPlayer.getUsername();
-                String[] messageParts = serverMessage.split(" ");
 
                 Map<String, Object> params = new HashMap<>();
                 params.put("inviter", inviterName);
                 params.put("inviterId", inviterId);
                 params.put("invitee", inviteeName);
                 params.put("inviteeId", inviteeId);
-                Response response = messageService.sendRequest("refuseInvitation", params);
+
+                Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
                 if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                     primaryStage.setScene(mainScene);
                     mainPageController.setupMainPage();
@@ -228,7 +213,7 @@ public class MainPageController {
         Player currentUser = SessionManager.getCurrentUser();
         Map<String, Object> params = new HashMap<>();
         params.put("username", currentUser.getUsername());
-        Response response = messageService.sendRequest("logout", params);
+        Response response = messageService.sendRequestAndReceiveResponse("logout", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             SessionManager.clearSession();
@@ -258,7 +243,7 @@ public class MainPageController {
             params.put("invitee", inviteeName);
             params.put("inviteeId", inviteeId);
 
-            Response response = messageService.sendRequest("invitation", params);
+            Response response = messageService.sendRequestAndReceiveResponse("invitation", params);
 
             if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                 this.running = false;

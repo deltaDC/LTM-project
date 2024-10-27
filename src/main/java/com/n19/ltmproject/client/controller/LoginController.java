@@ -49,7 +49,7 @@ public class LoginController {
         params.put("username", username);
         params.put("password", password);
 
-        Response response = messageService.sendRequest("login", params);
+        Response response = messageService.sendRequestAndReceiveResponse("login", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             AlertController.showInformationAlert("Login", "Login successful!");
@@ -88,8 +88,7 @@ public class LoginController {
         MainPageController mainpageController = loader.getController();
         mainpageController.setPrimaryStage( stage);
         stage.setScene(new Scene(root));
-        mainpageController.setup();
-        mainpageController.setThread();
+        mainpageController.setupMainPage();
     }
 
     private void loadScene(String resourcePath) throws IOException {

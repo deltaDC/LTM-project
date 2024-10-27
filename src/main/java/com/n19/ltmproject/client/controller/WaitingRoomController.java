@@ -191,11 +191,10 @@ public class WaitingRoomController {
         params.put("player1Id", inviterId);
         params.put("player2Id", inviteeId);
 
-        String message = createMessage("startNewGame", params);
-        serverHandler.sendMessage(message);
+        messageService.sendRequestAndReceiveResponse("startNewGame", params);
     }
 
-
+    @Deprecated
     private String createMessage(String action, HashMap<String, Object> params) {
         return "{\"action\":\"" + action + "\", \"params\":" + new Gson().toJson(params) + "}";
     }

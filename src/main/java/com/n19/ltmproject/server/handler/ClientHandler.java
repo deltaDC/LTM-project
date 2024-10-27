@@ -71,6 +71,12 @@ public class ClientHandler extends Thread {
         output = new PrintWriter(socket.getOutputStream(), true);
     }
 
+    /**
+     * This method listens for requests from the client and processes them.
+     * First type is raw string message, which is used for game invitation, and thread listening
+     * Second is Request object, which is used for other requests, handle by CommandFactory.
+     *
+     */
     private void listenForRequests() throws IOException {
         String jsonRequest;
         while ((jsonRequest = input.readLine()) != null) {
@@ -107,6 +113,7 @@ public class ClientHandler extends Thread {
     private void processRequest(String jsonRequest) {
         Request request = gson.fromJson(jsonRequest, Request.class);
         logRequest(request);
+        System.out.println(request.getAction());
 
         Command command = CommandFactory.getCommand(request.getAction(), this, clientManager);
         Response response = command.execute(request);

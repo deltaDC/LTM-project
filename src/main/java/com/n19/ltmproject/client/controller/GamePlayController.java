@@ -17,7 +17,6 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -273,7 +272,7 @@ public class GamePlayController {
         params.put("scoreUser2", scoreUser2);
 
 
-        Response response = messageService.sendRequest("updateScore", params);
+        Response response = messageService.sendRequestAndReceiveResponse("updateScore", params);
 
         if (response != null && "OK".equals(response.getStatus())) {
             System.out.println("Score updated on server successfully.");

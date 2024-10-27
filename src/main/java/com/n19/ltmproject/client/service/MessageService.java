@@ -17,7 +17,7 @@ public class MessageService {
         this.serverHandler = serverHandler;
     }
 
-    public Response sendRequest(String action, Map<String, Object> params) {
+    public Response sendRequestAndReceiveResponse(String action, Map<String, Object> params) {
         Request request = new Request();
         request.setAction(action);
         request.setParams(params);
@@ -33,5 +33,14 @@ public class MessageService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void sendRequestNoResponse(String action, Map<String, Object> params) {
+        Request request = new Request();
+        request.setAction(action);
+        request.setParams(params);
+
+        String jsonRequest = gson.toJson(request);
+        serverHandler.sendMessage(jsonRequest);
     }
 }

@@ -64,8 +64,7 @@ public class InvitationController {
         params.put("inviterId", inviterId);
         params.put("inviteeId", inviteeId);
 
-        String message = createMessage("userJoinedRoom", params);
-        serverHandler.sendMessage(message);
+        messageService.sendRequestNoResponse("userJoinedRoom", params);
     }
 
     private void loadWaitingRoom() throws IOException {
@@ -93,7 +92,7 @@ public class InvitationController {
         params.put("inviteeId", inviterId);
         params.put("inviterId", inviteeId);
 
-        Response response = messageService.sendRequest("refuseInvitation", params);
+        Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
 
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             moveToMainPage();
@@ -123,6 +122,7 @@ public class InvitationController {
         mainPageController.setupMainPage();
     }
 
+    @Deprecated
     private String createMessage(String action, HashMap<String, Object> params) {
         return "{\"action\":\"" + action + "\", \"params\":" + new Gson().toJson(params) + "}";
     }
