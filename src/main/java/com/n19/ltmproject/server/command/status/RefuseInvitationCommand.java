@@ -32,9 +32,10 @@ public class RefuseInvitationCommand implements Command {
         ClientHandler inviterHandler = clientManager.getClientByPlayerIdAndUsername(inviterId, inviter);
         ClientHandler inviteeHandler = clientManager.getClientByPlayerIdAndUsername(inviteeId, invitee);
 
-        if (inviterHandler != null) {
-            String jsonMessageToInviter = createJsonMessage("OK",
-                    "[REFUSED] User " + invitee + " playerId " + inviteeId + " has declined your invitation.",
+
+        if (inviteeHandler != null) {
+            String jsonMessageToInviter = createJsonMessage("REFUSED",
+                    "[REFUSED] "+invitee+ " has declined invitation.",
                     new HashMap<String, Object>() {{
                         put("invitee", invitee);
                         put("inviteeId", inviteeId);
@@ -43,19 +44,6 @@ public class RefuseInvitationCommand implements Command {
                     }});
 
             inviterHandler.sendMessage(jsonMessageToInviter);
-        }
-
-        if (inviteeHandler != null) {
-            String jsonMessageToInvitee = createJsonMessage("REFUSED",
-                    "[REFUSED] User " + inviter + " playerId " + inviterId + " has declined invitation.",
-                    new HashMap<String, Object>() {{
-                        put("invitee", invitee);
-                        put("inviteeId", inviteeId);
-                        put("inviter", inviter);
-                        put("inviterId", inviterId);
-                    }});
-
-            inviteeHandler.sendMessage(jsonMessageToInvitee);
         }
 
         return Response.builder()

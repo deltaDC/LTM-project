@@ -50,6 +50,8 @@ public class WaitingRoomController {
     private Button inviteeButton;
     @FXML
     private Label countdownLabel;
+    @FXML
+    private Label countdowntext;
 
     private int countdownTime = 3;
     private long inviterId;
@@ -130,7 +132,10 @@ public class WaitingRoomController {
 
             Platform.runLater(() -> {
                 inviteeButton.setText("READY");
+                inviteeButton.setStyle("-fx-background-color: #2BC9FC;");
                 waitingRoomPlayerName.setText(inviteeUsername);
+                countdownLabel.setVisible(true);
+                countdowntext.setVisible(true);
                 startCountdown();
                 stopListening();
             });

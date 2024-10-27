@@ -8,7 +8,9 @@ import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import lombok.Setter;
 
 public class InvitationController {
@@ -36,9 +39,14 @@ public class InvitationController {
     @FXML
     private Label invitationProfile;
 
+    @FXML
+    private Label coundowninvitation;
+
     private String inviterName;
     private long inviterId;
     private long inviteeId;
+    private int countdownINVITE = 10;
+    private volatile boolean isCountdownRunning = true;
 
     public void setUpInvitation(String inviterName, long inviterId, long inviteeId, String invitationProfile) {
         this.inviterName = inviterName;
@@ -46,12 +54,12 @@ public class InvitationController {
         this.inviteeId = inviteeId;
         this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
+        createReturnToMainPageTimeline(inviterName, inviterId, inviteeId);
+
     }
 
     public void ClickAccept(ActionEvent e) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
+        isCountdownRunning = false;
 
         sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername(), inviterId, inviteeId);
         loadWaitingRoom();
@@ -66,6 +74,72 @@ public class InvitationController {
 
         messageService.sendRequestNoResponse("userJoinedRoom", params);
     }
+
+//    private Timeline createReturnToMainPageTimeline(String userInvite,long inviterId,long inviteeId) {
+//        return new Timeline(new KeyFrame(Duration.seconds(10), event -> {
+//            try {
+//                HashMap<String, Object> params = new HashMap<>();
+//
+//                params.put("invitee", SessionManager.getCurrentUser().getUsername());
+//                params.put("inviter", userInvite);
+//                params.put("inviterId", inviterId);
+//                params.put("inviteeId", inviteeId);
+//
+//                Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
+//                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+//                    moveToMainPage();
+//
+//                } else {
+//                    System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }));
+//    }
+
+    private void createReturnToMainPageTimeline(String userInvite,long inviterId,long inviteeId) {
+        coundowninvitation.setText(String.valueOf(countdownINVITE));
+        new Thread(() -> {
+            while (countdownINVITE > 0 && isCountdownRunning) {
+                try {
+                    Thread.sleep(1000);
+                    countdownINVITE--;
+                    Platform.runLater(() -> coundowninvitation.setText(String.valueOf(countdownINVITE)));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+            // Only start game when countdown finishes
+            if (isCountdownRunning) {
+                HashMap<String, Object> params = new HashMap<>();
+
+                params.put("invitee", SessionManager.getCurrentUser().getUsername());
+                params.put("inviter", userInvite);
+                params.put("inviterId", inviterId);
+                params.put("inviteeId", inviteeId);
+
+                Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
+                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                    Platform.runLater(() -> {
+                        try {
+                            moveToMainPage();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+
+                } else {
+                    System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
+                }
+
+            }
+        }).start();
+    }
+
 
     private void loadWaitingRoom() throws IOException {
         FXMLLoader loader = new FXMLLoader();
@@ -82,31 +156,24 @@ public class InvitationController {
     }
 
     public void ClickRefuse(ActionEvent e) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
+        isCountdownRunning = false;
 
         HashMap<String, Object> params = new HashMap<>();
-        params.put("inviter", SessionManager.getCurrentUser().getUsername());
-        params.put("invitee", inviterName);
-        params.put("inviteeId", inviterId);
-        params.put("inviterId", inviteeId);
+
+        params.put("invitee", SessionManager.getCurrentUser().getUsername());
+        params.put("inviter", inviterName);
+        params.put("inviterId", inviterId);
+        params.put("inviteeId", inviteeId);
 
         Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
-
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             moveToMainPage();
+
         } else {
             System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
         }
     }
 
-    public void CloseInvitation(ActionEvent e) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
-        moveToMainPage();
-    }
 
     private void moveToMainPage() throws IOException {
         FXMLLoader loader = new FXMLLoader();

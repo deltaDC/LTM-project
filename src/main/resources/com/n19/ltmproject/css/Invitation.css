@@ -52,4 +52,15 @@
     -fx-border-radius: 15;
     -fx-background-radius: 30;
 }
+
+.countdownNumberInvitation{
+    -fx-font-size: 25px;
+    -fx-text-fill: #FF4500;
+    -fx-background-color: #282828;
+    -fx-border-color: #FF4500;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, #000000, 5, 0.5, 0, 0);
+}
 /*END CSS TrangChu */

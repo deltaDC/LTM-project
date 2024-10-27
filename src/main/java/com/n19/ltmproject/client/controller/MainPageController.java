@@ -153,11 +153,6 @@ public class MainPageController {
 
             String inviterProfile = "Default";
             invitationController.setUpInvitation(userInvite, inviterId, inviteeId, inviterProfile);
-
-            Timeline timeline = createReturnToMainPageTimeline(userInvite);
-            timeline.play();
-            invitationController.setTimeline(timeline);
-
             primaryStage.setScene(invitationScene);
             primaryStage.setTitle("Giao diện phòng chờ");
             primaryStage.show();
@@ -167,45 +162,29 @@ public class MainPageController {
     }
 
 
-    private Timeline createReturnToMainPageTimeline(String serverMessage) {
-    return new Timeline(new KeyFrame(Duration.seconds(10), event -> {
-        try {
-            FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-            Parent mainPageViewParent = mainLoader.load();
-            Scene mainScene = new Scene(mainPageViewParent);
+//    private Timeline createReturnToMainPageTimeline(String userInvite,long inviterId,long inviteeId) {
+//    return new Timeline(new KeyFrame(Duration.seconds(10), event -> {
+//        try {
+//            HashMap<String, Object> params = new HashMap<>();
+//
+//            params.put("invitee", SessionManager.getCurrentUser().getUsername());
+//            params.put("inviter", userInvite);
+//            params.put("inviterId", inviterId);
+//            params.put("inviteeId", inviteeId);
+//
+//            Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
+//            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+//                moveToMainPage();
+//
+//            } else {
+//                System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }));
+//}
 
-            MainPageController mainPageController = mainLoader.getController();
-            mainPageController.setPrimaryStage(primaryStage);
-
-            Player selectedPlayer = table.getSelectionModel().getSelectedItem();
-            if (selectedPlayer != null) {
-                long inviterId = SessionManager.getCurrentUser().getId();
-                long inviteeId = selectedPlayer.getId();
-                String inviterName = SessionManager.getCurrentUser().getUsername();
-                String inviteeName = selectedPlayer.getUsername();
-
-                Map<String, Object> params = new HashMap<>();
-                params.put("inviter", inviterName);
-                params.put("inviterId", inviterId);
-                params.put("invitee", inviteeName);
-                params.put("inviteeId", inviteeId);
-
-                Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
-                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-                    primaryStage.setScene(mainScene);
-                    mainPageController.setupMainPage();
-                } else {
-                    System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
-                }
-            } else {
-                System.out.println("Please choose a player to invite!");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }));
-}
 
     public void ClickLogout(ActionEvent e) throws IOException {
         this.running = false;
