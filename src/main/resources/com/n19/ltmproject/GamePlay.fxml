@@ -15,8 +15,8 @@
             <Image url="@images/useravartar.png" />
          </image>
       </ImageView>
-      <Label layoutX="10.0" layoutY="90.0" text="me" />
-      <Label fx:id="scoreUser1" layoutX="10.0" layoutY="110.0" text="Score: 0" />
+      <Label fx:id="currentPlayerName" layoutX="10.0" layoutY="90.0" text="me" />
+      <Label fx:id="currentPlayerScoreLabel" layoutX="10.0" layoutY="110.0" text="Score: 0" />
 
       <!-- Avatar and Score User 2 (Opponent) -->
       <ImageView fx:id="avatarUser2" fitHeight="60.0" fitWidth="60.0" layoutX="530.0" layoutY="20.0">
@@ -24,8 +24,8 @@
             <Image url="@images/useravartar3.png" />
          </image>
       </ImageView>
-      <Label layoutX="530.0" layoutY="90.0" text="User2" />
-      <Label fx:id="scoreUser2" layoutX="530.0" layoutY="110.0" text="Score: 0" />
+      <Label fx:id="opponentPlayerName" layoutX="530.0" layoutY="90.0" text="User2" />
+      <Label fx:id="opponentPlayerScoreLabel" layoutX="530.0" layoutY="110.0" text="Score: 0" />
 
       <!-- Trash Image in Center -->
       <ImageView fx:id="trashImage" fitHeight="100.0" fitWidth="100.0" layoutX="240.0" layoutY="163.0" />

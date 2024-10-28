@@ -64,8 +64,8 @@ public class ExitBattleController {
     }
 
     private void sendResultToServer() {
-        boolean isWinner = gamePlayController.getScore() > gamePlayController.getOpponentScore();
-        boolean isDraw = gamePlayController.getScore() == gamePlayController.getOpponentScore();
+        boolean isWinner = gamePlayController.getCurrentPlayerScore() > gamePlayController.getOpponentPlayerScore();
+        boolean isDraw = gamePlayController.getCurrentPlayerScore() == gamePlayController.getOpponentPlayerScore();
 
         try {
             long gameId = 123; // Dữ liệu cố định
