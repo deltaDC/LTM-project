@@ -36,15 +36,11 @@ public class StartNewGame implements Command {
         playerService.updatePlayerStatusById(player1Id, PlayerStatus.IN_GAME);
         playerService.updatePlayerStatusById(player2Id, PlayerStatus.IN_GAME);
 
-//        ClientHandler player1Client = clientManager.getClientByPlayerIdAndUsername(player1Id, null);
         ClientHandler player2Client = clientManager.getClientByPlayerIdAndUsername(player2Id,null);
 
         // Create a message to send to both players
         String gameStartMessage = "New game started! Game ID: " + game.getGameId();
 
-//        if (player1Client != null) {
-//            player1Client.sendMessage(gameStartMessage);
-//        }
         if (player2Client != null) {
             player2Client.sendMessage(gameStartMessage);
         }

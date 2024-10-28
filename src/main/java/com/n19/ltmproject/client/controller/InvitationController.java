@@ -7,7 +7,6 @@ import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,6 +41,14 @@ public class InvitationController {
     private int invitationCountdownSeconds = 10;
     private volatile boolean isCountdownRunning = true;
 
+    /**
+     * Set up the invitation information.
+     *
+     * @param inviterName The inviter name
+     * @param inviterId The inviter ID
+     * @param inviteeId The invitee ID
+     * @param invitationProfile The invitation profile
+     */
     public void setUpInvitation(String inviterName, long inviterId, long inviteeId, String invitationProfile) {
         this.inviterName = inviterName;
         this.inviterId = inviterId;
@@ -51,11 +58,27 @@ public class InvitationController {
         createReturnToMainPageTimeline(inviterName, inviterId, inviteeId);
     }
 
+    /**
+     * Create a timeline to return to the main page after the countdown.
+     *
+     * @param userInvite The user invite
+     * @param inviterId The inviter ID
+     * @param inviteeId The invitee ID
+     */
     private void createReturnToMainPageTimeline(String userInvite, long inviterId, long inviteeId) {
         countdownInvitation.setText(String.valueOf(invitationCountdownSeconds));
         startCountdown(userInvite, inviterId, inviteeId);
     }
 
+    /**
+     * Start the countdown for the invitation.
+     * If the countdown reaches 0 and still running, send a refusal to the server and move to the main page.
+     * This will be running in a separate thread.
+     *
+     * @param userInvite The user invite
+     * @param inviterId The inviter ID
+     * @param inviteeId The invitee ID
+     */
     private void startCountdown(String userInvite, long inviterId, long inviteeId) {
         new Thread(() -> {
             while (invitationCountdownSeconds > 0 && isCountdownRunning) {
@@ -74,6 +97,13 @@ public class InvitationController {
         }).start();
     }
 
+    /**
+     * Send a refusal to the server so server can notify the inviter and move to the main page.
+     *
+     * @param userInvite The user invite
+     * @param inviterId The inviter ID
+     * @param inviteeId The invitee ID
+     */
     private void sendRefusalAndMoveToMainPage(String userInvite, long inviterId, long inviteeId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("invitee", SessionManager.getCurrentUser().getUsername());
@@ -95,6 +125,12 @@ public class InvitationController {
         }
     }
 
+    /**
+     * Accept the invitation, notify server that player accepted invitation and move to the waiting room.
+     *
+     * @param e The action event
+     * @throws IOException If the waiting room cannot be loaded
+     */
     public void ClickAccept(ActionEvent e) throws IOException {
         isCountdownRunning = false;
 
@@ -102,6 +138,14 @@ public class InvitationController {
         loadWaitingRoom();
     }
 
+    /**
+     * Send the acceptance to the server, and the server will notify the inviter player.
+     *
+     * @param inviterPlayer The inviter player
+     * @param currentAccepterPlayer The current accepter player
+     * @param inviterId The inviter ID
+     * @param inviteeId The invitee ID
+     */
     private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer, long inviterId, long inviteeId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("username", currentAccepterPlayer);
@@ -112,6 +156,11 @@ public class InvitationController {
         messageService.sendRequestNoResponse("userJoinedRoom", params);
     }
 
+    /**
+     * Load the waiting room after accepting the invitation.
+     *
+     * @throws IOException If the waiting room cannot be loaded
+     */
     private void loadWaitingRoom() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
@@ -121,11 +170,22 @@ public class InvitationController {
 
         WaitingRoomController waitingRoomController = loader.getController();
         waitingRoomController.setPrimaryStage(primaryStage);
-        waitingRoomController.setUpPlayer(this.inviterName, SessionManager.getCurrentUser().getUsername(), this.inviterId, SessionManager.getCurrentUser().getId());
+        waitingRoomController.setUpOpponent(
+                this.inviterId,
+                SessionManager.getCurrentUser().getId(),
+                this.inviterName,
+                SessionManager.getCurrentUser().getUsername()
+        );
 
         primaryStage.setScene(scene);
     }
 
+    /**
+     * Refuse the invitation, notify server that player refused the invitation and move to the main page.
+     *
+     * @param e The action event
+     * @throws IOException If the main page cannot be loaded
+     */
     public void ClickRefuse(ActionEvent e) throws IOException {
         isCountdownRunning = false;
 
@@ -145,6 +205,11 @@ public class InvitationController {
         }
     }
 
+    /**
+     * Move to the main page.
+     *
+     * @throws IOException If the main page cannot be loaded
+     */
     private void moveToMainPage() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));

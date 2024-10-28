@@ -8,58 +8,72 @@ import com.n19.ltmproject.server.model.dto.Response;
 
 public class UpdateGameScoreCommand implements Command {
 
-    private static long player1TempScore = 0;
-    private static long player2TempScore = 0;
-
     private final ClientManager clientManager;
 
     public UpdateGameScoreCommand(ClientManager clientManager) {
         this.clientManager = clientManager;
     }
 
+    /**
+     * Get the long parameter from the request.
+     * If the parameter is missing or not a number, return the default value.
+     *
+     * @param request The request
+     * @param paramName The parameter name
+     * @param defaultValue The default value
+     * @return The long value of the parameter
+     */
+    private long getLongParam(Request request, String paramName, long defaultValue) {
+        Object paramValue = request.getParams().get(paramName);
+        if (paramValue instanceof Number) {
+            return ((Number) paramValue).longValue();
+        } else {
+            System.out.println("Parameter " + paramName + " is missing or not a number. Using default value: " + defaultValue);
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Execute the command to update the game score and notify the opponent player.
+     *
+     * @param request The request
+     * @return The response
+     */
     @Override
     public Response execute(Request request) {
-        // Lấy thông tin từ request
-        long gameId = ((Number) request.getParams().get("gameId")).longValue();
-        long player1Id = ((Number) request.getParams().get("player1Id")).longValue();
-        long player2Id = ((Number) request.getParams().get("player2Id")).longValue();
-        long sendingPlayerId = ((Number) request.getParams().get("sendingPlayerId")).longValue();
-        long player1Score = ((Number) request.getParams().get("player1Score")).longValue();
-        long player2Score = ((Number) request.getParams().get("player2Score")).longValue();
+        System.out.println("UpdateGameScoreCommand: execute");
 
-        // Xử lý logic cập nhật điểm tạm thời
-        System.out.println("Update Score for Game ID: " + gameId);
-        System.out.println("Player1 ID: " + player1Id + " | Score: " + player1Score);
-        System.out.println("Player2 ID: " + player2Id + " | Score: " + player2Score);
+        long gameId = getLongParam(request, "gameId", -1);
+        //TODO remove if not needed
+//        long currentPlayerId = getLongParam(request, "currentPlayerId", -1);
+        long opponentPlayerId = getLongParam(request, "opponentPlayerId", -1);
+        long currentPlayerScore = getLongParam(request, "currentPlayerScore", 0);
 
-        player1TempScore = player1Score;
-        player2TempScore = player2Score;
-
-        long notifiedPlayerId;
-        if (sendingPlayerId == player1Id) {
-            notifiedPlayerId = player2Id;
-        } else {
-            notifiedPlayerId = player1Id;
-        }
-
-        sendUpdateToPlayer(notifiedPlayerId, gameId, player1TempScore, player2TempScore);
+        sendUpdateToOpponentPlayer(gameId, opponentPlayerId, currentPlayerScore);
 
         return Response.builder()
                 .status("OK")
                 .message("Score updated successfully and notified the other player.")
-                .data("GameId: " + gameId + ", Player1: " + player1TempScore + ", Player2: " + player2TempScore)
+                .data(null)
                 .build();
     }
 
-    private void sendUpdateToPlayer(long playerId, long gameId, long player1Score, long player2Score) {
+    /**
+     * Send the updated score to the opponent player depend on the gameId and opponentPlayerId.
+     *
+     * @param gameId The game ID
+     * @param opponentPlayerId The opponent player ID
+     * @param currentPlayerScore The current player score to send to opponent to update
+     */
+    private void sendUpdateToOpponentPlayer(long gameId, long opponentPlayerId, long currentPlayerScore) {
         // Tìm kiếm ClientHandler tương ứng với playerId
-        ClientHandler targetClient = clientManager.getClientByPlayerIdAndUsername(playerId, null);
+        ClientHandler targetClient = clientManager.getClientByPlayerIdAndUsername(opponentPlayerId, null);
         if (targetClient != null) {
-            String message = String.format("Game ID: %s, Player1 Score: %d, Player2 Score: %d", gameId, player1Score, player2Score);
+            String message = String.format("[UPDATE_SCORE] Game ID: %s, Opponent Score: %d", gameId, currentPlayerScore);
             targetClient.sendMessage(message);
-            System.out.println("Notified Player ID: " + playerId + " with new scores.");
+            System.out.println("Notified Player ID: " + opponentPlayerId + " with new scores.");
         } else {
-            System.out.println("Player ID: " + playerId + " not found.");
+            System.out.println("Player ID: " + opponentPlayerId + " not found.");
         }
     }
 }

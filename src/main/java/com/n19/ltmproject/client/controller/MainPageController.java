@@ -56,6 +56,10 @@ public class MainPageController {
         this.primaryStage = stage;
     }
 
+    /**
+     * This method is used to set up the main page.
+     * It will display the current user's username and load all players from the server.
+     */
     @FXML
     public void setupMainPage() {
         mainPageUsername.setText(SessionManager.getCurrentUser().getUsername());
@@ -65,17 +69,16 @@ public class MainPageController {
         setThread();
     }
 
-//    [Haven't developed]
-//    private String fetchUserProfile(long inviterId) {
-//        return playerHistoryService.getProfileByPlayerId(inviterId);
-//    }
-
     public void setThread(){
         this.running = true;
         System.out.println("Thread in setThread");
         startListeningForInvite();
     }
 
+    /**
+     * This method is used to load all players from the server and display them in the table.
+     * It is called when the main page is loaded. And call api to server and get all players
+     */
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
@@ -110,11 +113,20 @@ public class MainPageController {
         }
     }
 
+
+    /**
+     * This method is used to start a new thread to listen for server messages.
+     * Which in this case is listening for invitation from other players.
+     */
     public void startListeningForInvite() {
         System.out.println("Start thread");
         new Thread(this::listenForServerMessages).start();
     }
 
+    /**
+     * This method is used to listen for server messages.
+     * If the server sends an invitation message, it will handle the invitation.
+     */
     private void listenForServerMessages() {
         try {
             while (this.running) {
@@ -134,6 +146,12 @@ public class MainPageController {
         }
     }
 
+    /**
+     * This method is used to handle the invitation message from the server.
+     * It will stop the current thread and show the invitation dialog.
+     *
+     * @param serverMessage The invitation message from the server
+     */
     private void handleInvitation(String serverMessage) {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
@@ -158,6 +176,14 @@ public class MainPageController {
         }
     }
 
+    /**
+     * This method is used to handle the logout action.
+     * It will send a request to the server to log out the current user.
+     * If the logout is successful, it will clear the session and show the login page.
+     *
+     * @param e The action event
+     * @throws IOException If an I/O error occurs
+     */
     public void ClickLogout(ActionEvent e) throws IOException {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
@@ -179,6 +205,18 @@ public class MainPageController {
         }
     }
 
+    /**
+     * This method is used to handle the invite player action.
+     * It will send an invitation to the selected player through server.
+     * The flow is as follows:
+     * 1. Get the selected player from the table
+     * 2. Send an invitation to the selected player
+     * 3. If the invitation is successful, stop the current thread and move to the waiting room
+     * 4. If the invitation fails, show an error message
+     *
+     * @param event The action event
+     * @throws IOException If an I/O error occurs
+     */
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
 
@@ -208,6 +246,12 @@ public class MainPageController {
         }
     }
 
+    /**
+     * This method is used to move to the waiting room.
+     * It will stop the current thread and show the waiting room.
+     *
+     * @param selectedPlayer The selected player
+     */
     private void moveToWaitingRoom(Player selectedPlayer) {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
@@ -219,7 +263,12 @@ public class MainPageController {
 
                 WaitingRoomController waitingRoomController = loader.getController();
                 waitingRoomController.setPrimaryStage(primaryStage);
-                waitingRoomController.setUpHost(SessionManager.getCurrentUser().getUsername(), SessionManager.getCurrentUser().getId(), selectedPlayer.getId(), selectedPlayer.getUsername());
+                waitingRoomController.setUpHost(
+                        SessionManager.getCurrentUser().getId(),
+                        selectedPlayer.getId(),
+                        SessionManager.getCurrentUser().getUsername(),
+                        selectedPlayer.getUsername()
+                );
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -230,6 +279,12 @@ public class MainPageController {
     }
 
 
+    /**
+     * This method is used to handle the refresh action.
+     * It will stop the current thread and refresh the main page.
+     *
+     * @param e The action event
+     */
     public void ClickAchievement(ActionEvent e) throws IOException {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
@@ -246,6 +301,12 @@ public class MainPageController {
         primaryStage.setScene(scene);
     }
 
+    /**
+     * This method is used to handle the leaderboard action.
+     * It will stop the current thread and show the leaderboard page.
+     *
+     * @param e The action event
+     */
     public void ClickLeaderBoard(ActionEvent e) throws IOException {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
@@ -260,6 +321,12 @@ public class MainPageController {
         primaryStage.setScene(scene);
     }
 
+    /**
+     * This method is used to handle the refresh action.
+     * It will stop the current thread and refresh the main page.
+     *
+     * @param actionEvent The action event
+     */
     public void ClickRefresh(ActionEvent actionEvent) {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
