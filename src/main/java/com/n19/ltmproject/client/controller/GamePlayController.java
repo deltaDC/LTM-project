@@ -88,7 +88,7 @@ public class GamePlayController {
     @Setter
     private long gameId;
 
-    private int timeLeft = 10;
+    private int timeLeft = 100;
 
     private final String[] trashTypes = {"organic", "metal"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};

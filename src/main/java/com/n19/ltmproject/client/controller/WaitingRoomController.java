@@ -82,6 +82,42 @@ public class WaitingRoomController {
         startListeningForInvitee();
     }
 
+    private void handleNewGameStartedMessage(String serverMessage) {
+        String regex = "New game started! Game ID: (\\d+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(serverMessage);
+
+        if (matcher.find()) {
+            gameId = Long.parseLong(matcher.group(1));
+            System.out.println("Đã gán game ID: " + gameId);
+
+            running = false;
+            serverHandler.sendMessage("STOP_LISTENING");
+            startGame(gameId);
+        }
+    }
+
+    private void handleJsonMessage(String serverMessage) {
+        try {
+            Response response = new Gson().fromJson(serverMessage, Response.class);
+
+            if ("SUCCESS".equals(response.getStatus())) {
+                updateUIWithJoinMessage(response.getMessage());
+            } else if ("REFUSED".equals(response.getStatus())) {
+                Platform.runLater(() -> {
+                    System.out.println("Player declined the invitation.");
+                    try {
+                        ClickExit();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        } catch (JsonSyntaxException e) {
+            System.out.println("Invalid JSON format: " + e.getMessage());
+        }
+    }
+
     public void startListeningForInvitee() {
         System.out.println("Listening for player 2 to join room...");
 
@@ -91,39 +127,9 @@ public class WaitingRoomController {
                     String serverMessage = serverHandler.receiveMessage();
 
                     if (serverMessage.contains("New game started! Game ID:")) {
-                        String regex = "New game started! Game ID: (\\d+)";
-                        Pattern pattern = Pattern.compile(regex);
-                        Matcher matcher = pattern.matcher(serverMessage);
-
-                        if (matcher.find()) {
-                            gameId = Long.parseLong(matcher.group(1));
-                            System.out.println("Đã gán game ID: " + gameId);
-
-                            running = false;
-                            serverHandler.sendMessage("STOP_LISTENING");
-                            startGame(gameId);
-                        }
-                    }
-                    else if (serverMessage.startsWith("{")) {
-                        try {
-                            Response response = new Gson().fromJson(serverMessage, Response.class);
-
-                            if ("SUCCESS".equals(response.getStatus())) {
-                                updateUIWithJoinMessage(response.getMessage());
-
-                            } else if ("REFUSED".equals(response.getStatus())) {
-                                Platform.runLater(() -> {
-                                    System.out.println("Player declined the invitation.");
-                                    try {
-                                        ClickExit();
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                });
-                            }
-                        } catch (JsonSyntaxException e) {
-                            System.out.println("Invalid JSON format: " + e.getMessage());
-                        }
+                        handleNewGameStartedMessage(serverMessage);
+                    } else if (serverMessage.startsWith("{")) {
+                        handleJsonMessage(serverMessage);
                     }
                 }
             } catch (IOException ex) {
@@ -225,12 +231,6 @@ public class WaitingRoomController {
         } else {
             System.out.println("Failed to start game: " + response.getMessage());
         }
-    }
-
-
-    @Deprecated
-    private String createMessage(String action, HashMap<String, Object> params) {
-        return "{\"action\":\"" + action + "\", \"params\":" + new Gson().toJson(params) + "}";
     }
 
     @FXML

@@ -56,7 +56,7 @@
                <Button fx:id="inviter" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" prefHeight="74.0" prefWidth="258.0" styleClass="button-acthorpane-invitation-inviteyou" text="USER1 INVITE YOU" textFill="#01b861" />
             </children>
          </AnchorPane>
-         <Label fx:id="coundowninvitation" layoutX="520.0" layoutY="2.0" prefHeight="29.0" prefWidth="31.0" styleClass="countdownNumberInvitation" text="10" />
+         <Label fx:id="countdownInvitation" layoutX="520.0" layoutY="2.0" prefHeight="29.0" prefWidth="31.0" styleClass="countdownNumberInvitation" text="10" />
       </AnchorPane>
    </AnchorPane>
 </AnchorPane>

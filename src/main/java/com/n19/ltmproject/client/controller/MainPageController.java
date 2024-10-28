@@ -11,8 +11,6 @@ import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -29,7 +27,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
-import javafx.util.Duration;
 
 public class MainPageController {
 
@@ -160,31 +157,6 @@ public class MainPageController {
             e.printStackTrace();
         }
     }
-
-
-//    private Timeline createReturnToMainPageTimeline(String userInvite,long inviterId,long inviteeId) {
-//    return new Timeline(new KeyFrame(Duration.seconds(10), event -> {
-//        try {
-//            HashMap<String, Object> params = new HashMap<>();
-//
-//            params.put("invitee", SessionManager.getCurrentUser().getUsername());
-//            params.put("inviter", userInvite);
-//            params.put("inviterId", inviterId);
-//            params.put("inviteeId", inviteeId);
-//
-//            Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
-//            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-//                moveToMainPage();
-//
-//            } else {
-//                System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }));
-//}
-
 
     public void ClickLogout(ActionEvent e) throws IOException {
         this.running = false;
