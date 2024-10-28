@@ -22,11 +22,11 @@ public class CommandFactory {
             case "login" -> new LoginCommand(clientHandler);
             case "signUp" -> new SignupCommand();
             case "getAllGameData" -> new GetAllGameDataCommand();
-            case "startNewGame" -> new StartNewGame();
+            case "startNewGame" -> new StartNewGame(clientManager);
             case "endGameById" -> new EndGameById();
             case "getAllPlayer" -> new GetAllPlayerCommand();
             case "getAllPlayerHistory" -> new GetAllPlayerHistoryCommand();
-            case "updateScore" -> new UpdateGameScoreCommand();
+            case "updateScore" -> new UpdateGameScoreCommand(clientManager);
             case "logout" -> new LogoutCommand();
             case "invitation" -> new InvitationCommand(clientManager);
             case "refuseInvitation" -> new RefuseInvitationCommand(clientHandler, clientManager);

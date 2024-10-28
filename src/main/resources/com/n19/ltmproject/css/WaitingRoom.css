@@ -15,7 +15,7 @@
     -fx-background-radius: 30;
 }
 .button-waiting-ready2{
-    -fx-background-color:  #2BC9FC;
+    -fx-background-color: brown ;
     -fx-border-radius: 15;
     -fx-background-radius: 30;
 }
@@ -30,5 +30,26 @@
 .acthorpane-waiting-child{
     -fx-background-color: #D9D9D9;
 }
+.coundountplaying{
+    -fx-font-size: 30px;
+    -fx-text-fill: #FF4500;
+    -fx-background-color: #282828;
+    -fx-padding: 10px;
+    -fx-border-color: #FF4500;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, #000000, 5, 0.5, 0, 0);
+}
+.countdownText{
+    fx-font-size: 18px;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 10px;
+    -fx-font-weight: bold;
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, #000000, 3, 0.5, 0, 0);
+    -fx-alignment: center;
+}
+
 
 /*END CSS WAITINGROOM */

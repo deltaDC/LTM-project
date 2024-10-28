@@ -28,12 +28,15 @@ public class ClientManager {
     public synchronized ClientHandler getClientByPlayerIdAndUsername(long playerId, String username) {
         for (ClientHandler client : clients) {
             System.out.println("Checking client with ID: " + client.getPlayerId() + " and Username: " + client.getUsername());
-            if (client.getPlayerId() == playerId && client.getUsername() != null && client.getUsername().equals(username)) {
-                System.out.println("Match found for player ID " + playerId + " and username " + username);
-                return client;
+
+            if (client.getPlayerId() == playerId) {
+                if (username == null || client.getUsername() != null && client.getUsername().equals(username)) {
+                    System.out.println("Match found for player ID " + playerId + (username != null ? " and username " + username : ""));
+                    return client;
+                }
             }
         }
-        System.out.println("No match found for player ID " + playerId + " and username " + username);
+        System.out.println("No match found for player ID " + playerId + (username != null ? " and username " + username : ""));
         return null;
     }
 

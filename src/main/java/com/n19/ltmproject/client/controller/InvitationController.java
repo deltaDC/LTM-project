@@ -3,12 +3,12 @@ package com.n19.ltmproject.client.controller;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,18 +27,20 @@ public class InvitationController {
     @Setter
     private Stage primaryStage;
 
-    @Setter
-    private Timeline timeline;
-
     @FXML
     private Button inviter;
 
     @FXML
     private Label invitationProfile;
 
+    @FXML
+    private Label countdownInvitation;
+
     private String inviterName;
     private long inviterId;
     private long inviteeId;
+    private int invitationCountdownSeconds = 10;
+    private volatile boolean isCountdownRunning = true;
 
     public void setUpInvitation(String inviterName, long inviterId, long inviteeId, String invitationProfile) {
         this.inviterName = inviterName;
@@ -46,12 +48,55 @@ public class InvitationController {
         this.inviteeId = inviteeId;
         this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
+        createReturnToMainPageTimeline(inviterName, inviterId, inviteeId);
+    }
+
+    private void createReturnToMainPageTimeline(String userInvite, long inviterId, long inviteeId) {
+        countdownInvitation.setText(String.valueOf(invitationCountdownSeconds));
+        startCountdown(userInvite, inviterId, inviteeId);
+    }
+
+    private void startCountdown(String userInvite, long inviterId, long inviteeId) {
+        new Thread(() -> {
+            while (invitationCountdownSeconds > 0 && isCountdownRunning) {
+                try {
+                    Thread.sleep(1000);
+                    invitationCountdownSeconds--;
+                    Platform.runLater(() -> countdownInvitation.setText(String.valueOf(invitationCountdownSeconds)));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+            if (isCountdownRunning) {
+                sendRefusalAndMoveToMainPage(userInvite, inviterId, inviteeId);
+            }
+        }).start();
+    }
+
+    private void sendRefusalAndMoveToMainPage(String userInvite, long inviterId, long inviteeId) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("invitee", SessionManager.getCurrentUser().getUsername());
+        params.put("inviter", userInvite);
+        params.put("inviterId", inviterId);
+        params.put("inviteeId", inviteeId);
+
+        Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            Platform.runLater(() -> {
+                try {
+                    moveToMainPage();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } else {
+            System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
+        }
     }
 
     public void ClickAccept(ActionEvent e) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
+        isCountdownRunning = false;
 
         sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername(), inviterId, inviteeId);
         loadWaitingRoom();
@@ -82,30 +127,22 @@ public class InvitationController {
     }
 
     public void ClickRefuse(ActionEvent e) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
+        isCountdownRunning = false;
 
         HashMap<String, Object> params = new HashMap<>();
-        params.put("inviter", SessionManager.getCurrentUser().getUsername());
-        params.put("invitee", inviterName);
-        params.put("inviteeId", inviterId);
-        params.put("inviterId", inviteeId);
+
+        params.put("invitee", SessionManager.getCurrentUser().getUsername());
+        params.put("inviter", inviterName);
+        params.put("inviterId", inviterId);
+        params.put("inviteeId", inviteeId);
 
         Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
-
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             moveToMainPage();
+
         } else {
             System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
         }
-    }
-
-    public void CloseInvitation(ActionEvent e) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
-        moveToMainPage();
     }
 
     private void moveToMainPage() throws IOException {
@@ -120,10 +157,5 @@ public class InvitationController {
 
         primaryStage.setScene(scene);
         mainPageController.setupMainPage();
-    }
-
-    @Deprecated
-    private String createMessage(String action, HashMap<String, Object> params) {
-        return "{\"action\":\"" + action + "\", \"params\":" + new Gson().toJson(params) + "}";
     }
 }

@@ -21,7 +21,7 @@
          <Font name="System Bold" size="18.0" />
       </font>
    </Button>
-   <Button layoutX="204.0" layoutY="381.0" mnemonicParsing="false" onAction="#ClickStart" prefHeight="43.0" prefWidth="192.0" styleClass="button-waiting-start" text="START" textFill="WHITE">
+   <Button layoutX="204.0" layoutY="456.0" mnemonicParsing="false" onAction="#ClickStart" prefHeight="43.0" prefWidth="192.0" styleClass="button-waiting-start" text="START" textFill="WHITE">
       <font>
          <Font name="System Bold" size="20.0" />
       </font>
@@ -53,16 +53,21 @@
          <Font name="System Bold" size="18.0" />
       </font>
    </Button>
-   <Button fx:id="inviteeButton" layoutX="317.0" layoutY="264.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="138.0" styleClass="button-waiting-ready2" text="WAITING" textFill="WHITE">
+   <Button fx:id="inviteeButton" layoutX="317.0" layoutY="262.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="141.0" styleClass="button-waiting-ready2" text="WAITING" textFill="WHITE">
       <font>
          <Font name="System Bold" size="18.0" />
       </font>
    </Button>
 
    <!-- Countdown Timer -->
-   <Label fx:id="countdownLabel" layoutX="270.0" layoutY="320.0" prefHeight="30.0" prefWidth="60.0" text="10" textFill="WHITE" style="-fx-font-size: 24px;">
+   <Label fx:id="countdownLabel" layoutX="270.0" layoutY="380.0" prefHeight="30.0" prefWidth="60.0" styleClass="coundountplaying" text="10" textFill="WHITE" visible="false">
       <font>
          <Font name="System Bold" size="24.0" />
+      </font>
+   </Label>
+   <Label fx:id="countdownText" layoutX="140.0" layoutY="329.0" prefHeight="57.0" prefWidth="354.0" styleClass="countdownText" text="Trận đấu sẽ bắt đầu sau " visible="false">
+      <font>
+         <Font size="25.0" />
       </font>
    </Label>
 </AnchorPane>

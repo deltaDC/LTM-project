@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -83,8 +84,11 @@ public class GamePlayController {
     // Opponent's score
     @Getter
     private int opponentScore = 0;
+    @Getter
+    @Setter
+    private long gameId;
 
-    private int timeLeft = 10;
+    private int timeLeft = 100;
 
     private final String[] trashTypes = {"organic", "metal"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
@@ -109,6 +113,7 @@ public class GamePlayController {
     }
 
     private void startGame() {
+        System.out.println(gameId);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateTimer()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
@@ -346,4 +351,5 @@ public class GamePlayController {
             e.printStackTrace();
         }
     }
+
 }
