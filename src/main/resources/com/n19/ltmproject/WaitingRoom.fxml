@@ -65,7 +65,7 @@
          <Font name="System Bold" size="24.0" />
       </font>
    </Label>
-   <Label fx:id="countdowntext" layoutX="140.0" layoutY="329.0" prefHeight="57.0" prefWidth="354.0" styleClass="countdownText" text="Trận đấu sẽ bắt đầu sau " visible="false">
+   <Label fx:id="countdownText" layoutX="140.0" layoutY="329.0" prefHeight="57.0" prefWidth="354.0" styleClass="countdownText" text="Trận đấu sẽ bắt đầu sau " visible="false">
       <font>
          <Font size="25.0" />
       </font>
