@@ -29,7 +29,7 @@ public class GamePlayController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
-
+    private volatile boolean running = true;
     @FXML
     private ImageView trashImage;
 
@@ -67,8 +67,6 @@ public class GamePlayController {
 
     @FXML
     private Label timerLabel;
-
-    private boolean isListening = false;
 
     private final Random random = new Random();
     private final int[] trashImagesCount = {21, 22, 21, 24, 21};
@@ -153,13 +151,12 @@ public class GamePlayController {
      * This will run in a separate thread.
      */
     private void startListeningToServer() {
-        isListening = true;
 
         new Thread(() -> {
             try {
-                while (true) {
+                while (running) {
                     String serverMessage = serverHandler.receiveMessage();
-
+                    System.out.println("Thread in gameplay");
                     System.out.println("Run in thread");
                     if (serverMessage != null) {
                         System.out.println("Received from server: " + serverMessage);
@@ -398,6 +395,7 @@ public class GamePlayController {
      */
     private void endGame() {
         timeline.stop();
+        stopListening();
         showResultScreen();
     }
 
@@ -427,9 +425,9 @@ public class GamePlayController {
 
             resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, "Đối thủ");
 
-            Stage stage = (Stage) timerLabel.getScene().getWindow();
-            stage.setScene(new Scene(resultScreen));
-            stage.show();
+            resultController.setPrimaryStage(primaryStage);
+            primaryStage.setScene(new Scene(resultScreen));
+            primaryStage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -471,6 +469,10 @@ public class GamePlayController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private void stopListening() {
+        running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
     }
 
 }

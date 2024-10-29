@@ -93,7 +93,6 @@ public class ResultController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            serverHandler.sendMessage("STOP_LISTENING");
             mainPageController.setupMainPage();
         } catch (IOException e) {
             e.printStackTrace();

@@ -113,6 +113,7 @@ public class WaitingRoomController {
         listenerThread = new Thread(() -> {
             try {
                 while (running) {
+                    System.out.println("Thread in Waiting Room");
                     String serverMessage = serverHandler.receiveMessage();
 
                     if (serverMessage.contains("New game started! Game ID:")) {
