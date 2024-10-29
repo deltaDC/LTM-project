@@ -71,7 +71,7 @@ public class GamePlayController {
     private boolean isListening = false;
 
     private final Random random = new Random();
-    private final int[] trashImagesCount = {21, 22};
+    private final int[] trashImagesCount = {21, 22, 21, 24, 21};
 
 	Timeline timeline;
 
@@ -96,7 +96,7 @@ public class GamePlayController {
 
     private int timeLeft = 15;
 
-    private final String[] trashTypes = {"organic", "metal"};
+    private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
     private final String[] incorrectFeedback = {"Wrong!", "Try next time!"};
     private String currentTrashType;
