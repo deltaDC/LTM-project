@@ -1,11 +1,20 @@
 package com.n19.ltmproject.server.dao;
 
 import com.n19.ltmproject.server.model.Game;
+import com.n19.ltmproject.server.model.Player;
+import com.n19.ltmproject.server.model.enums.PlayerStatus;
 import com.n19.ltmproject.server.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.mindrot.jbcrypt.BCrypt;
 
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 
@@ -86,5 +95,25 @@ public class GameDao {
         }
 
         return game;
+    }
+
+    public String SendChatMessageDao(long currentPlayerId, long opponentPlayerId, String message) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null; // Bắt đầu giao dịch
+
+        try {
+            // Bắt đầu giao dịch
+            transaction = session.beginTransaction();
+            transaction.commit();  // Hoàn tất giao dịch
+            return currentPlayerId + "-" + opponentPlayerId + "-" + message;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();  // Nếu có lỗi, rollback giao dịch
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();  // Đóng session sau khi hoàn tất
+        }
+        return null;
     }
 }

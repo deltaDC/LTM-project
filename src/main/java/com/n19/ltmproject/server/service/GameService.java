@@ -24,4 +24,8 @@ public class GameService {
     public Game endGameById(long gameId, long player1Score, long player2Score) {
         return gameDao.endGameById(gameId, player1Score, player2Score);
     }
+
+    public String sendChatMessageService(long currentPlayerId,long opponentPlayerId, String message) {
+        return gameDao.SendChatMessageDao(currentPlayerId, opponentPlayerId, message);
+    }
 }

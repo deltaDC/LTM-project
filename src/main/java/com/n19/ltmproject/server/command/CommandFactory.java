@@ -31,6 +31,7 @@ public class CommandFactory {
             case "invitation" -> new InvitationCommand(clientManager);
             case "refuseInvitation" -> new RefuseInvitationCommand(clientHandler, clientManager);
             case "userJoinedRoom" -> new UserJoinedRoomCommand(clientHandler, clientManager);
+            case "sendChatMessage" -> new SendChatMessageCommand(clientManager);
             default -> throw new IllegalArgumentException("Unknown action: " + action);
         };
     }

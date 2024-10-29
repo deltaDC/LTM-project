@@ -1,4 +1,5 @@
 package com.n19.ltmproject.client.controller;
+
 // CLICK EXIT
 // SEND KET QUA TRAN DAU (UPDATE WIN , LOSS)
 import com.n19.ltmproject.client.handler.ServerHandler;
@@ -44,7 +45,7 @@ public class GamePlayController {
     @FXML
     private ImageView trashCan5;
 
-    //TODO rename for better readability
+    // TODO rename for better readability
     @FXML
     private ImageView humanGameplay;
     @FXML
@@ -52,7 +53,7 @@ public class GamePlayController {
     @FXML
     private Label feedbackLabel;
 
-    //TODO rename for better readability
+    // TODO rename for better readability
     @FXML
     private ImageView humanGameplay1;
     @FXML
@@ -71,9 +72,9 @@ public class GamePlayController {
     private boolean isListening = false;
 
     private final Random random = new Random();
-    private final int[] trashImagesCount = {21, 22, 21, 24, 21};
+    private final int[] trashImagesCount = { 21, 22, 21, 24, 21 };
 
-	Timeline timeline;
+    Timeline timeline;
 
     @Getter
     private Stage primaryStage;
@@ -96,9 +97,9 @@ public class GamePlayController {
 
     private int timeLeft = 15;
 
-    private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
-    private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
-    private final String[] incorrectFeedback = {"Wrong!", "Try next time!"};
+    private final String[] trashTypes = { "organic", "metal", "plastic", "glass", "paper" };
+    private final String[] correctFeedback = { "Correct!", "Nice!", "Good job!" };
+    private final String[] incorrectFeedback = { "Wrong!", "Try next time!" };
     private String currentTrashType;
 
     private boolean isDragging = false;
@@ -112,14 +113,17 @@ public class GamePlayController {
     }
 
     /**
-     * Initialize the game with the game ID, current player ID, opponent player ID, current player name, and opponent player name.
-     * @param gameId The game ID
-     * @param currentPlayerId The current player ID
-     * @param opponentPlayerId The opponent player ID
-     * @param currentPlayerName The current player name
+     * Initialize the game with the game ID, current player ID, opponent player ID,
+     * current player name, and opponent player name.
+     * 
+     * @param gameId             The game ID
+     * @param currentPlayerId    The current player ID
+     * @param opponentPlayerId   The opponent player ID
+     * @param currentPlayerName  The current player name
      * @param opponentPlayerName The opponent player name
      */
-    public void initGame(long gameId, long currentPlayerId, long opponentPlayerId, String currentPlayerName, String opponentPlayerName) {
+    public void initGame(long gameId, long currentPlayerId, long opponentPlayerId, String currentPlayerName,
+            String opponentPlayerName) {
         this.gameId = gameId;
         this.currentPlayerId = currentPlayerId;
         this.opponentPlayerId = opponentPlayerId;
@@ -129,6 +133,7 @@ public class GamePlayController {
 
     /**
      * Set the stage for the game play.
+     * 
      * @param stage The stage
      */
     public void setStage(Stage stage) {
@@ -153,11 +158,11 @@ public class GamePlayController {
      * This will run in a separate thread.
      */
     private void startListeningToServer() {
-        isListening = true;
+        this.isListening = true;
 
         new Thread(() -> {
             try {
-                while (true) {
+                while (this.isListening) {
                     String serverMessage = serverHandler.receiveMessage();
 
                     System.out.println("Run in thread");
@@ -172,15 +177,17 @@ public class GamePlayController {
         }).start();
     }
 
-    //TODO refactor if have time
+    // TODO refactor if have time
     /**
      * Parse the server message to update the score of the opponent player.
-     * The message should be in the format: "[UPDATE_SCORE] Game ID: {gameId}, Opponent Score: {opponentScore}"
+     * The message should be in the format: "[UPDATE_SCORE] Game ID: {gameId},
+     * Opponent Score: {opponentScore}"
      *
      * @param serverMessage The server message
      */
     private void parseServerMessage(String serverMessage) {
-        // The request is in the format: "[UPDATE_SCORE] Game ID: {gameId}, Opponent Score: {opponentScore}"
+        // The request is in the format: "[UPDATE_SCORE] Game ID: {gameId}, Opponent
+        // Score: {opponentScore}"
         if (serverMessage.startsWith("[UPDATE_SCORE]")) {
             String[] parts = serverMessage.split(",");
             if (parts.length == 2) {
@@ -195,7 +202,9 @@ public class GamePlayController {
     }
 
     /**
-     * Update the score of the opponent player in the UI after receive notify from server.
+     * Update the score of the opponent player in the UI after receive notify from
+     * server.
+     * 
      * @param updatedScore The updated score of the opponent player
      */
     private void updateOpponentScore(int updatedScore) {
@@ -244,7 +253,8 @@ public class GamePlayController {
 
     /**
      * Initialize the trash item and trash cans.
-     * Set the event handlers for dragging the trash item and dropping it into the trash cans.
+     * Set the event handlers for dragging the trash item and dropping it into the
+     * trash cans.
      */
     @FXML
     private void initialize() {
@@ -277,7 +287,8 @@ public class GamePlayController {
 
     /**
      * Check if the trash item is dropped into a trash can.
-     * If the trash item is dropped into a trash can, handle the trash drop, should increase the player score if correct.
+     * If the trash item is dropped into a trash can, handle the trash drop, should
+     * increase the player score if correct.
      * Otherwise, reset the trash item position.
      *
      * @param dropX The X coordinate of the drop
@@ -289,8 +300,7 @@ public class GamePlayController {
                 "metal", trashCan2,
                 "organic", trashCan3,
                 "paper", trashCan4,
-                "plastic", trashCan5
-        );
+                "plastic", trashCan5);
 
         for (Map.Entry<String, ImageView> entry : trashCanMap.entrySet()) {
             if (isWithinBounds(dropX, dropY, entry.getValue())) {
@@ -305,10 +315,11 @@ public class GamePlayController {
     /**
      * Check if the drop coordinates are within the bounds of the trash can.
      *
-     * @param dropX The X coordinate of the drop
-     * @param dropY The Y coordinate of the drop
+     * @param dropX    The X coordinate of the drop
+     * @param dropY    The Y coordinate of the drop
      * @param trashCan The trash can image view
-     * @return True if the drop coordinates are within the bounds of the trash can, false otherwise
+     * @return True if the drop coordinates are within the bounds of the trash can,
+     *         false otherwise
      */
     private boolean isWithinBounds(double dropX, double dropY, ImageView trashCan) {
         double canX = trashCan.getLayoutX();
@@ -329,7 +340,8 @@ public class GamePlayController {
 
     /**
      * Handle the trash drop into a trash can.
-     * If the trash item is dropped into the correct trash can, increase the player score.
+     * If the trash item is dropped into the correct trash can, increase the player
+     * score.
      * Otherwise, show the feedback and spawn a new trash item.
      *
      * @param binType The type of the trash can
@@ -375,12 +387,13 @@ public class GamePlayController {
      * Send a request to the server to update the score of the current player.
      * This will also notify the opponent player of the updated score.
      *
-     * @param gameId The current gameId
-     * @param currentPlayerId The ID of the current player
-     * @param opponentPlayerId The ID of the opponent player
+     * @param gameId             The current gameId
+     * @param currentPlayerId    The ID of the current player
+     * @param opponentPlayerId   The ID of the opponent player
      * @param currentPlayerScore The updated score of the current player
      */
-    private void sendScoreUpdateToServer(long gameId, long currentPlayerId, long opponentPlayerId, int currentPlayerScore) {
+    private void sendScoreUpdateToServer(long gameId, long currentPlayerId, long opponentPlayerId,
+            int currentPlayerScore) {
         Map<String, Object> params = new HashMap<>();
         params.put("gameId", gameId);
         params.put("currentPlayerId", currentPlayerId);
@@ -390,7 +403,8 @@ public class GamePlayController {
         messageService.sendRequestNoResponse("updateScore", params);
     }
 
-    //TODO after the game ends, send the result to the server to update the game with player score,
+    // TODO after the game ends, send the result to the server to update the game
+    // with player score,
     // and update the player history with the game result
     // and update player status to ONLINE
     /**
@@ -398,18 +412,22 @@ public class GamePlayController {
      */
     private void endGame() {
         timeline.stop();
+        this.isListening = false;
+        serverHandler.sendMessage("STOP_LISTENING");
         showResultScreen();
     }
 
     /**
      * Show the result screen with the game outcome.
-     * The result screen will display the result message, the score, and the game outcome.
+     * The result screen will display the result message, the score, and the game
+     * outcome.
      */
     private void showResultScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
             Parent resultScreen = loader.load();
             ResultController resultController = loader.getController();
+            resultController.setPrimaryStage(primaryStage);
 
             String resultMessage;
             boolean isWin = currentPlayerScore > opponentPlayerScore;
@@ -425,7 +443,8 @@ public class GamePlayController {
                 resultMessage = "Bạn đã thua!";
             }
 
-            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, "Đối thủ");
+            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, "Đối thủ", this.currentPlayerId,
+                    currentPlayerName.getText(), this.opponentPlayerId, opponentPlayerName.getText());
 
             Stage stage = (Stage) timerLabel.getScene().getWindow();
             stage.setScene(new Scene(resultScreen));
@@ -445,7 +464,7 @@ public class GamePlayController {
         showExitBattleModal();
     }
 
-    //TODO implement logic after confirming exit
+    // TODO implement logic after confirming exit
     /**
      * Show the exit battle modal to confirm the exit.
      */
