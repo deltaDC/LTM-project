@@ -92,6 +92,9 @@ public class GamePlayController {
     @FXML
     private Label opponentPlayerName;
 
+    private String username;
+    private  String opponentName;
+
     private int timeLeft = 15;
 
     private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
@@ -104,6 +107,7 @@ public class GamePlayController {
     private double offsetY;
     private double initialX;
     private double initialY;
+
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
@@ -123,6 +127,8 @@ public class GamePlayController {
         this.opponentPlayerId = opponentPlayerId;
         this.currentPlayerName.setText(currentPlayerName + " (me)");
         this.opponentPlayerName.setText(opponentPlayerName);
+        this.username = currentPlayerName;
+        this.opponentName = opponentPlayerName;
     }
 
     /**
@@ -157,12 +163,12 @@ public class GamePlayController {
                 while (running) {
                     String serverMessage = serverHandler.receiveMessage();
                     System.out.println("Thread in gameplay");
-                    System.out.println("Run in thread");
                     if (serverMessage != null) {
                         System.out.println("Received from server: " + serverMessage);
                         parseServerMessage(serverMessage);
                     }
                 }
+                System.out.println("END THREAD IN GAMEPLAY");
             } catch (IOException ex) {
                 System.out.println("Error receiving message from server: " + ex.getMessage());
             }
@@ -424,9 +430,10 @@ public class GamePlayController {
             }
 
             resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, "Đối thủ");
-
-            resultController.setPrimaryStage(primaryStage);
             primaryStage.setScene(new Scene(resultScreen));
+            resultController.setUpPlayerID(currentPlayerId, opponentPlayerId,username,opponentName);
+            resultController.setPrimaryStage(primaryStage);
+
             primaryStage.show();
 
         } catch (IOException e) {

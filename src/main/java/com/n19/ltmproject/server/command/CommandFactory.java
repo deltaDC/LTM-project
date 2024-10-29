@@ -24,11 +24,13 @@ public class CommandFactory {
             case "getAllGameData" -> new GetAllGameDataCommand();
             case "startNewGame" -> new StartNewGame(clientManager);
             case "endGameById" -> new EndGameById();
+            case "exitResult" -> new ExitResultCommand(clientManager);
             case "getAllPlayer" -> new GetAllPlayerCommand();
             case "getAllPlayerHistory" -> new GetAllPlayerHistoryCommand();
             case "updateScore" -> new UpdateGameScoreCommand(clientManager);
             case "logout" -> new LogoutCommand();
             case "invitation" -> new InvitationCommand(clientManager);
+            case "playagain" -> new PlayAgainInvitationCommand(clientManager);
             case "refuseInvitation" -> new RefuseInvitationCommand(clientHandler, clientManager);
             case "userJoinedRoom" -> new UserJoinedRoomCommand(clientHandler, clientManager);
             default -> throw new IllegalArgumentException("Unknown action: " + action);

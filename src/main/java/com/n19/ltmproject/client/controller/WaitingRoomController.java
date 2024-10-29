@@ -122,6 +122,7 @@ public class WaitingRoomController {
                         handleJsonMessage(serverMessage);
                     }
                 }
+                System.out.println("END THREAD IN WAITING ROOM");
             } catch (IOException ex) {
                 System.out.println("Error receiving message from server: " + ex.getMessage());
             }
