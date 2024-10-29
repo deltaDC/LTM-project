@@ -263,9 +263,9 @@ public class WaitingRoomController {
 
             // init the game base on isInviter, if isInviter then currentPlayerId is inviterId, and currentPlayerName is host name
             if(isInviter) {
-                gamePlayController.initGame(gameId, currentPlayerId, opponentPlayerId, waitingRoomHostName.getText(), waitingRoomPlayerName.getText());
+                gamePlayController.initGame(gameId, currentPlayerId, opponentPlayerId, waitingRoomHostName.getText(), waitingRoomPlayerName.getText(), isInviter);
             } else {
-                gamePlayController.initGame(gameId, opponentPlayerId, currentPlayerId, waitingRoomPlayerName.getText(), waitingRoomHostName.getText());
+                gamePlayController.initGame(gameId, opponentPlayerId, currentPlayerId, waitingRoomPlayerName.getText(), waitingRoomHostName.getText(), isInviter);
             }
 
             Scene scene = new Scene(root);
