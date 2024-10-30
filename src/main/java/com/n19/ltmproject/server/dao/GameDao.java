@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,8 @@ public class GameDao {
             game = new Game();
             game.setPlayer1Id(player1Id);
             game.setPlayer2Id(player2Id);
-            game.setStartTime(String.valueOf(new Date()));
+//            game.setStartTime(String.valueOf(new Date()));
+            game.setStartTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
             session.save(game);
             transaction.commit();
         } catch (Exception e) {
@@ -73,7 +75,7 @@ public class GameDao {
             game = session.get(Game.class, gameId);
             game.setPlayer1Score(player1Score);
             game.setPlayer2Score(player2Score);
-            game.setEndTime(String.valueOf(new Date()));
+            game.setEndTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
             session.update(game);
             transaction.commit();
         } catch (Exception e) {

@@ -95,7 +95,7 @@ public class GamePlayController {
     @FXML
     private Label opponentPlayerName;
 
-    private int timeLeft = 15;
+    private int timeLeft = 3;
 
     private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
@@ -161,12 +161,12 @@ public class GamePlayController {
                 while (running) {
                     String serverMessage = serverHandler.receiveMessage();
                     System.out.println("Thread in gameplay");
-                    System.out.println("Run in thread");
                     if (serverMessage != null) {
                         System.out.println("Received from server: " + serverMessage);
                         parseServerMessage(serverMessage);
                     }
                 }
+                System.out.println("END THREAD IN GAMEPLAY");
             } catch (IOException ex) {
                 System.out.println("Error receiving message from server: " + ex.getMessage());
             }
@@ -485,11 +485,17 @@ public class GamePlayController {
                     resultMessage = "Bạn đã thua!";
                 }
 
-                resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
+            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
+            primaryStage.setScene(new Scene(resultScreen));
+            String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
+            String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
 
-                resultController.setPrimaryStage(primaryStage);
-                primaryStage.setScene(new Scene(resultScreen));
-                primaryStage.show();
+            resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
+            resultController.setPrimaryStage(primaryStage);
+
+            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
+
+            primaryStage.show();
 
             } catch (IOException e) {
                 e.printStackTrace();
