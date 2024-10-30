@@ -95,7 +95,7 @@ public class GamePlayController {
     @FXML
     private Label opponentPlayerName;
 
-    private int timeLeft = 15;
+    private int timeLeft = 3;
 
     private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};

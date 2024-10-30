@@ -102,7 +102,7 @@ public class ResultController {
     @FXML
     private void handlePlayAgain() {
         stopListening();
-        sendResultToServer();
+//        sendResultToServer();
         HashMap<String, Object> params = new HashMap<>();
         params.put("username",username);
         params.put("opponent", opponentName);
