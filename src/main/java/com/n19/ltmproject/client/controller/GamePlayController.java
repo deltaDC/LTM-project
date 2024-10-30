@@ -14,7 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import lombok.Getter;
@@ -31,6 +30,7 @@ public class GamePlayController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
     private volatile boolean running = true;
+
     @FXML
     private ImageView trashImage;
 
@@ -405,16 +405,22 @@ public class GamePlayController {
         timeline.stop();
         stopListening();
 
+        //TODO duplicated code
         if (isInviter) {
             sendEndGame();
             boolean isWin = currentPlayerScore > opponentPlayerScore;
             boolean isDraw = currentPlayerScore == opponentPlayerScore;
-            long winerId = isWin ? currentPlayerId : opponentPlayerId;
+            long winnerId = isWin ? currentPlayerId : opponentPlayerId;
             long loserId = isWin ? opponentPlayerId : currentPlayerId;
-            sendMatchResult(winerId, loserId, isWin, isDraw);
+            sendMatchResult(winnerId, loserId, isWin, isDraw);
         }
 
         showResultScreen();
+    }
+
+    private void stopListening() {
+        running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
     }
 
     /**
@@ -463,6 +469,7 @@ public class GamePlayController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
                 Parent resultScreen = loader.load();
                 ResultController resultController = loader.getController();
+                resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
 
                 String resultMessage;
                 boolean isWin = currentPlayerScore > opponentPlayerScore;
@@ -525,9 +532,5 @@ public class GamePlayController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    private void stopListening() {
-        running = false;
-        serverHandler.sendMessage("STOP_LISTENING");
     }
 }
