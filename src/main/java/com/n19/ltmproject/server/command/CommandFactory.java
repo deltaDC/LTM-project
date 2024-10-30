@@ -24,6 +24,7 @@ public class CommandFactory {
             case "getAllGameData" -> new GetAllGameDataCommand();
             case "startNewGame" -> new StartNewGame(clientManager);
             case "endGameById" -> new EndGameById();
+            case "sendMatchResult" -> new SendMatchResult();
             case "getAllPlayer" -> new GetAllPlayerCommand();
             case "getAllPlayerHistory" -> new GetAllPlayerHistoryCommand();
             case "updateScore" -> new UpdateGameScoreCommand(clientManager);

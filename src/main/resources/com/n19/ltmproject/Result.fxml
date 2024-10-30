@@ -34,7 +34,7 @@
                         <Image url="@images/useravartar.png"/>
                     </image>
                 </ImageView>
-                <Label text="PLAYER 1" style="-fx-text-fill: white;"/>
+                <Label fx:id="currentPlayerNameLabel" text="PLAYER 1" style="-fx-text-fill: white;"/>
             </VBox>
 
             <!-- Score Label -->
@@ -50,7 +50,7 @@
                         <Image url="@images/useravartar3.png"/>
                     </image>
                 </ImageView>
-                <Label text="PLAYER 2" style="-fx-text-fill: white;"/>
+                <Label fx:id="opponentPlayerNameLabel" text="PLAYER 2" style="-fx-text-fill: white;"/>
             </VBox>
         </HBox>
 

@@ -29,12 +29,19 @@ public class ResultController {
     private String opponent;
     private long gameId; // Thay đổi để lưu gameId
     private Stage primaryStage;
+    @FXML
+    private Label currentPlayerNameLabel;
+    @FXML
+    private Label opponentPlayerNameLabel;
 
-    public void setResults(String results, String score, boolean isWinner, boolean isDraw, String opponent) {
+    public void setPlayerNames(String currentPlayerName, String opponentPlayerName) {
+        currentPlayerNameLabel.setText(currentPlayerName);
+        opponentPlayerNameLabel.setText(opponentPlayerName);
+    }
+
+    public void setResults(String results, String score, boolean isWinner, boolean isDraw) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
-        this.opponent = opponent;
-        this.gameId = 123; // Gán gameId ở đây (hoặc truyền từ bên ngoài)
         scoreLabel.setText(score);
         resultLabel.setText(isDraw ? "Trận đấu hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!"));
     }
@@ -93,7 +100,6 @@ public class ResultController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            serverHandler.sendMessage("STOP_LISTENING");
             mainPageController.setupMainPage();
         } catch (IOException e) {
             e.printStackTrace();

@@ -113,6 +113,7 @@ public class WaitingRoomController {
         listenerThread = new Thread(() -> {
             try {
                 while (running) {
+                    System.out.println("Thread in Waiting Room");
                     String serverMessage = serverHandler.receiveMessage();
 
                     if (serverMessage.contains("New game started! Game ID:")) {
@@ -262,9 +263,9 @@ public class WaitingRoomController {
 
             // init the game base on isInviter, if isInviter then currentPlayerId is inviterId, and currentPlayerName is host name
             if(isInviter) {
-                gamePlayController.initGame(gameId, currentPlayerId, opponentPlayerId, waitingRoomHostName.getText(), waitingRoomPlayerName.getText());
+                gamePlayController.initGame(gameId, currentPlayerId, opponentPlayerId, waitingRoomHostName.getText(), waitingRoomPlayerName.getText(), isInviter);
             } else {
-                gamePlayController.initGame(gameId, opponentPlayerId, currentPlayerId, waitingRoomPlayerName.getText(), waitingRoomHostName.getText());
+                gamePlayController.initGame(gameId, opponentPlayerId, currentPlayerId, waitingRoomPlayerName.getText(), waitingRoomHostName.getText(), isInviter);
             }
 
             Scene scene = new Scene(root);

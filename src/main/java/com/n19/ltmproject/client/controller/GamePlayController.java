@@ -29,6 +29,7 @@ public class GamePlayController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+    private volatile boolean running = true;
 
     @FXML
     private ImageView trashImage;
@@ -68,8 +69,6 @@ public class GamePlayController {
     @FXML
     private Label timerLabel;
 
-    private boolean isListening = false;
-
     private final Random random = new Random();
     private final int[] trashImagesCount = {21, 22, 21, 24, 21};
 
@@ -85,6 +84,8 @@ public class GamePlayController {
     @Getter
     @Setter
     private long gameId;
+
+    private boolean isInviter;
 
     private long currentPlayerId;
     @FXML
@@ -119,12 +120,13 @@ public class GamePlayController {
      * @param currentPlayerName The current player name
      * @param opponentPlayerName The opponent player name
      */
-    public void initGame(long gameId, long currentPlayerId, long opponentPlayerId, String currentPlayerName, String opponentPlayerName) {
+    public void initGame(long gameId, long currentPlayerId, long opponentPlayerId, String currentPlayerName, String opponentPlayerName, boolean isInviter) {
         this.gameId = gameId;
         this.currentPlayerId = currentPlayerId;
         this.opponentPlayerId = opponentPlayerId;
         this.currentPlayerName.setText(currentPlayerName + " (me)");
         this.opponentPlayerName.setText(opponentPlayerName);
+        this.isInviter = isInviter;
     }
 
     /**
@@ -153,13 +155,12 @@ public class GamePlayController {
      * This will run in a separate thread.
      */
     private void startListeningToServer() {
-        isListening = true;
 
         new Thread(() -> {
             try {
-                while (true) {
+                while (running) {
                     String serverMessage = serverHandler.receiveMessage();
-
+                    System.out.println("Thread in gameplay");
                     System.out.println("Run in thread");
                     if (serverMessage != null) {
                         System.out.println("Received from server: " + serverMessage);
@@ -225,19 +226,23 @@ public class GamePlayController {
      * It will take a random image from the resources.
      */
     private void spawnTrash() {
-        int randomTypeIndex = random.nextInt(trashTypes.length);
-        currentTrashType = trashTypes[randomTypeIndex];
+        boolean imageLoaded = false;
+        while (!imageLoaded) {
+            int randomTypeIndex = random.nextInt(trashTypes.length);
+            currentTrashType = trashTypes[randomTypeIndex];
 
-        int maxImages = trashImagesCount[randomTypeIndex];
-        int randomImageIndex = random.nextInt(maxImages) + 1;
-        String imageDirectory = "/com/n19/ltmproject/images/";
-        String imagePath = imageDirectory + currentTrashType + "/" + currentTrashType + randomImageIndex + ".png";
+            int maxImages = trashImagesCount[randomTypeIndex];
+            int randomImageIndex = random.nextInt(maxImages) + 1;
+            String imageDirectory = "/com/n19/ltmproject/images/";
+            String imagePath = imageDirectory + currentTrashType + "/" + currentTrashType + randomImageIndex + ".png";
 
-        try {
-            Image trashImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            trashImage.setImage(trashImg);
-        } catch (Exception e) {
-            System.out.println("Lỗi: Không thể tải hình ảnh từ " + imagePath);
+            try {
+                Image trashImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+                trashImage.setImage(trashImg);
+                imageLoaded = true;
+            } catch (Exception e) {
+                System.out.println("Lỗi: Không thể tải hình ảnh từ " + imagePath);
+            }
         }
         resetTrashPosition();
     }
@@ -398,7 +403,60 @@ public class GamePlayController {
      */
     private void endGame() {
         timeline.stop();
+        stopListening();
+
+        //TODO duplicated code
+        if (isInviter) {
+            sendEndGame();
+            boolean isWin = currentPlayerScore > opponentPlayerScore;
+            boolean isDraw = currentPlayerScore == opponentPlayerScore;
+            long winnerId = isWin ? currentPlayerId : opponentPlayerId;
+            long loserId = isWin ? opponentPlayerId : currentPlayerId;
+            sendMatchResult(winnerId, loserId, isWin, isDraw);
+        }
+
         showResultScreen();
+    }
+
+    private void stopListening() {
+        running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
+    }
+
+    /**
+     * Command to send the final result of the game to the server.
+     */
+    private void sendEndGame() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("gameId", gameId);
+        params.put("player1Id", currentPlayerId);
+        params.put("player2Id", opponentPlayerId);
+        params.put("player1Score", currentPlayerScore);
+        params.put("player2Score", opponentPlayerScore);
+        messageService.sendRequestAndReceiveResponse("endGameById", params);
+    }
+
+    /**
+     * Send the match result to the server including winnerId, loserId, isWin, and isDraw.
+     *
+     * @param winnerId The ID of the winning player
+     * @param loserId The ID of the losing player
+     * @param isWin Indicates if the current player has won (1 for win, 0 for loss)
+     * @param isDraw Indicates if the game ended in a draw (1 for draw, 0 for no draw)
+     */
+    private void sendMatchResult(long winnerId, long loserId, boolean isWin, boolean isDraw) {
+        // Create a request map to hold the parameters
+        Map<String, Object> params = new HashMap<>();
+        params.put("winnerId", winnerId);
+        params.put("loserId", loserId);
+        params.put("isWin", isWin);
+        params.put("isDraw", isDraw);
+
+        // Construct the request message
+
+        // Send the message to the server
+        messageService.sendRequestAndReceiveResponse("sendMatchResult", params);
+
     }
 
     /**
@@ -406,34 +464,37 @@ public class GamePlayController {
      * The result screen will display the result message, the score, and the game outcome.
      */
     private void showResultScreen() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
-            Parent resultScreen = loader.load();
-            ResultController resultController = loader.getController();
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
+                Parent resultScreen = loader.load();
+                ResultController resultController = loader.getController();
+                resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
 
-            String resultMessage;
-            boolean isWin = currentPlayerScore > opponentPlayerScore;
-            boolean isDraw = currentPlayerScore == opponentPlayerScore;
-            String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
+                String resultMessage;
+                boolean isWin = currentPlayerScore > opponentPlayerScore;
+                boolean isDraw = currentPlayerScore == opponentPlayerScore;
+                String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
 
-            // Set result message and call setResults based on game outcome
-            if (isWin) {
-                resultMessage = "Bạn đã thắng!";
-            } else if (isDraw) {
-                resultMessage = "Trận đấu hòa!";
-            } else {
-                resultMessage = "Bạn đã thua!";
+                // Set result message and call setResults based on game outcome
+                if (isWin) {
+                    resultMessage = "Bạn đã thắng!";
+                } else if (isDraw) {
+                    resultMessage = "Trận đấu hòa!";
+                } else {
+                    resultMessage = "Bạn đã thua!";
+                }
+
+                resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
+
+                resultController.setPrimaryStage(primaryStage);
+                primaryStage.setScene(new Scene(resultScreen));
+                primaryStage.show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, "Đối thủ");
-
-            Stage stage = (Stage) timerLabel.getScene().getWindow();
-            stage.setScene(new Scene(resultScreen));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     /**
@@ -472,5 +533,4 @@ public class GamePlayController {
             e.printStackTrace();
         }
     }
-
 }
