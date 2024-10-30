@@ -21,7 +21,7 @@ public class GameService {
         return gameDao.createNewGame(player1Id, player2Id);
     }
 
-    public Game endGameById(long gameId, long player1Score, long player2Score) {
-        return gameDao.endGameById(gameId, player1Score, player2Score);
+    public Game endGameById(long gameId, long player1Id, long player2Id, long player1Score, long player2Score) {
+        return gameDao.endGameById(gameId,player1Score, player2Score);
     }
 }

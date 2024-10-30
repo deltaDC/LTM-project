@@ -29,36 +29,38 @@
             <VBox alignment="CENTER">
                 <ImageView fitHeight="80" fitWidth="80">
                     <image>
-                        <Image url="@images/useravartar.png" />
+                        <Image url="@images/useravartar.png"/>
                     </image>
                 </ImageView>
-                <Label style="-fx-text-fill: white;" text="PLAYER 1" />
+                <Label fx:id="currentPlayerNameLabel" text="PLAYER 1" style="-fx-text-fill: white;"/>
             </VBox>
 
             <!-- Score Label -->
             <VBox alignment="CENTER">
-                <Label style="-fx-text-fill: white; -fx-font-size: 16px;" text="TỈ SỐ" />
-                <Label fx:id="scoreLabel" style="-fx-font-size: 40px; -fx-text-fill: white;" text="0 - 0" />
+                <Label text="TỈ SỐ" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                <Label fx:id="scoreLabel" text="0 - 0" style="-fx-font-size: 40px; -fx-text-fill: white;"/>
             </VBox>
 
             <!-- Player 2 Section -->
             <VBox alignment="CENTER">
-                <ImageView fitHeight="80" fitWidth="80">
+                <ImageView fitWidth="80" fitHeight="80">
                     <image>
-                        <Image url="@images/useravartar3.png" />
+                        <Image url="@images/useravartar3.png"/>
                     </image>
                 </ImageView>
-                <Label style="-fx-text-fill: white;" text="PLAYER 2" />
+                <Label fx:id="opponentPlayerNameLabel" text="PLAYER 2" style="-fx-text-fill: white;"/>
             </VBox>
         </HBox>
 
         <!-- Buttons Section -->
         <HBox layoutX="220" layoutY="420" spacing="30">
             <!-- Play Again Button -->
-            <Button fx:id="playAgainButton" onAction="#handlePlayAgain" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Thách đấu lại" />
+            <Button fx:id="playAgainButton" text="Thách đấu lại" onAction="#handlePlayAgain"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
 
             <!-- Exit Button -->
-            <Button fx:id="exitButton" onAction="#handleExit" style="-fx-background-color: #FF0000; -fx-text-fill: white;" text="Thoát" />
+            <Button fx:id="exitButton" text="Thoát" onAction="#handleExit"
+                    style="-fx-background-color: #FF0000; -fx-text-fill: white;"/>
         </HBox>
       <Label fx:id="labelexitopponent" layoutX="215.0" layoutY="76.0" prefHeight="50.0" prefWidth="188.0" styleClass="opponentLeftLabel" stylesheets="@css/Result.css" text="Đối thủ đã thoát" visible="false" />
       <Label fx:id="playagainpane" layoutX="100.0" layoutY="224.0" prefHeight="231.0" prefWidth="400.0" styleClass="playapainPane" stylesheets="@css/Result.css" visible="false" />

@@ -48,19 +48,18 @@ public class ExitBattleController {
     }
 
     @FXML
-    private void onConfirmExit() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-
-        Parent MainPageViewParent = loader.load();
-        Scene scene = new Scene(MainPageViewParent);
-
-        MainPageController mainPageController = loader.getController();
-        mainPageController.setPrimaryStage(primaryStage);
-
-        primaryStage.setScene(scene);
+    private void onConfirmExit(ActionEvent event) throws IOException {
+        if (timeline != null) {
+            timeline.stop();
+        }
+        if (exitTimeline != null) {
+            exitTimeline.stop();
+        }
         serverHandler.sendMessage("STOP_LISTENING");
-        mainPageController.setupMainPage();
+
+        sendResultToServer();
+
+        goToHomePage(event);
     }
 
     private void sendResultToServer() {

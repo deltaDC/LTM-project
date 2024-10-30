@@ -1,8 +1,6 @@
 package com.n19.ltmproject.client.controller;
 
 import com.n19.ltmproject.client.handler.ServerHandler;
-import com.n19.ltmproject.client.model.Player;
-import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 import javafx.application.Platform;
@@ -13,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,8 +23,10 @@ public class ResultController {
     private final MessageService messageService = new MessageService(serverHandler);
     private volatile boolean running = true;
     private volatile boolean isOponentExit = false;
+
     @FXML
     private Label resultLabel;
+
     @FXML
     private Label labelexitopponent;
 
@@ -49,6 +48,11 @@ public class ResultController {
     private String opponent;
     private long gameId; // Thay đổi để lưu gameId
     private Stage primaryStage;
+    @FXML
+    private Label currentPlayerNameLabel;
+    @FXML
+    private Label opponentPlayerNameLabel;
+
     private long currentPlayerId;
     private long opponentPlayerId;
     private String username;
@@ -60,16 +64,17 @@ public class ResultController {
         this.opponentName = opponentName;
     }
 
-    public void setResults(String results, String score, boolean isWinner, boolean isDraw, String opponent) {
+    public void setPlayerNames(String currentPlayerName, String opponentPlayerName) {
+        currentPlayerNameLabel.setText(currentPlayerName);
+        opponentPlayerNameLabel.setText(opponentPlayerName);
+    }
+
+    public void setResults(String results, String score, boolean isWinner, boolean isDraw) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
-        this.opponent = opponent;
-        this.gameId = 123; // Gán gameId ở đây (hoặc truyền từ bên ngoài)
         scoreLabel.setText(score);
         resultLabel.setText(isDraw ? "Trận đấu hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!"));
     }
-
-
 
     @FXML
     private void handleExit() {
@@ -98,13 +103,14 @@ public class ResultController {
     @FXML
     private void handlePlayAgain() {
         stopListening();
+        sendResultToServer();
         HashMap<String, Object> params = new HashMap<>();
         params.put("username",username);
         params.put("opponent", opponentName);
         params.put("userId",currentPlayerId);
         params.put("opponentId", opponentPlayerId);
 
-        Response response =messageService.sendRequestAndReceiveResponse("playagain", params);
+        Response response = messageService.sendRequestAndReceiveResponse("playagain", params);
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             moveToWaitingRoom();
         } else {
@@ -149,6 +155,33 @@ public class ResultController {
         startListeningForInvitee();
     }
 
+    private void sendResultToServer() {
+        boolean isWinner = this.isWinner;
+        boolean isDraw = this.isDraw;
+
+        try {
+            System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
+
+            messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
+                    "gameId", gameId,
+                    "isWinner", isWinner,
+                    "isDraw", isDraw
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Lỗi: Không thể gửi kết quả về server");
+        }
+    }
+
+    private void sendExitNotification() {
+        Map<String, Object> params = Map.of("exitResult", opponent);
+        Response response = messageService.sendRequestAndReceiveResponse("exitResult", params);
+        System.out.println(
+                response != null && "OK".equalsIgnoreCase(response.getStatus())
+                ? "Kết quả thoát đã được xác nhận"
+                : "Xác nhận kết quả thoát thất bại"
+        );
+    }
 
     private void loadMainPage() {
 
