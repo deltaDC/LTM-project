@@ -22,31 +22,31 @@ public class ResultController {
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
     private volatile boolean running = true;
-    private volatile boolean isOponentExit = false;
+    private volatile boolean isOpponentExit = false;
 
     @FXML
     private Label resultLabel;
 
     @FXML
-    private Label labelexitopponent;
+    private Label opponentExitLabel;
 
     @FXML
     private Label scoreLabel;
     @FXML
     private Button playAgainButton;
     @FXML
-    private Label playagainpane;
+    private Label playAgainPane;
     @FXML
-    private Label messageplayagain;
+    private Label playAgainMessage;
     @FXML
-    private Button acceptplayagain;
+    private Button playAgainAcceptButton;
     @FXML
-    private Button refuseplayagain;
+    private Button playAgainRefuseButton;
 
     private boolean isWinner;
     private boolean isDraw;
     private String opponent;
-    private long gameId; // Thay đổi để lưu gameId
+    private long gameId;
     private Stage primaryStage;
     @FXML
     private Label currentPlayerNameLabel;
@@ -57,6 +57,7 @@ public class ResultController {
     private long opponentPlayerId;
     private String username;
     private  String opponentName;
+
     public void setUpPlayerID(long playerId, long opponentId,String username, String opponentName) {
         this.currentPlayerId = playerId;
         this.opponentPlayerId = opponentId;
@@ -79,7 +80,7 @@ public class ResultController {
     @FXML
     private void handleExit() {
         stopListening();
-        if(!isOponentExit){
+        if(!isOpponentExit){
             HashMap<String, Object> params = new HashMap<>();
             params.put("username",username);
             params.put("opponent", opponentName);
@@ -96,8 +97,6 @@ public class ResultController {
         else{
             loadMainPage();
         }
-
-
     }
 
     @FXML
@@ -131,15 +130,15 @@ public class ResultController {
                     String serverMessage = serverHandler.receiveMessage();
                     System.out.println("THREAD: " + serverMessage);
                     if (serverMessage.contains("EXITRESULT")) {
-                        isOponentExit = true;
+                        isOpponentExit = true;
                         playAgainButton.setVisible(false);
-                        labelexitopponent.setVisible(true);
+                        opponentExitLabel.setVisible(true);
                     }
                     if (serverMessage.contains("PlayAgain")) {
-                        playagainpane.setVisible(true);
-                        messageplayagain.setVisible(true);
-                        acceptplayagain.setVisible(true);
-                        refuseplayagain.setVisible(true);
+                        playAgainPane.setVisible(true);
+                        playAgainMessage.setVisible(true);
+                        playAgainAcceptButton.setVisible(true);
+                        playAgainRefuseButton.setVisible(true);
                         System.out.println("Bạn nhận dc lời mời chs lại");
                     }
                 }
@@ -202,6 +201,7 @@ public class ResultController {
             System.out.println("Error: Unable to load MainPage.fxml");
         }
     }
+
     private void stopListening() {
         running = false;
         serverHandler.sendMessage("STOP_LISTENING");
@@ -216,11 +216,13 @@ public class ResultController {
 
         messageService.sendRequestNoResponse("userJoinedRoom", params);
     }
+
     public void ClickAcceptPlayAgain(ActionEvent e) throws IOException {
         stopListening();
         sendAcceptanceToServer(opponentName, username, opponentPlayerId, currentPlayerId);
         loadWaitingRoom();
     }
+
     public void ClickRefusePlayAgain(ActionEvent e) throws IOException {
         stopListening();
         HashMap<String, Object> params = new HashMap<>();
@@ -265,6 +267,7 @@ public class ResultController {
             }
         });
     }
+
     // đây là sang trang waitng của người dc mời
     private void loadWaitingRoom() throws IOException {
         FXMLLoader loader = new FXMLLoader();

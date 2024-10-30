@@ -487,13 +487,14 @@ public class GamePlayController {
 
             resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
             primaryStage.setScene(new Scene(resultScreen));
-            resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, currentPlayerName.getText(), opponentPlayerName.getText());
+            String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
+            String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
+
+            resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
             resultController.setPrimaryStage(primaryStage);
 
             resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
 
-            resultController.setPrimaryStage(primaryStage);
-            primaryStage.setScene(new Scene(resultScreen));
             primaryStage.show();
 
             } catch (IOException e) {
