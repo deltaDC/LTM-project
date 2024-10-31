@@ -1,27 +1,26 @@
 package com.n19.ltmproject.client.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -33,18 +32,42 @@ public class ResultController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+    private volatile boolean running = true;
+    private volatile boolean isOpponentExit = false;
 
     @FXML
     private Label resultLabel;
 
     @FXML
+    private Label opponentExitLabel;
+
+    @FXML
     private Label scoreLabel;
+    @FXML
+    private Button playAgainButton;
+    @FXML
+    private Label playAgainPane;
+    @FXML
+    private Label playAgainMessage;
+    @FXML
+    private Button playAgainAcceptButton;
+    @FXML
+    private Button playAgainRefuseButton;
 
     private boolean isWinner;
     private boolean isDraw;
     private String opponent;
-    private long gameId; // Thay đổi để lưu gameId
+    private long gameId;
     private Stage primaryStage;
+    @FXML
+    private Label currentPlayerNameLabel;
+    @FXML
+    private Label opponentPlayerNameLabel;
+
+    private long currentPlayerId;
+    private long opponentPlayerId;
+    private String username;
+    private  String opponentName;
 
     @FXML
     private TextField chatInput;
@@ -55,26 +78,18 @@ public class ResultController {
     @FXML
     private Label currentPlayerLabel;
 
-    private long currentPlayerId;
-
     @FXML
     private Label opponentPlayerLabel;
-
-    private long opponentPlayerId;
-
-    private boolean isListening = true;
 
     // Định dạng thời gian: giờ:phút
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Gson gson = new Gson();
 
-    public void setResults(String results, String score, boolean isWinner, boolean isDraw, String opponent,
+    public void setResults(String results, String score, boolean isWinner, boolean isDraw,
             long currentPlayerId, String currentPlayerName, long opponentPlayerId, String opponentPlayerName) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
-        this.opponent = opponent;
-        this.gameId = 123; // Gán gameId ở đây (hoặc truyền từ bên ngoài)
         scoreLabel.setText(score);
         resultLabel.setText(isDraw ? "Trận đấu hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!"));
 
@@ -84,29 +99,82 @@ public class ResultController {
         opponentPlayerLabel.setText(opponentPlayerName);
     }
 
+    public void setUpPlayerID(long playerId, long opponentId, String username, String opponentName) {
+        this.currentPlayerId = playerId;
+        this.opponentPlayerId = opponentId;
+        this.username = username;
+        this.opponentName = opponentName;
+    }
+
+    public void setPlayerNames(String currentPlayerName, String opponentPlayerName) {
+        currentPlayerNameLabel.setText(currentPlayerName);
+        opponentPlayerNameLabel.setText(opponentPlayerName);
+    }
+
     @FXML
     private void handleExit() {
-        isListening = false;
-        serverHandler.sendMessage("STOP_LISTENING");
-        loadMainPage();
+        stopListening();
+        if(!isOpponentExit){
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("username",username);
+            params.put("opponent", opponentName);
+            params.put("userId",currentPlayerId);
+            params.put("opponentId", opponentPlayerId);
+
+            Response response =messageService.sendRequestAndReceiveResponse("exitResult", params);
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                loadMainPage();
+            } else {
+                System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+            }
+        }
+        else{
+            loadMainPage();
+        }
     }
 
     @FXML
     private void handlePlayAgain() {
-        sendResultToServer();
-    }
+        stopListening();
+//        sendResultToServer();
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("username",username);
+        params.put("opponent", opponentName);
+        params.put("userId",currentPlayerId);
+        params.put("opponentId", opponentPlayerId);
 
-    public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
-        startListeningToServer();
-    }
+        Response response = messageService.sendRequestAndReceiveResponse("playagain", params);
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            moveToWaitingRoom();
+        } else {
+            System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+        }
 
-    private void startListeningToServer() {
-        new Thread(() -> {
+    }
+    public void startListeningForServer() {
+        System.out.println("Listening for player1 quit game ...");
+
+       new Thread(() -> {
             try {
-                while (isListening) {
+                while (running) {
+                    if (!this.running) {
+                        break;
+                    }
+                    System.out.println("Thread in Result");
                     String serverMessage = serverHandler.receiveMessage();
-                    System.out.println("Let's go!!! " + serverMessage);
+                    System.out.println("THREAD: " + serverMessage);
+                    if (serverMessage.contains("EXITRESULT")) {
+                        isOpponentExit = true;
+                        playAgainButton.setVisible(false);
+                        opponentExitLabel.setVisible(true);
+                    }
+                    if (serverMessage.contains("PlayAgain")) {
+                        playAgainPane.setVisible(true);
+                        playAgainMessage.setVisible(true);
+                        playAgainAcceptButton.setVisible(true);
+                        playAgainRefuseButton.setVisible(true);
+                        System.out.println("Bạn nhận dc lời mời chs lại");
+                    }
                     if (serverMessage.contains("Send message from user1:")) {
                         parseServerMessage(serverMessage);
                     }
@@ -128,6 +196,11 @@ public class ResultController {
         renderChatMessage(senderId, receiverId, message);
     }
 
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
+        startListeningForServer();
+    }
+
     private void sendResultToServer() {
         boolean isWinner = this.isWinner;
         boolean isDraw = this.isDraw;
@@ -139,7 +212,8 @@ public class ResultController {
             messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
                     "gameId", gameId,
                     "isWinner", isWinner,
-                    "isDraw", isDraw));
+                    "isDraw", isDraw
+            ));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Lỗi: Không thể gửi kết quả về server");
@@ -156,6 +230,7 @@ public class ResultController {
     }
 
     private void loadMainPage() {
+
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
@@ -167,13 +242,99 @@ public class ResultController {
             mainPageController.setPrimaryStage(primaryStage);
 
             primaryStage.setScene(scene);
-            serverHandler.sendMessage("STOP_LISTENING");
             mainPageController.setupMainPage();
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error: Unable to load MainPage.fxml");
         }
     }
+
+    private void stopListening() {
+        running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
+    }
+
+    private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer, long inviterId, long inviteeId) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("username", currentAccepterPlayer);
+        params.put("inviterName", inviterPlayer);
+        params.put("inviterId", inviterId);
+        params.put("inviteeId", inviteeId);
+
+        messageService.sendRequestNoResponse("userJoinedRoom", params);
+    }
+
+    public void ClickAcceptPlayAgain(ActionEvent e) throws IOException {
+        stopListening();
+        sendAcceptanceToServer(opponentName, username, opponentPlayerId, currentPlayerId);
+        loadWaitingRoom();
+    }
+
+    public void ClickRefusePlayAgain(ActionEvent e) throws IOException {
+        stopListening();
+        HashMap<String, Object> params = new HashMap<>();
+
+        params.put("invitee", username);
+        params.put("inviter", opponentName);
+        params.put("inviterId", opponentPlayerId);
+        params.put("inviteeId", currentPlayerId);
+
+        Response response = messageService.sendRequestAndReceiveResponse("refuseInvitation", params);
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            loadMainPage();
+
+        } else {
+            System.out.println("REFUSED failed: " + (response != null ? response.getMessage() : "Unknown error"));
+        }
+    }
+
+    // đây là sang trang waitinh của người thách đấu lại
+    private void moveToWaitingRoom() {
+        this.running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+                Parent waitViewParent = loader.load();
+
+                WaitingRoomController waitingRoomController = loader.getController();
+                waitingRoomController.setPrimaryStage(primaryStage);
+                waitingRoomController.setUpHost(
+                        currentPlayerId,
+                        opponentPlayerId,
+                        username,
+                        opponentName
+                );
+
+                Scene scene = new Scene(waitViewParent);
+                primaryStage.setScene(scene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    // đây là sang trang waitng của người dc mời
+    private void loadWaitingRoom() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+
+        Parent WaitingRoomParent = loader.load();
+        Scene scene = new Scene(WaitingRoomParent);
+
+        WaitingRoomController waitingRoomController = loader.getController();
+        waitingRoomController.setPrimaryStage(primaryStage);
+        waitingRoomController.setUpOpponent(
+                opponentPlayerId,
+                currentPlayerId,
+                opponentName,
+                username
+        );
+
+        primaryStage.setScene(scene);
+    }
+
 
     @FXML
     private void handleSendChat() {

@@ -1,21 +1,12 @@
 package com.n19.ltmproject.server.dao;
 
 import com.n19.ltmproject.server.model.Game;
-import com.n19.ltmproject.server.model.Player;
-import com.n19.ltmproject.server.model.enums.PlayerStatus;
 import com.n19.ltmproject.server.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.mindrot.jbcrypt.BCrypt;
 
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class GameDao {
@@ -57,7 +48,8 @@ public class GameDao {
             game = new Game();
             game.setPlayer1Id(player1Id);
             game.setPlayer2Id(player2Id);
-            game.setStartTime(String.valueOf(new Date()));
+//            game.setStartTime(String.valueOf(new Date()));
+            game.setStartTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
             session.save(game);
             transaction.commit();
         } catch (Exception e) {
@@ -82,7 +74,7 @@ public class GameDao {
             game = session.get(Game.class, gameId);
             game.setPlayer1Score(player1Score);
             game.setPlayer2Score(player2Score);
-            game.setEndTime(String.valueOf(new Date()));
+            game.setEndTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
             session.update(game);
             transaction.commit();
         } catch (Exception e) {
@@ -97,6 +89,7 @@ public class GameDao {
         return game;
     }
 
+    @Deprecated
     public String SendChatMessageDao(long currentPlayerId, long opponentPlayerId, String message) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null; // Bắt đầu giao dịch

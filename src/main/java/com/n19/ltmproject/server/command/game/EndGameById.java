@@ -21,10 +21,12 @@ public class EndGameById implements Command {
     @Override
     public Response execute(Request request) {
         long gameId = ((Number) request.getParams().get("gameId")).longValue();
+        long player1Id = ((Number) request.getParams().get("player1Id")).longValue();
+        long player2Id = ((Number) request.getParams().get("player2Id")).longValue();
         long player1Score = ((Number) request.getParams().get("player1Score")).longValue();
         long player2Score = ((Number) request.getParams().get("player2Score")).longValue();
 
-        Game game = gameService.endGameById(gameId, player1Score, player2Score);
+        Game game = gameService.endGameById(gameId, player1Id, player2Id, player1Score, player2Score);
         playerService.updatePlayerStatusById(game.getPlayer1Id(), PlayerStatus.ONLINE);
         playerService.updatePlayerStatusById(game.getPlayer2Id(), PlayerStatus.ONLINE);
 
