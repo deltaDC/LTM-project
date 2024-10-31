@@ -192,34 +192,6 @@ public class ResultController {
         startListeningForServer();
     }
 
-    private void sendResultToServer() {
-        boolean isWinner = this.isWinner;
-        boolean isDraw = this.isDraw;
-
-        try {
-            System.out.println("Dữ liệu gửi về server: " + String
-                    .format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
-
-            messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
-                    "gameId", gameId,
-                    "isWinner", isWinner,
-                    "isDraw", isDraw
-            ));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Lỗi: Không thể gửi kết quả về server");
-        }
-    }
-
-    private void sendExitNotification() {
-        Map<String, Object> params = Map.of("exitResult", opponent);
-        Response response = messageService.sendRequestAndReceiveResponse("exitResult", params);
-        System.out.println(
-                response != null && "OK".equalsIgnoreCase(response.getStatus())
-                        ? "Kết quả thoát đã được xác nhận"
-                        : "Xác nhận kết quả thoát thất bại");
-    }
-
     private void loadMainPage() {
 
         try {
@@ -372,12 +344,14 @@ public class ResultController {
                 messageBox.setAlignment(Pos.CENTER_RIGHT);
                 messageBox.setPadding(new Insets(0, 10, 0, 160)); // Đẩy tin nhắn của mình về sát viền phải
                 messageLabel.setStyle(
-                        "-fx-text-fill: white; -fx-background-color: #4CAF50; -fx-padding: 10; -fx-background-radius: 10;");
+                        "-fx-text-fill: white; -fx-background-color: #4CAF50; -fx-padding: 10; -fx-background-radius: 10;"
+                );
             } else {
                 messageBox.setAlignment(Pos.CENTER_LEFT);
                 messageBox.setPadding(new Insets(0, 160, 0, 10)); // Đẩy tin nhắn của đối phương về sát viền trái
                 messageLabel.setStyle(
-                        "-fx-text-fill: white; -fx-background-color: #4A4A4A; -fx-padding: 10; -fx-background-radius: 10;");
+                        "-fx-text-fill: white; -fx-background-color: #4A4A4A; -fx-padding: 10; -fx-background-radius: 10;"
+                );
             }
 
             // Thêm tin nhắn vào VBox chatBox
