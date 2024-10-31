@@ -75,28 +75,20 @@ public class ResultController {
     @FXML
     private VBox chatBox;
 
-    @FXML
-    private Label currentPlayerLabel;
-
-    @FXML
-    private Label opponentPlayerLabel;
-
     // Định dạng thời gian: giờ:phút
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Gson gson = new Gson();
 
     public void setResults(String results, String score, boolean isWinner, boolean isDraw,
-            long currentPlayerId, String currentPlayerName, long opponentPlayerId, String opponentPlayerName) {
+            long currentPlayerId, long opponentPlayerId
+    ) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
         scoreLabel.setText(score);
-        resultLabel.setText(isDraw ? "Trận đấu hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!"));
-
+        resultLabel.setText(results);
         this.currentPlayerId = currentPlayerId;
-        currentPlayerLabel.setText(currentPlayerName);
         this.opponentPlayerId = opponentPlayerId;
-        opponentPlayerLabel.setText(opponentPlayerName);
     }
 
     public void setUpPlayerID(long playerId, long opponentId, String username, String opponentName) {
@@ -136,7 +128,6 @@ public class ResultController {
     @FXML
     private void handlePlayAgain() {
         stopListening();
-//        sendResultToServer();
         HashMap<String, Object> params = new HashMap<>();
         params.put("username",username);
         params.put("opponent", opponentName);
@@ -149,8 +140,8 @@ public class ResultController {
         } else {
             System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
         }
-
     }
+
     public void startListeningForServer() {
         System.out.println("Listening for player1 quit game ...");
 
@@ -176,7 +167,7 @@ public class ResultController {
                         System.out.println("Bạn nhận dc lời mời chs lại");
                     }
                     if (serverMessage.contains("Send message from user1:")) {
-                        parseServerMessage(serverMessage);
+                        parseServerChatMessage(serverMessage);
                     }
                 }
             } catch (IOException ex) {
@@ -185,7 +176,7 @@ public class ResultController {
         }).start();
     }
 
-    private void parseServerMessage(String serverMessage) {
+    private void parseServerChatMessage(String serverMessage) {
         // The request is in the format: "currentPlayerId-opponentPlayerId-message"
         String playerIdAndMesStr = serverMessage.substring(25);
         String[] messages = playerIdAndMesStr.split("\\-");
@@ -361,9 +352,9 @@ public class ResultController {
         // Tạo nội dung tin nhắn kèm thời gian
         String messageWithTime;
         if (currentPlayerId == SessionManager.getCurrentUser().getId()) {
-            messageWithTime = "[" + currentTime + "] " + this.currentPlayerLabel.getText() + ": " + message;
+            messageWithTime = "[" + currentTime + "] " + username + ": " + message;
         } else {
-            messageWithTime = "[" + currentTime + "] " + this.opponentPlayerLabel.getText() + ": " + message;
+            messageWithTime = "[" + currentTime + "] " + opponentName + ": " + message;
         }
 
         // Đảm bảo việc cập nhật giao diện xảy ra trên UI thread

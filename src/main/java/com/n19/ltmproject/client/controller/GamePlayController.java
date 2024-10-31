@@ -461,8 +461,6 @@ public class GamePlayController {
         params.put("isWin", isWin);
         params.put("isDraw", isDraw);
 
-        // Construct the request message
-
         // Send the message to the server
         messageService.sendRequestAndReceiveResponse("sendMatchResult", params);
 
@@ -495,7 +493,6 @@ public class GamePlayController {
                     resultMessage = "Bạn đã thua!";
                 }
 
-//            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
             primaryStage.setScene(new Scene(resultScreen));
             String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
             String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
@@ -503,11 +500,17 @@ public class GamePlayController {
             resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
             resultController.setPrimaryStage(primaryStage);
 
-            //TODO need resolve
-            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw, this.currentPlayerId,
-                    trimmedCurrentPlayerName, this.opponentPlayerId, trimmedOpponentPlayerName);
+            resultController.setResults(
+                    resultMessage,
+                    scoreMessage,
+                    isWin,
+                    isDraw,
+                    this.currentPlayerId,
+                    this.opponentPlayerId
+            );
 
-//            resultController.setResults(resultMessage, scoreMessage, isWin, isDraw);
+            System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
+            System.out.println("Trimmed opponent player name: " + trimmedOpponentPlayerName);
 
             primaryStage.show();
 
