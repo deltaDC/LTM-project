@@ -79,4 +79,30 @@
     -fx-border-radius: 15;
     -fx-background-radius: 30;
 }
+.labelrefusematch{
+    -fx-background-color: #ffdddd;
+    -fx-text-fill: #d9534f;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-color: #d43f3a;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+    -fx-alignment: center;
+}
+.labelcancelmatch{
+    -fx-background-color: #ffdddd;
+    -fx-text-fill: #d9534f;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-color: #d43f3a;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+    -fx-alignment: center;
+}
 /*END CSS TrangChu */

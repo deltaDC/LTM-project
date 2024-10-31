@@ -55,13 +55,14 @@ public class WaitingRoomController {
     private Label countdownText;
 
 
-    private int countdownTime = 3;
+    private int countdownTime = 5;
     private long inviterId;
     private long inviteeId;
-    private long gameId;
-    private volatile boolean isOpponentExit = false;
     private String username;
     private  String opponentName;
+    private long gameId;
+    private volatile boolean isOpponentExit = false;
+
     /**
      * Set up the host information.
      *
@@ -70,10 +71,10 @@ public class WaitingRoomController {
      * @param waitingRoomHostName The waiting room host name
      * @param waitingRoomPlayerName The waiting room player name
      */
-    public void setUpHost(long inviterId, long inviteeId, String waitingRoomHostName, String waitingRoomPlayerName) {
+    public void setUpHost(long currentPlayerId, long opponentPlayerId, String waitingRoomHostName, String waitingRoomPlayerName) {
         this.waitingRoomHostName.setText(waitingRoomHostName);
-        this.inviterId = inviterId;
-        this.inviteeId = inviteeId;
+        this.inviterId = currentPlayerId;
+        this.inviteeId = opponentPlayerId;
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
         this.isInviter = true;
         this.username = waitingRoomHostName;
@@ -94,8 +95,8 @@ public class WaitingRoomController {
         this.inviteeId = inviteeId;
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
         this.isInviter = false;
-        this.username = host;
-        this.opponentName = waitingRoomPlayerName;
+        this.username = waitingRoomPlayerName;
+        this.opponentName = host;
     }
 
     /**
@@ -122,8 +123,11 @@ public class WaitingRoomController {
                 while (running) {
                     System.out.println("Thread in Waiting Room");
                     String serverMessage = serverHandler.receiveMessage();
-
-                    if (serverMessage.contains("New game started! Game ID:")) {
+                    if (serverMessage != null && serverMessage.contains("EXITRESULT")){
+                        isOpponentExit=true;
+                        handleExit();
+                    }
+                    else if (serverMessage.contains("New game started! Game ID:")) {
                         handleNewGameStartedMessage(serverMessage);
                     } else if (serverMessage.startsWith("{")) {
                         handleJsonMessage(serverMessage);
@@ -157,6 +161,29 @@ public class WaitingRoomController {
             serverHandler.sendMessage("STOP_LISTENING");
             startGame(gameId, inviterId, inviteeId);
         }
+    }
+
+    private void handleExit() {
+        isCountdownRunning = false;
+        Platform.runLater(() -> {
+            stopListening();
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+                Parent MainPageViewParent = loader.load();
+                Scene scene = new Scene(MainPageViewParent);
+
+                MainPageController mainPageController = loader.getController();
+                mainPageController.setPrimaryStage(primaryStage);
+                mainPageController.showLabelCancelMatch();
+                primaryStage.setScene(scene);
+                mainPageController.setupMainPage();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Error: Unable to load MainPage.fxml");
+            }
+        });
     }
 
     /**
@@ -213,7 +240,7 @@ public class WaitingRoomController {
                 countdownLabel.setVisible(true);
                 countdownText.setVisible(true);
                 startCountdown();
-                stopListening();
+//                stopListening();
             });
         } else {
             System.out.println("Could not extract usernames from message.");
@@ -227,23 +254,28 @@ public class WaitingRoomController {
      */
     private void startCountdown() {
         countdownLabel.setText(String.valueOf(countdownTime));
-        isCountdownRunning = true;
         new Thread(() -> {
             while (countdownTime > 0 && isCountdownRunning) {
                 try {
                     Thread.sleep(1000);
                     countdownTime--;
                     Platform.runLater(() -> countdownLabel.setText(String.valueOf(countdownTime)));
+                    if(isOpponentExit){
+                        break;
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
                 }
             }
 
-            if (isCountdownRunning) {
+            if (countdownTime==0 && !isOpponentExit) {
+                System.out.println(countdownTime+" dvcdz "+isOpponentExit);
                 if (isInviter) {
+                    stopListening();
                     sendStartGameCommand();
                 } else {
+                    stopListening();
                     Platform.runLater(() -> startGame(gameId, inviterId, inviteeId));
                 }
             }
@@ -315,25 +347,8 @@ public class WaitingRoomController {
      *
      * @throws IOException If the main page cannot be loaded
      */
-//    @FXML
-//    void ClickExit() throws IOException {
-//        // Dừng đếm ngược khi người dùng nhấn "Exit"
-//        isCountdownRunning = false;
-//        stopListening();
-//        // Điều hướng về MainPage
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-//
-//        Parent MainPageViewParent = loader.load();
-//        Scene scene = new Scene(MainPageViewParent);
-//
-//        MainPageController mainPageController = loader.getController();
-//        mainPageController.setPrimaryStage(primaryStage);
-//
-//        primaryStage.setScene(scene);
-//        mainPageController.setupMainPage();
-//    }
-    @FXML
+
+    // click refuse
     void handleRufuse() throws IOException {
         // Dừng đếm ngược khi người dùng nhấn "Exit"
         isCountdownRunning = false;
@@ -347,34 +362,64 @@ public class WaitingRoomController {
 
         MainPageController mainPageController = loader.getController();
         mainPageController.setPrimaryStage(primaryStage);
-
+        mainPageController.showLabelRefuseMatch();
         primaryStage.setScene(scene);
         mainPageController.setupMainPage();
     }
     @FXML
-    void ClickExit() throws IOException {
-        stopListening();
-        if(!isOpponentExit){
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("username",username);
-        params.put("opponent", opponentName);
-        params.put("userId",inviterId);
-        params.put("opponentId", inviteeId);
+    void ClickExit(ActionEvent e) throws IOException {
+        // Chủ phòng
+        if(isInviter){
+            stopListening();
+            if(!isOpponentExit){
+                isOpponentExit=true;
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("username",username);
+                params.put("opponent", opponentName);
+                params.put("userId",inviterId);
+                params.put("opponentId", inviteeId);
 
-        Response response =messageService.sendRequestAndReceiveResponse("exitResult", params);
-        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
-            loadMainPage();
-        } else {
-            System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+                Response response =messageService.sendRequestAndReceiveResponse("exitResult", params);
+                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                    loadMainPage();
+                } else {
+                    System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+                }
+            }
+            else {
+                loadMainPage();
+            }
         }
-    }
-        else {
-            loadMainPage();
+        else{
+            // Người chơi
+            stopListening();
+            if(!isOpponentExit){
+                isOpponentExit=true;
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("username",username);
+                params.put("opponent", opponentName);
+                params.put("userId",inviteeId);
+                params.put("opponentId", inviterId);
+                System.out.println("username "+ opponentName);
+                System.out.println("opponent "+ username);
+                System.out.println("userId" + inviteeId);
+                System.out.println("opponentId "+ inviterId);
+
+                Response response =messageService.sendRequestAndReceiveResponse("exitResult", params);
+                if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                    loadMainPage();
+                } else {
+                    System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+                }
+            }
+            else {
+                loadMainPage();
+            }
         }
+
     }
 
     private void loadMainPage() {
-
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
@@ -384,7 +429,6 @@ public class WaitingRoomController {
 
             MainPageController mainPageController = loader.getController();
             mainPageController.setPrimaryStage(primaryStage);
-
             primaryStage.setScene(scene);
             mainPageController.setupMainPage();
         } catch (IOException e) {
@@ -399,14 +443,7 @@ public class WaitingRoomController {
      * Now this button is deprecated, the current implementation is countdown and navigate to the game play page.
      * Should be handled in future
      */
-    @FXML
-    void ClickStart(ActionEvent event) {
-        if ("READY".equals(inviteeButton.getText())) {
-            startGame(gameId, inviterId, inviteeId);
-        } else {
-            System.out.println("Both players need to be ready.");
-        }
-    }
+
 
     /**
      * Stop listening for the invitee to join the room after the invitee has joined or the player has exited.

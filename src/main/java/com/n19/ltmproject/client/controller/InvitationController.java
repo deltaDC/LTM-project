@@ -42,6 +42,7 @@ public class InvitationController {
     private volatile boolean isCountdownRunning = true;
     private volatile boolean isOpponentExit = false;
 
+
     /**
      * Set up the invitation information.
      *
@@ -191,22 +192,43 @@ public class InvitationController {
      * @throws IOException If the waiting room cannot be loaded
      */
     private void loadWaitingRoom() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+                Parent waitViewParent = loader.load();
 
-        Parent WaitingRoomParent = loader.load();
-        Scene scene = new Scene(WaitingRoomParent);
-
-        WaitingRoomController waitingRoomController = loader.getController();
-        waitingRoomController.setPrimaryStage(primaryStage);
-        waitingRoomController.setUpOpponent(
+                WaitingRoomController waitingRoomController = loader.getController();
+                waitingRoomController.setPrimaryStage(primaryStage);
+                waitingRoomController.setUpOpponent(
                 this.inviterId,
                 SessionManager.getCurrentUser().getId(),
                 this.inviterName,
                 SessionManager.getCurrentUser().getUsername()
         );
 
-        primaryStage.setScene(scene);
+                Scene scene = new Scene(waitViewParent);
+                primaryStage.setScene(scene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+//        FXMLLoader loader = new FXMLLoader();
+//        loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+//
+//        Parent WaitingRoomParent = loader.load();
+//        Scene scene = new Scene(WaitingRoomParent);
+//
+//        WaitingRoomController waitingRoomController = loader.getController();
+//        waitingRoomController.setPrimaryStage(primaryStage);
+//        waitingRoomController.setUpOpponent(
+//                this.inviterId,
+//                SessionManager.getCurrentUser().getId(),
+//                this.inviterName,
+//                SessionManager.getCurrentUser().getUsername()
+//        );
+//
+//        primaryStage.setScene(scene);
     }
 
     /**
