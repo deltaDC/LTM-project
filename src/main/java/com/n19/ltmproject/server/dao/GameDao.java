@@ -7,7 +7,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 public class GameDao {
@@ -88,5 +87,26 @@ public class GameDao {
         }
 
         return game;
+    }
+
+    @Deprecated
+    public String SendChatMessageDao(long currentPlayerId, long opponentPlayerId, String message) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null; // Bắt đầu giao dịch
+
+        try {
+            // Bắt đầu giao dịch
+            transaction = session.beginTransaction();
+            transaction.commit();  // Hoàn tất giao dịch
+            return currentPlayerId + "-" + opponentPlayerId + "-" + message;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();  // Nếu có lỗi, rollback giao dịch
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();  // Đóng session sau khi hoàn tất
+        }
+        return null;
     }
 }

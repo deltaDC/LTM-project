@@ -1,19 +1,30 @@
 package com.n19.ltmproject.client.controller;
 
+import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
+import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +69,29 @@ public class ResultController {
     private String username;
     private  String opponentName;
 
-    public void setUpPlayerID(long playerId, long opponentId,String username, String opponentName) {
+    @FXML
+    private TextField chatInput;
+
+    @FXML
+    private VBox chatBox;
+
+    // Định dạng thời gian: giờ:phút
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    private final Gson gson = new Gson();
+
+    public void setResults(String results, String score, boolean isWinner, boolean isDraw,
+            long currentPlayerId, long opponentPlayerId
+    ) {
+        this.isWinner = isWinner;
+        this.isDraw = isDraw;
+        scoreLabel.setText(score);
+        resultLabel.setText(results);
+        this.currentPlayerId = currentPlayerId;
+        this.opponentPlayerId = opponentPlayerId;
+    }
+
+    public void setUpPlayerID(long playerId, long opponentId, String username, String opponentName) {
         this.currentPlayerId = playerId;
         this.opponentPlayerId = opponentId;
         this.username = username;
@@ -68,13 +101,6 @@ public class ResultController {
     public void setPlayerNames(String currentPlayerName, String opponentPlayerName) {
         currentPlayerNameLabel.setText(currentPlayerName);
         opponentPlayerNameLabel.setText(opponentPlayerName);
-    }
-
-    public void setResults(String results, String score, boolean isWinner, boolean isDraw) {
-        this.isWinner = isWinner;
-        this.isDraw = isDraw;
-        scoreLabel.setText(score);
-        resultLabel.setText(isDraw ? "Trận đấu hòa!" : (isWinner ? "Bạn đã thắng!" : "Bạn đã thua!"));
     }
 
     @FXML
@@ -102,7 +128,6 @@ public class ResultController {
     @FXML
     private void handlePlayAgain() {
         stopListening();
-//        sendResultToServer();
         HashMap<String, Object> params = new HashMap<>();
         params.put("username",username);
         params.put("opponent", opponentName);
@@ -115,9 +140,9 @@ public class ResultController {
         } else {
             System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
         }
-
     }
-    public void startListeningForInvitee() {
+
+    public void startListeningForServer() {
         System.out.println("Listening for player1 quit game ...");
 
        new Thread(() -> {
@@ -141,45 +166,30 @@ public class ResultController {
                         playAgainRefuseButton.setVisible(true);
                         System.out.println("Bạn nhận dc lời mời chs lại");
                     }
+                    if (serverMessage.contains("Send message from user1:")) {
+                        parseServerChatMessage(serverMessage);
+                    }
                 }
             } catch (IOException ex) {
                 System.out.println("Error receiving message from server: " + ex.getMessage());
             }
         }).start();
+    }
 
+    private void parseServerChatMessage(String serverMessage) {
+        // The request is in the format: "currentPlayerId-opponentPlayerId-message"
+        String playerIdAndMesStr = serverMessage.substring(25);
+        String[] messages = playerIdAndMesStr.split("\\-");
+        int senderId = Integer.parseInt(messages[0]);
+        int receiverId = Integer.parseInt(messages[1]);
+        String message = messages[2];
+        System.out.println("message from user2 " + message);
+        renderChatMessage(senderId, receiverId, message);
     }
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
-        startListeningForInvitee();
-    }
-
-    private void sendResultToServer() {
-        boolean isWinner = this.isWinner;
-        boolean isDraw = this.isDraw;
-
-        try {
-            System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
-
-            messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
-                    "gameId", gameId,
-                    "isWinner", isWinner,
-                    "isDraw", isDraw
-            ));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Lỗi: Không thể gửi kết quả về server");
-        }
-    }
-
-    private void sendExitNotification() {
-        Map<String, Object> params = Map.of("exitResult", opponent);
-        Response response = messageService.sendRequestAndReceiveResponse("exitResult", params);
-        System.out.println(
-                response != null && "OK".equalsIgnoreCase(response.getStatus())
-                ? "Kết quả thoát đã được xác nhận"
-                : "Xác nhận kết quả thoát thất bại"
-        );
+        startListeningForServer();
     }
 
     private void loadMainPage() {
@@ -288,4 +298,67 @@ public class ResultController {
         primaryStage.setScene(scene);
     }
 
+
+    @FXML
+    private void handleSendChat() {
+        String message = chatInput.getText();
+        if (!message.isEmpty()) {
+            sendChatToServer(currentPlayerId, opponentPlayerId, message);
+            renderChatMessage(this.currentPlayerId, this.opponentPlayerId, message);
+        }
+    }
+
+    private void sendChatToServer(long currentPlayerId, long opponentPlayerId, String message) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("currentPlayerId", currentPlayerId + "");
+        params.put("opponentPlayerId", opponentPlayerId + "");
+        params.put("message", message);
+
+        messageService.sendRequestNoResponse("sendChatMessage", params);
+    }
+
+    private void renderChatMessage(long currentPlayerId, long opponentPlayerId, String message) {
+        // Lấy thời gian hiện tại
+        String currentTime = LocalDateTime.now().format(TIME_FORMATTER);
+
+        // Tạo nội dung tin nhắn kèm thời gian
+        String messageWithTime;
+        if (currentPlayerId == SessionManager.getCurrentUser().getId()) {
+            messageWithTime = "[" + currentTime + "] " + username + ": " + message;
+        } else {
+            messageWithTime = "[" + currentTime + "] " + opponentName + ": " + message;
+        }
+
+        // Đảm bảo việc cập nhật giao diện xảy ra trên UI thread
+        Platform.runLater(() -> {
+            // Tạo một Label mới cho tin nhắn
+            Label messageLabel = new Label(messageWithTime);
+            messageLabel.setMaxWidth(350); // Đặt kích thước tối đa cho tin nhắn
+            messageLabel.setWrapText(true); // Cho phép ngắt dòng nếu tin nhắn quá dài
+
+            // Tạo một HBox chứa tin nhắn và căn chỉnh dựa trên người gửi
+            HBox messageBox = new HBox(messageLabel);
+            messageBox.setPrefWidth(Region.USE_COMPUTED_SIZE);
+
+            if (currentPlayerId == SessionManager.getCurrentUser().getId()) {
+                messageBox.setAlignment(Pos.CENTER_RIGHT);
+                messageBox.setPadding(new Insets(0, 10, 0, 160)); // Đẩy tin nhắn của mình về sát viền phải
+                messageLabel.setStyle(
+                        "-fx-text-fill: white; -fx-background-color: #4CAF50; -fx-padding: 10; -fx-background-radius: 10;"
+                );
+            } else {
+                messageBox.setAlignment(Pos.CENTER_LEFT);
+                messageBox.setPadding(new Insets(0, 160, 0, 10)); // Đẩy tin nhắn của đối phương về sát viền trái
+                messageLabel.setStyle(
+                        "-fx-text-fill: white; -fx-background-color: #4A4A4A; -fx-padding: 10; -fx-background-radius: 10;"
+                );
+            }
+
+            // Thêm tin nhắn vào VBox chatBox
+            chatBox.getChildren().add(messageBox);
+
+            // Làm trống ô nhập sau khi gửi tin nhắn
+            chatInput.clear();
+        });
+    }
 }
