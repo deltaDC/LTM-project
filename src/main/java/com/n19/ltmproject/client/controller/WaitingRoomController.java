@@ -54,11 +54,14 @@ public class WaitingRoomController {
     @FXML
     private Label countdownText;
 
+
     private int countdownTime = 3;
     private long inviterId;
     private long inviteeId;
     private long gameId;
-
+    private volatile boolean isOpponentExit = false;
+    private String username;
+    private  String opponentName;
     /**
      * Set up the host information.
      *
@@ -73,6 +76,8 @@ public class WaitingRoomController {
         this.inviteeId = inviteeId;
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
         this.isInviter = true;
+        this.username = waitingRoomHostName;
+        this.opponentName = waitingRoomPlayerName;
     }
 
     /**
@@ -89,6 +94,8 @@ public class WaitingRoomController {
         this.inviteeId = inviteeId;
         this.waitingRoomPlayerName.setText(waitingRoomPlayerName);
         this.isInviter = false;
+        this.username = host;
+        this.opponentName = waitingRoomPlayerName;
     }
 
     /**
@@ -169,7 +176,7 @@ public class WaitingRoomController {
                 Platform.runLater(() -> {
                     System.out.println("Player declined the invitation.");
                     try {
-                        ClickExit();
+                        handleRufuse();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -308,8 +315,26 @@ public class WaitingRoomController {
      *
      * @throws IOException If the main page cannot be loaded
      */
+//    @FXML
+//    void ClickExit() throws IOException {
+//        // Dừng đếm ngược khi người dùng nhấn "Exit"
+//        isCountdownRunning = false;
+//        stopListening();
+//        // Điều hướng về MainPage
+//        FXMLLoader loader = new FXMLLoader();
+//        loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+//
+//        Parent MainPageViewParent = loader.load();
+//        Scene scene = new Scene(MainPageViewParent);
+//
+//        MainPageController mainPageController = loader.getController();
+//        mainPageController.setPrimaryStage(primaryStage);
+//
+//        primaryStage.setScene(scene);
+//        mainPageController.setupMainPage();
+//    }
     @FXML
-    void ClickExit() throws IOException {
+    void handleRufuse() throws IOException {
         // Dừng đếm ngược khi người dùng nhấn "Exit"
         isCountdownRunning = false;
         stopListening();
@@ -325,6 +350,47 @@ public class WaitingRoomController {
 
         primaryStage.setScene(scene);
         mainPageController.setupMainPage();
+    }
+    @FXML
+    void ClickExit() throws IOException {
+        stopListening();
+        if(!isOpponentExit){
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("username",username);
+        params.put("opponent", opponentName);
+        params.put("userId",inviterId);
+        params.put("opponentId", inviteeId);
+
+        Response response =messageService.sendRequestAndReceiveResponse("exitResult", params);
+        if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+            loadMainPage();
+        } else {
+            System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+        }
+    }
+        else {
+            loadMainPage();
+        }
+    }
+
+    private void loadMainPage() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+            Parent MainPageViewParent = loader.load();
+            Scene scene = new Scene(MainPageViewParent);
+
+            MainPageController mainPageController = loader.getController();
+            mainPageController.setPrimaryStage(primaryStage);
+
+            primaryStage.setScene(scene);
+            mainPageController.setupMainPage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error: Unable to load MainPage.fxml");
+        }
     }
 
     /**

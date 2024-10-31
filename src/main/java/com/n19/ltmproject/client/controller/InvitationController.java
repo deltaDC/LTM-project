@@ -22,7 +22,7 @@ public class InvitationController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
-
+    private volatile boolean running = true;
     @Setter
     private Stage primaryStage;
 
@@ -40,6 +40,7 @@ public class InvitationController {
     private long inviteeId;
     private int invitationCountdownSeconds = 10;
     private volatile boolean isCountdownRunning = true;
+    private volatile boolean isOpponentExit = false;
 
     /**
      * Set up the invitation information.
@@ -56,6 +57,33 @@ public class InvitationController {
         this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
         createReturnToMainPageTimeline(inviterName, inviterId, inviteeId);
+        startListeningForServer();
+    }
+
+    public void startListeningForServer() {
+        System.out.println("Listening for player1 quit game ...");
+
+        new Thread(() -> {
+            try {
+                while (running) {
+                    if (!this.running) {
+                        break;
+                    }
+                    System.out.println("Thread in Invitation");
+                    String serverMessage = serverHandler.receiveMessage();
+                    System.out.println("THREAD: " + serverMessage);
+                    if (serverMessage != null && serverMessage.contains("EXITRESULT")){
+                        isOpponentExit=true;
+                        handleExit();
+//                        playAgainButton.setVisible(false);
+//                        opponentExitLabel.setVisible(true);
+                    }
+                }
+                System.out.println("END THREAD IN INVITATION");
+            } catch (IOException ex) {
+                System.out.println("Error receiving message from server: " + ex.getMessage());
+            }
+        }).start();
     }
 
     /**
@@ -91,7 +119,8 @@ public class InvitationController {
                     return;
                 }
             }
-            if (isCountdownRunning) {
+            if (isCountdownRunning && !isOpponentExit) {
+                stopListening();
                 sendRefusalAndMoveToMainPage(userInvite, inviterId, inviteeId);
             }
         }).start();
@@ -133,7 +162,7 @@ public class InvitationController {
      */
     public void ClickAccept(ActionEvent e) throws IOException {
         isCountdownRunning = false;
-
+        stopListening();
         sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername(), inviterId, inviteeId);
         loadWaitingRoom();
     }
@@ -188,7 +217,7 @@ public class InvitationController {
      */
     public void ClickRefuse(ActionEvent e) throws IOException {
         isCountdownRunning = false;
-
+        stopListening();
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("invitee", SessionManager.getCurrentUser().getUsername());
@@ -222,5 +251,21 @@ public class InvitationController {
 
         primaryStage.setScene(scene);
         mainPageController.setupMainPage();
+    }
+    @FXML
+    private void handleExit() throws IOException {
+        isCountdownRunning = false;
+        Platform.runLater(() -> {
+            try {
+                stopListening();
+                moveToMainPage();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+    private void stopListening() {
+        running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
     }
 }
