@@ -15,36 +15,64 @@
 }
 
 .table-view {
-    -fx-background-color: #E7DCC1;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
+    -fx-background-color: linear-gradient(to bottom, #E3F2FD, #BBDEFB); /* Nền gradient từ xanh dương nhạt đến xanh pastel */
+    -fx-border-color: #90CAF9; /* Viền xanh nhạt */
+    -fx-border-radius: 8px; /* Bo góc mềm mại */
+    -fx-effect: dropshadow(gaussian, rgba(0, 145, 234, 0.2), 10, 0.3, 0, 2); /* Bóng đổ nhẹ */
 }
-.table-view .scroll-bar:horizontal { /* Ẩn thanh cuộn ngang   */
-    -fx-opacity: 0;
+
+.table-view .scroll-bar:horizontal,
+.table-view .scroll-bar:vertical {
+    -fx-opacity: 0; /* Ẩn cả thanh cuộn ngang và dọc */
+    -fx-pref-width: 0px;
     -fx-pref-height: 0px;
 }
+
 .table-view .column-header {
-    -fx-background-color: #E7DCC1; /* Màu nền header*/
-}
-.table-column {
-    -fx-border-width: 0;
-}
-.table-cell {
-    -fx-alignment: CENTER; /* Căn giữa cả chiều ngang và chiều dọc cho tất cả các ô */
-    -fx-text-fill: #000;
-}
-
-.table-row-cell:selected {
-    -fx-background-color: red;
-}
-
-.table-row-cell:focused {
-    -fx-background-color: #999;
+    -fx-background-color: #64B5F6; /* Nền tiêu đề xanh dương đậm */
+    -fx-text-fill: #FFFFFF; /* Màu chữ trắng cho tiêu đề */
+    -fx-font-weight: bold;
+    -fx-padding: 12px;
+    -fx-font-size: 15px; /* Kích thước chữ tiêu đề */
+    -fx-border-color: #1E88E5; /* Viền dưới của tiêu đề */
+    -fx-border-width: 0 0 2px 0;
+    -fx-effect: dropshadow(gaussian, rgba(30, 136, 229, 0.4), 3, 0.5, 0, 2); /* Hiệu ứng bóng đổ cho tiêu đề */
 }
 
 .table-row-cell {
-    -fx-background-color: transparent;
+    -fx-background-color: #E3F2FD; /* Màu nền xanh dương nhạt */
+    -fx-border-color: #BBDEFB; /* Viền nhạt */
+    -fx-border-width: 0 0 1px 0;
 }
+
+.table-row-cell:odd {
+    -fx-background-color: #BBDEFB; /* Hàng lẻ màu xanh dương pastel */
+}
+
+.table-row-cell:even {
+    -fx-background-color: #E3F2FD; /* Hàng chẵn màu xanh dương nhạt */
+}
+
+.table-cell {
+    -fx-alignment: CENTER; /* Căn giữa */
+    -fx-text-fill: #1A237E; /* Màu chữ xanh đậm */
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-color: transparent; /* Trong suốt cho từng ô */
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #0288D1; /* Màu nền xanh tươi khi hàng được chọn */
+    -fx-text-fill: #FAFAFA; /* Màu chữ sáng khi hàng được chọn */
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #81D4FA; /* Màu xanh đậm hơn khi hover */
+    -fx-text-fill: #01579B; /* Màu chữ xanh đậm khi hover */
+}
+
+
 .button-acthorpane {
     -fx-background-color: #fdf2db;
     -fx-border-color: #000000;
@@ -78,5 +106,31 @@
     -fx-background-color:  #3B8E26;
     -fx-border-radius: 15;
     -fx-background-radius: 30;
+}
+.labelrefusematch{
+    -fx-background-color: #ffdddd;
+    -fx-text-fill: #d9534f;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-color: #d43f3a;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+    -fx-alignment: center;
+}
+.labelcancelmatch{
+    -fx-background-color: #ffdddd;
+    -fx-text-fill: #d9534f;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-color: #d43f3a;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+    -fx-alignment: center;
 }
 /*END CSS TrangChu */

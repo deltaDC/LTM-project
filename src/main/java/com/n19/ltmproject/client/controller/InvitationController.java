@@ -22,7 +22,7 @@ public class InvitationController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
-
+    private volatile boolean running = true;
     @Setter
     private Stage primaryStage;
 
@@ -40,6 +40,8 @@ public class InvitationController {
     private long inviteeId;
     private int invitationCountdownSeconds = 10;
     private volatile boolean isCountdownRunning = true;
+    private volatile boolean isOpponentExit = false;
+
 
     /**
      * Set up the invitation information.
@@ -56,6 +58,33 @@ public class InvitationController {
         this.inviter.setText(inviterName.toUpperCase() + " INVITE YOU");
         this.invitationProfile.setText(invitationProfile);
         createReturnToMainPageTimeline(inviterName, inviterId, inviteeId);
+        startListeningForServer();
+    }
+
+    public void startListeningForServer() {
+        System.out.println("Listening for player1 quit game ...");
+
+        new Thread(() -> {
+            try {
+                while (running) {
+                    if (!this.running) {
+                        break;
+                    }
+                    System.out.println("Thread in Invitation");
+                    String serverMessage = serverHandler.receiveMessage();
+                    System.out.println("THREAD: " + serverMessage);
+                    if (serverMessage != null && serverMessage.contains("EXITRESULT")){
+                        isOpponentExit=true;
+                        handleExit();
+//                        playAgainButton.setVisible(false);
+//                        opponentExitLabel.setVisible(true);
+                    }
+                }
+                System.out.println("END THREAD IN INVITATION");
+            } catch (IOException ex) {
+                System.out.println("Error receiving message from server: " + ex.getMessage());
+            }
+        }).start();
     }
 
     /**
@@ -91,7 +120,8 @@ public class InvitationController {
                     return;
                 }
             }
-            if (isCountdownRunning) {
+            if (isCountdownRunning && !isOpponentExit) {
+                stopListening();
                 sendRefusalAndMoveToMainPage(userInvite, inviterId, inviteeId);
             }
         }).start();
@@ -133,7 +163,7 @@ public class InvitationController {
      */
     public void ClickAccept(ActionEvent e) throws IOException {
         isCountdownRunning = false;
-
+        stopListening();
         sendAcceptanceToServer(this.inviterName, SessionManager.getCurrentUser().getUsername(), inviterId, inviteeId);
         loadWaitingRoom();
     }
@@ -162,22 +192,43 @@ public class InvitationController {
      * @throws IOException If the waiting room cannot be loaded
      */
     private void loadWaitingRoom() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+                Parent waitViewParent = loader.load();
 
-        Parent WaitingRoomParent = loader.load();
-        Scene scene = new Scene(WaitingRoomParent);
-
-        WaitingRoomController waitingRoomController = loader.getController();
-        waitingRoomController.setPrimaryStage(primaryStage);
-        waitingRoomController.setUpOpponent(
+                WaitingRoomController waitingRoomController = loader.getController();
+                waitingRoomController.setPrimaryStage(primaryStage);
+                waitingRoomController.setUpOpponent(
                 this.inviterId,
                 SessionManager.getCurrentUser().getId(),
                 this.inviterName,
                 SessionManager.getCurrentUser().getUsername()
         );
 
-        primaryStage.setScene(scene);
+                Scene scene = new Scene(waitViewParent);
+                primaryStage.setScene(scene);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+//        FXMLLoader loader = new FXMLLoader();
+//        loader.setLocation(getClass().getResource("/com/n19/ltmproject/WaitingRoom.fxml"));
+//
+//        Parent WaitingRoomParent = loader.load();
+//        Scene scene = new Scene(WaitingRoomParent);
+//
+//        WaitingRoomController waitingRoomController = loader.getController();
+//        waitingRoomController.setPrimaryStage(primaryStage);
+//        waitingRoomController.setUpOpponent(
+//                this.inviterId,
+//                SessionManager.getCurrentUser().getId(),
+//                this.inviterName,
+//                SessionManager.getCurrentUser().getUsername()
+//        );
+//
+//        primaryStage.setScene(scene);
     }
 
     /**
@@ -188,7 +239,7 @@ public class InvitationController {
      */
     public void ClickRefuse(ActionEvent e) throws IOException {
         isCountdownRunning = false;
-
+        stopListening();
         HashMap<String, Object> params = new HashMap<>();
 
         params.put("invitee", SessionManager.getCurrentUser().getUsername());
@@ -222,5 +273,32 @@ public class InvitationController {
 
         primaryStage.setScene(scene);
         mainPageController.setupMainPage();
+    }
+    @FXML
+    private void handleExit() throws IOException {
+        isCountdownRunning = false;
+        Platform.runLater(() -> {
+            try {
+                stopListening();
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+                Parent MainPageViewParent = loader.load();
+                Scene scene = new Scene(MainPageViewParent);
+
+                MainPageController mainPageController = loader.getController();
+                mainPageController.setPrimaryStage(primaryStage);
+
+                primaryStage.setScene(scene);
+                mainPageController.setupMainPage();
+                mainPageController.showLabelCancelMatch();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+    private void stopListening() {
+        running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
     }
 }
