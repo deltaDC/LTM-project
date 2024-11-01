@@ -21,18 +21,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ResultController {
 
     private final ServerHandler serverHandler = ServerHandler.getInstance();
     private final MessageService messageService = new MessageService(serverHandler);
+    @Setter
     private volatile boolean running = true;
+    @Setter
     private volatile boolean isOpponentExit = false;
 
     @FXML
@@ -103,6 +105,11 @@ public class ResultController {
         opponentPlayerNameLabel.setText(opponentPlayerName);
     }
 
+//    void setPlayerExit() {
+//        this.isOpponentExit = true;
+//        this.running = false;
+//    }
+
     @FXML
     private void handleExit() {
         stopListening();
@@ -170,6 +177,7 @@ public class ResultController {
                         parseServerChatMessage(serverMessage);
                     }
                 }
+                System.out.println("END THREAD IN RESULT");
             } catch (IOException ex) {
                 System.out.println("Error receiving message from server: " + ex.getMessage());
             }
