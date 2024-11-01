@@ -11,25 +11,33 @@ import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import com.n19.ltmproject.client.model.Player;
+import javafx.util.Duration;
 
 public class MainPageController {
-
+    @FXML
+    private Label labelrefusematch;
+    @FXML
+    private Label labelcancelmatch;
     @FXML
     private TableView<Player> table;
 
@@ -44,6 +52,16 @@ public class MainPageController {
 
     @FXML
     private Label mainPageUsername;
+
+    @FXML
+    private Button onlineButton;
+    @FXML
+    private Button inGameButton;
+    @FXML
+    private Button offlineButton;
+
+
+    private ObservableList<Player> filteredList = FXCollections.observableArrayList(); // Danh sách lọc
 
     private ObservableList<Player> playerList;
     private Stage primaryStage;
@@ -112,6 +130,25 @@ public class MainPageController {
             e.printStackTrace();
         }
     }
+    // Phương thức lọc theo trạng thái
+    private void filterPlayers(PlayerStatus status) {
+        filteredList.setAll(playerList.filtered(player -> player.getStatus().equals(status)));
+        table.setItems(filteredList); // Hiển thị danh sách lọc
+        table.getSelectionModel().clearSelection();
+    }
+    @FXML
+    public void ClickOnlineButton(ActionEvent event) {
+        filterPlayers(PlayerStatus.ONLINE);
+    }
+    @FXML
+    public void ClickInGameButton(ActionEvent event) {
+        filterPlayers(PlayerStatus.IN_GAME);
+    }
+    @FXML
+    public void ClickOfflineButton(ActionEvent event) {
+        filterPlayers(PlayerStatus.OFFLINE);
+    }
+
 
 
     /**
@@ -331,5 +368,39 @@ public class MainPageController {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
         setupMainPage();
+    }
+    public void showLabelRefuseMatch(){
+        labelrefusematch.setVisible(true);
+
+        // Tạo Timeline để ẩn Label sau 3 giây
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.seconds(2),
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        labelrefusematch.setVisible(false); // Ẩn Label sau 5 giây
+                    }
+                }
+        ));
+
+        timeline.setCycleCount(1); // Chạy 1 lần duy nhất
+        timeline.play(); // Bắt đầu Timeline
+    }
+    public void showLabelCancelMatch(){
+        labelcancelmatch.setVisible(true);
+
+        // Tạo Timeline để ẩn Label sau 3 giây
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.seconds(2),
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        labelcancelmatch.setVisible(false); // Ẩn Label sau 5 giây
+                    }
+                }
+        ));
+
+        timeline.setCycleCount(1); // Chạy 1 lần duy nhất
+        timeline.play(); // Bắt đầu Timeline
     }
 }

@@ -96,7 +96,7 @@ public class GamePlayController {
     @FXML
     private Label opponentPlayerName;
 
-    private int timeLeft = 60;
+    private int timeLeft = 50;
 
     private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
@@ -108,6 +108,10 @@ public class GamePlayController {
     private double offsetY;
     private double initialX;
     private double initialY;
+
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
+    }
 
     /**
      * Initialize the game with the game ID, current player ID, opponent player ID,
