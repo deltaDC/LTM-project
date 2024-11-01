@@ -70,6 +70,56 @@ public class PlayerHistoryDao {
 
         return playerHistoryDtos;
     }
+    public PlayerHistoryDto getPlayerHistoryById(long playerId) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        PlayerHistoryDto playerHistoryDto = null;
+
+        try {
+            transaction = session.beginTransaction();
+
+            // Create CriteriaBuilder
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+
+            // Create CriteriaQuery for PlayerHistoryDto
+            CriteriaQuery<PlayerHistoryDto> cq = cb.createQuery(PlayerHistoryDto.class);
+
+            // Define root entities
+            Root<Player> playerRoot = cq.from(Player.class);
+            Root<PlayerHistory> playerHistoryRoot = cq.from(PlayerHistory.class);
+
+            // Define join condition and select specific player's history based on playerId
+            cq.select(cb.construct(
+                            PlayerHistoryDto.class,
+                            playerRoot.get("id"),
+                            playerRoot.get("username"),
+                            playerHistoryRoot.get("draws"),
+                            playerHistoryRoot.get("losses"),
+                            playerHistoryRoot.get("totalGames"),
+                            playerHistoryRoot.get("totalPoints"),
+                            playerHistoryRoot.get("wins")
+                    ))
+                    .where(cb.and(
+                            cb.equal(playerRoot.get("id"), playerHistoryRoot.get("playerId")),
+                            cb.equal(playerRoot.get("id"), playerId)
+                    ));
+
+            // Execute the query and get single result
+            playerHistoryDto = session.createQuery(cq).uniqueResult();
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+
+        return playerHistoryDto;
+    }
+
 
     // Phương thức cập nhật lịch sử chơi game của người chơi
     public boolean updateGameHistory(long playerId, boolean isWin, boolean isDraw) {

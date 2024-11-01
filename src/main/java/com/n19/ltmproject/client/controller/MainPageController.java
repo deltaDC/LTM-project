@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.n19.ltmproject.client.handler.ServerHandler;
 import com.n19.ltmproject.client.model.auth.SessionManager;
+import com.n19.ltmproject.client.model.dto.PlayerHistoryDto;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.model.enums.PlayerStatus;
 import com.n19.ltmproject.client.service.MessageService;
@@ -203,6 +204,15 @@ public class MainPageController {
             long inviterId = Long.parseLong(serverMessage.split(" ")[4]);
             long inviteeId = SessionManager.getCurrentUser().getId();
 
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("inviterId", inviterId);
+            Response response = messageService.sendRequestAndReceiveResponse("getPlayerHistoryById", params);
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                PlayerHistoryDto playerHistory = gson.fromJson(new Gson().toJson(response.getData()), PlayerHistoryDto.class);
+                invitationController.SetUpWinLossDrawInviter(playerHistory.getTotalGames(),playerHistory.getTotalPoints(),playerHistory.getWins(),playerHistory.getDraws(),playerHistory.getLosses());
+            } else {
+                System.out.println("Failed to get player history: " + (response != null ? response.getMessage() : "Unknown error"));
+            }
             String inviterProfile = "Default";
             invitationController.setUpInvitation(userInvite, inviterId, inviteeId, inviterProfile);
             primaryStage.setScene(invitationScene);

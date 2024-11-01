@@ -27,9 +27,9 @@
                <Font name="System Bold" size="20.0" />
             </font>
          </Label>
-         <Button layoutX="345.0" layoutY="126.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="POINT:" />
-         <Button layoutX="346.0" layoutY="249.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="LOSS:" />
-         <Button layoutX="346.0" layoutY="290.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="RANK:" />
+         <Button fx:id="LabelTotalPoint" layoutX="346.0" layoutY="155.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="POINT:" />
+         <Button fx:id="LabelLosses" layoutX="346.0" layoutY="290.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="LOSS:" />
+         <Button fx:id="LabelTotalGames" layoutX="346.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="TOTALGAME:" />
          <Circle fill="#221e1f" layoutX="383.0" layoutY="55.0" radius="40.0" stroke="BLACK" strokeType="INSIDE" />
          <ImageView fitHeight="44.0" fitWidth="43.0" layoutX="361.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@images/iconrecycle2.png" />
@@ -39,8 +39,8 @@
                <Image url="@images/invitation-image.png" />
             </image>
          </ImageView>
-         <Button layoutX="345.0" layoutY="208.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="DRAW:" />
-         <Button layoutX="346.0" layoutY="167.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="WIN:" />
+         <Button fx:id="LabelDraws" layoutX="346.0" layoutY="245.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="DRAW:" />
+         <Button fx:id="LabelWins" layoutX="346.0" layoutY="200.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="162.0" styleClass="button-acthorpane-invitation" text="WIN:" />
          <Button layoutX="27.0" layoutY="188.0" mnemonicParsing="false" onAction="#ClickAccept" prefHeight="50.0" prefWidth="144.0" styleClass="buttonaccept-invitation" stylesheets="@css/Invitation.css" text="ACCEPT" textFill="WHITE">
             <font>
                <Font name="System Bold" size="24.0" />

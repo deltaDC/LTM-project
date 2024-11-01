@@ -20,4 +20,7 @@ public class PlayerHistoryService {
     public boolean updateGameHistory(long playerId, boolean isWin, boolean isDraw) {
         return playerHistoryDao.updateGameHistory(playerId, isWin, isDraw);
     }
+    public PlayerHistoryDto getPlayerHistoryById(long playerId) {
+        return playerHistoryDao.getPlayerHistoryById(playerId);
+    }
 }

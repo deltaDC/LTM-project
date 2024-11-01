@@ -6,6 +6,7 @@ import com.n19.ltmproject.server.command.auth.SignupCommand;
 import com.n19.ltmproject.server.command.game.*;
 import com.n19.ltmproject.server.command.player.GetAllPlayerCommand;
 import com.n19.ltmproject.server.command.playerHistory.GetAllPlayerHistoryCommand;
+import com.n19.ltmproject.server.command.playerHistory.GetPlayerHistoryByIdCommand;
 import com.n19.ltmproject.server.command.status.*;
 import com.n19.ltmproject.server.handler.ClientHandler;
 import com.n19.ltmproject.server.manager.ClientManager;
@@ -27,6 +28,7 @@ public class CommandFactory {
             case "exitResult" -> new ExitResultCommand(clientManager);
             case "sendMatchResult" -> new SendMatchResult();
             case "getAllPlayer" -> new GetAllPlayerCommand();
+            case "getPlayerHistoryById" -> new GetPlayerHistoryByIdCommand();
             case "getAllPlayerHistory" -> new GetAllPlayerHistoryCommand();
             case "updateScore" -> new UpdateGameScoreCommand(clientManager);
             case "logout" -> new LogoutCommand();
