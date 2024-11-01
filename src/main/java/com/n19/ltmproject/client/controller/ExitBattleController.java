@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ExitBattleController {
@@ -21,6 +22,9 @@ public class ExitBattleController {
     private final MessageService messageService = new MessageService(serverHandler);
     private Stage primaryStage;
 
+    private long gameId;
+    private long currentPlayerId;
+    private long opponentPlayerId;
     private int score;
     private int opponentScore;
     private int timeLeft;
@@ -34,7 +38,10 @@ public class ExitBattleController {
 
     // Hàm để thiết lập trạng thái của GamePlay
     //TODO remove this method if not used
-    public void setGamePlayState(int score, int opponentScore, int timeLeft, Timeline timeline,  Stage primaryStage) {
+    public void setGamePlayState(long gameId, long currentPlayerId, long opponentPlayerId, int score, int opponentScore, int timeLeft, Timeline timeline, Stage primaryStage) {
+        this.gameId = gameId;
+        this.currentPlayerId = currentPlayerId;
+        this.opponentPlayerId = opponentPlayerId;
         this.score = score;
         this.opponentScore = opponentScore;
         this.timeLeft = timeLeft;
@@ -49,56 +56,39 @@ public class ExitBattleController {
 
     @FXML
     private void onConfirmExit(ActionEvent event) throws IOException {
-        if (timeline != null) {
-            timeline.stop();
-        }
-        if (exitTimeline != null) {
-            exitTimeline.stop();
-        }
-        serverHandler.sendMessage("STOP_LISTENING");
+        gamePlayController.stopListening();
 
         sendResultToServer();
 
-        goToHomePage(event);
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+
+        gamePlayController.returnMainPage();
     }
 
     private void sendResultToServer() {
-        boolean isWinner = gamePlayController.getCurrentPlayerScore() > gamePlayController.getOpponentPlayerScore();
-        boolean isDraw = gamePlayController.getCurrentPlayerScore() == gamePlayController.getOpponentPlayerScore();
-
         try {
-            long gameId = 123; // Dữ liệu cố định
-            System.out.println("Dữ liệu gửi về server: " + String.format("EXIT_GAME {\"gameId\": %d, \"isWinner\": %b, \"isDraw\": %b}", gameId, isWinner, isDraw));
+            // Send the result to the server
+            Map<String, Object> endGameParams = new HashMap<>();
+            endGameParams.put("gameId", gameId);
+            endGameParams.put("player1Id", currentPlayerId);
+            endGameParams.put("player2Id", opponentPlayerId);
+            endGameParams.put("player1Score", score);
+            endGameParams.put("player2Score", opponentScore);
 
-            //TODO change action to EndGameById, and send player history
-            messageService.sendRequestAndReceiveResponse("EXIT_GAME", Map.of(
-                    "gameId", gameId,
-                    "isWinner", isWinner,
-                    "isDraw", isDraw
-            ));
+            messageService.sendRequestAndReceiveResponse("endGameById", endGameParams);
+
+            // exiter is the loser
+            Map<String, Object> matchResultParams = new HashMap<>();
+            matchResultParams.put("winnerId", opponentPlayerId);
+            matchResultParams.put("loserId", currentPlayerId);
+            matchResultParams.put("isWin", true);
+            matchResultParams.put("isDraw", false);
+
+            messageService.sendRequestAndReceiveResponse("sendMatchResult", matchResultParams);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Lỗi: Không thể gửi kết quả về server");
-        }
-    }
-
-    private void goToHomePage(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
-
-            Parent MainPageViewParent = loader.load();
-            Scene scene = new Scene(MainPageViewParent);
-
-            MainPageController mainPageController = loader.getController();
-            mainPageController.setPrimaryStage(primaryStage);
-
-            primaryStage.setScene(scene);
-            serverHandler.sendMessage("STOP_LISTENING");
-            mainPageController.setupMainPage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Lỗi: Không thể tải MainPage.fxml");
         }
     }
 
@@ -108,5 +98,4 @@ public class ExitBattleController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
-
 }

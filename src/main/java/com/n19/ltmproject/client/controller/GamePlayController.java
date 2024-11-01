@@ -74,6 +74,7 @@ public class GamePlayController {
 
 	Timeline timeline;
 
+    @Setter
     @Getter
     private Stage primaryStage;
 
@@ -157,7 +158,7 @@ public class GamePlayController {
      * Start listening to the server for updates the score of the opponent player.
      * This will run in a separate thread.
      */
-    private void startListeningToServer() {
+    void startListeningToServer() {
 
         new Thread(() -> {
             try {
@@ -184,6 +185,20 @@ public class GamePlayController {
      * @param serverMessage The server message
      */
     private void parseServerMessage(String serverMessage) {
+        if (serverMessage.startsWith("New game started! Game ID:")) {
+            // Extract game ID using string manipulation
+            String[] parts = serverMessage.split(": ");
+            if (parts.length > 1) {
+                try {
+                    long newGameId = Long.parseLong(parts[1].trim());
+                    setGameId(newGameId); // Set the game ID in the controller
+                    System.out.println("Successfully passed Game ID: " + newGameId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing Game ID: " + e.getMessage());
+                }
+            }
+        }
+
         // The request is in the format: "[UPDATE_SCORE] Game ID: {gameId}, Opponent Score: {opponentScore}"
         if (serverMessage.startsWith("[UPDATE_SCORE]")) {
             String[] parts = serverMessage.split(",");
@@ -195,6 +210,56 @@ public class GamePlayController {
                     updateOpponentScore(updatedOpponentScore);
                 }
             }
+        }
+
+        if (serverMessage.contains("\"status\":\"GAME_END\"")) {
+            // Hiển thị thông báo và chuyển người chơi đến trang kết quả với trạng thái thắng
+            Platform.runLater(() -> {
+                stopListening();
+                if (timeline != null) {
+                    timeline.stop();
+                }
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
+                    Parent resultScreen = loader.load();
+                    ResultController resultController = loader.getController();
+                    resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
+                    resultController.setOpponentExit();
+
+                    String resultMessage;
+                    boolean isWin = true;
+                    boolean isDraw = false;
+                    String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
+
+
+                    primaryStage.setScene(new Scene(resultScreen));
+                    String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
+                    String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
+
+                    // Set result message and call setResults based on game outcome
+                    resultMessage = "Bạn đã thắng!";
+
+                    resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
+                    resultController.setPrimaryStage(primaryStage);
+
+                    resultController.setResults(
+                            resultMessage,
+                            scoreMessage,
+                            isWin,
+                            isDraw,
+                            this.currentPlayerId,
+                            this.opponentPlayerId
+                    );
+
+                    System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
+                    System.out.println("Trimmed opponent player name: " + trimmedOpponentPlayerName);
+
+                    primaryStage.show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -427,7 +492,7 @@ public class GamePlayController {
         showResultScreen();
     }
 
-    private void stopListening() {
+    void stopListening() {
         running = false;
         serverHandler.sendMessage("STOP_LISTENING");
     }
@@ -539,6 +604,7 @@ public class GamePlayController {
             Parent exitBattleModal = loader.load();
             ExitBattleController exitBattleController = loader.getController();
             exitBattleController.setGamePlayController(this);
+            exitBattleController.setGamePlayState(gameId, currentPlayerId, opponentPlayerId, currentPlayerScore, opponentPlayerScore, timeLeft, timeline, primaryStage);
 
             Stage modalStage = new Stage();
             modalStage.initOwner(primaryStage);
@@ -548,6 +614,8 @@ public class GamePlayController {
             modalStage.setOnCloseRequest(event -> {
                 event.consume();
                 modalStage.hide();
+                startListeningToServer();
+                System.out.println("Listening to server again");
             });
 
             modalStage.showAndWait();
@@ -555,5 +623,31 @@ public class GamePlayController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Return to MainPage if confirmed exit.
+     */
+    void returnMainPage() {
+        if (timeline != null) {
+            timeline.stop();
+        }
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+                Parent MainPageViewParent = loader.load();
+                Scene scene = new Scene(MainPageViewParent);
+
+                MainPageController mainPageController = loader.getController();
+                mainPageController.setPrimaryStage(primaryStage);
+
+                primaryStage.setScene(scene);
+                mainPageController.setupMainPage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
