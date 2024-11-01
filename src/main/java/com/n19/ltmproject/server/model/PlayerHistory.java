@@ -32,5 +32,5 @@ public class PlayerHistory {
     private int losses;
 
     @Column(name = "draws")
-    private int draws = 0;
+    private int draws;
 }
