@@ -220,19 +220,20 @@ public class GamePlayController {
                     Parent resultScreen = loader.load();
                     ResultController resultController = loader.getController();
                     resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
-//                    resultController.setPlayerExit();
+                    resultController.setOpponentExit();
 
                     String resultMessage;
                     boolean isWin = true;
                     boolean isDraw = false;
                     String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
 
-                    // Set result message and call setResults based on game outcome
-                    resultMessage = "Bạn đã thắng!";
 
                     primaryStage.setScene(new Scene(resultScreen));
                     String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
                     String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
+
+                    // Set result message and call setResults based on game outcome
+                    resultMessage = "Bạn đã thắng!";
 
                     resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
                     resultController.setPrimaryStage(primaryStage);
@@ -594,7 +595,6 @@ public class GamePlayController {
      * Show the exit battle modal to confirm the exit.
      */
     private void showExitBattleModal() {
-        stopListening();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/ExitBattle.fxml"));
             Parent exitBattleModal = loader.load();

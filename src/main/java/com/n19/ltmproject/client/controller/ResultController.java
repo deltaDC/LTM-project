@@ -44,6 +44,9 @@ public class ResultController {
     private Label opponentExitLabel;
 
     @FXML
+    private Label opponentExitMessageLabel;
+
+    @FXML
     private Label scoreLabel;
     @FXML
     private Button playAgainButton;
@@ -105,10 +108,11 @@ public class ResultController {
         opponentPlayerNameLabel.setText(opponentPlayerName);
     }
 
-//    void setPlayerExit() {
-//        this.isOpponentExit = true;
-//        this.running = false;
-//    }
+    void setOpponentExit(){
+        isOpponentExit = true;
+        playAgainButton.setVisible(false);
+        opponentExitLabel.setVisible(true);
+    }
 
     @FXML
     private void handleExit() {
