@@ -374,7 +374,7 @@ public class MainPageController {
 
         // Tạo Timeline để ẩn Label sau 3 giây
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.seconds(1),
+                Duration.seconds(2),
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
@@ -391,7 +391,7 @@ public class MainPageController {
 
         // Tạo Timeline để ẩn Label sau 3 giây
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.seconds(1),
+                Duration.seconds(2),
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {

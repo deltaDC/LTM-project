@@ -280,7 +280,18 @@ public class InvitationController {
         Platform.runLater(() -> {
             try {
                 stopListening();
-                moveToMainPage();
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/n19/ltmproject/MainPage.fxml"));
+
+                Parent MainPageViewParent = loader.load();
+                Scene scene = new Scene(MainPageViewParent);
+
+                MainPageController mainPageController = loader.getController();
+                mainPageController.setPrimaryStage(primaryStage);
+
+                primaryStage.setScene(scene);
+                mainPageController.setupMainPage();
+                mainPageController.showLabelCancelMatch();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
