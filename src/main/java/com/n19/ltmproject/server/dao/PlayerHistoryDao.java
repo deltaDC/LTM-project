@@ -88,13 +88,12 @@ public class PlayerHistoryDao {
             // Define join condition and select specific player's history based on playerId
             cq.select(cb.construct(
                             PlayerHistoryDto.class,
-                            playerRoot.get("id"),
                             playerRoot.get("username"),
+                            playerHistoryRoot.get("totalGames"),
+                            playerHistoryRoot.get("wins"),
                             playerHistoryRoot.get("draws"),
                             playerHistoryRoot.get("losses"),
-                            playerHistoryRoot.get("totalGames"),
-                            playerHistoryRoot.get("totalPoints"),
-                            playerHistoryRoot.get("wins")
+                            playerHistoryRoot.get("totalPoints")
                     ))
                     .where(cb.and(
                             cb.equal(playerRoot.get("id"), playerHistoryRoot.get("playerId")),
