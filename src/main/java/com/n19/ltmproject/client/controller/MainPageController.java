@@ -60,6 +60,8 @@ public class MainPageController {
     private Button inGameButton;
     @FXML
     private Button offlineButton;
+    @FXML
+    private Label scoreUser;
 
 
     private ObservableList<Player> filteredList = FXCollections.observableArrayList(); // Danh sách lọc
@@ -85,7 +87,7 @@ public class MainPageController {
         messageService = new MessageService(serverHandler);
         System.out.println("Load bang trong setUp");
         loadPlayers();
-        setThread();
+//        setThread();
     }
 
     public void setThread(){
@@ -101,7 +103,7 @@ public class MainPageController {
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
-            this.running = false;
+//            this.running = false;
             Response response = messageService.sendRequestAndReceiveResponse("getAllPlayer", params);
 
             Platform.runLater(() -> {
@@ -121,11 +123,22 @@ public class MainPageController {
                     System.out.println("Tạo bảng thành công");
                     table.setFocusTraversable(false);
                     table.getSelectionModel().clearSelection();
-                    this.running = true;
+//                    this.running = true;
                 } else {
                     System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
                 }
+                HashMap<String, Object> param2 = new HashMap<>();
+                param2.put("inviterId", SessionManager.getCurrentUser().getId());
+                Response response2 = messageService.sendRequestAndReceiveResponse("getPlayerHistoryById", param2);
+                if (response2 != null && "OK".equalsIgnoreCase(response2.getStatus())) {
+                    PlayerHistoryDto playerHistory = gson.fromJson(new Gson().toJson(response2.getData()), PlayerHistoryDto.class);
+                    scoreUser.setText("Score: "+playerHistory.getTotalPoints());
+                    setThread();
+                } else {
+                    System.out.println("Failed to get player history: " + (response2 != null ? response2.getMessage() : "Unknown error"));
+                }
             });
+
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -53,6 +53,10 @@ public class WaitingRoomController {
     private Label countdownLabel;
     @FXML
     private Label countdownText;
+    @FXML
+    private Label LabelWaitReady;
+    @FXML
+    private Label LabelWaitgoRoom;
 
 
     private int countdownTime = 5;
@@ -127,6 +131,9 @@ public class WaitingRoomController {
                         isOpponentExit=true;
                         handleExit();
                     }
+                    else if(serverMessage != null && serverMessage.contains("ClickReady")){
+                        handleReady();
+                    }
                     else if (serverMessage.contains("New game started! Game ID:")) {
                         handleNewGameStartedMessage(serverMessage);
                     } else if (serverMessage.startsWith("{")) {
@@ -161,6 +168,35 @@ public class WaitingRoomController {
             serverHandler.sendMessage("STOP_LISTENING");
             startGame(gameId, inviterId, inviteeId);
         }
+    }
+    @FXML
+    public void ClickReady(ActionEvent event) {
+        if(!isInviter){
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("username",username);
+            params.put("opponent", opponentName);
+            params.put("userId",inviteeId);
+            params.put("opponentId", inviterId);
+
+            Response response =messageService.sendRequestAndReceiveResponse("clickReady", params);
+            if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
+                inviteeButton.setText("READY");
+            } else {
+                System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+            }
+        }
+    }
+    private void handleReady(){
+        Platform.runLater(() -> {
+            countdownLabel.setVisible(true);
+            countdownText.setVisible(true);
+            inviteeButton.setText("READY");
+            inviteeButton.setStyle("-fx-background-color: #2BC9FC;");
+            if(isInviter){
+                LabelWaitReady.setVisible(false);
+            }
+            startCountdown();
+        });
     }
 
     private void handleExit() {
@@ -234,13 +270,12 @@ public class WaitingRoomController {
             this.inviteeId = inviteePlayerId;
 
             Platform.runLater(() -> {
-                inviteeButton.setText("READY");
-                inviteeButton.setStyle("-fx-background-color: #2BC9FC;");
+                inviteeButton.setText("NOT READY");
                 waitingRoomPlayerName.setText(inviteeUsername);
-                countdownLabel.setVisible(true);
-                countdownText.setVisible(true);
-                startCountdown();
-//                stopListening();
+                LabelWaitgoRoom.setVisible(false);
+                if(isInviter){
+                    LabelWaitReady.setVisible(true);
+                }
             });
         } else {
             System.out.println("Could not extract usernames from message.");
