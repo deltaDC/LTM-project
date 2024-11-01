@@ -8,9 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,21 +34,20 @@ public class PlayerHistoryDao {
             CriteriaQuery<PlayerHistoryDto> cq = cb.createQuery(PlayerHistoryDto.class);
 
             // Define root entities
-            Root<Player> playerRoot = cq.from(Player.class);
             Root<PlayerHistory> playerHistoryRoot = cq.from(PlayerHistory.class);
+            Root<Player> playerRoot = cq.from(Player.class);
 
             // Define join condition on playerId
             cq.select(cb.construct(
                             PlayerHistoryDto.class,
-                            playerRoot.get("id"),
                             playerRoot.get("username"),
+                            playerHistoryRoot.get("totalGames"),
+                            playerHistoryRoot.get("wins"),
                             playerHistoryRoot.get("draws"),
                             playerHistoryRoot.get("losses"),
-                            playerHistoryRoot.get("totalGames"),
-                            playerHistoryRoot.get("totalPoints"),
-                            playerHistoryRoot.get("wins")
+                            playerHistoryRoot.get("totalPoints")
                     )
-            ).where(cb.equal(playerRoot.get("id"), playerHistoryRoot.get("playerId")));
+            ).where(cb.equal(playerHistoryRoot.get("playerId"), playerRoot.get("id")));
 
             // Execute the query and get results
             playerHistoryDtos = session.createQuery(cq).getResultList();
