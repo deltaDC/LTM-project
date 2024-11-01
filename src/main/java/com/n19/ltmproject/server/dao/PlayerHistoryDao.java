@@ -85,26 +85,35 @@ public class PlayerHistoryDao {
                     .setParameter("playerId", playerId)
                     .uniqueResult();
 
-            if (playerHistory != null) {
-                // Cập nhật thông tin thắng, thua, hòa
-                if (isWin) {
-                    playerHistory.setWins(playerHistory.getWins() + 1);
-                } else if (isDraw) {
-                    playerHistory.setDraws(playerHistory.getDraws() + 1);
-                } else {
-                    playerHistory.setLosses(playerHistory.getLosses() + 1);
-                }
-
-                // Cập nhật tổng số trận
-                playerHistory.setTotalGames(playerHistory.getTotalGames() + 1);
-                // Cập nhật tổng điểm (giả sử mỗi trận thắng được 3 điểm, hòa 1 điểm, thua 0 điểm)
-                playerHistory.setTotalPoints(playerHistory.getTotalPoints() + (isWin ? 3 : (isDraw ? 1 : 0)));
-
-                // Cập nhật vào cơ sở dữ liệu
-                session.update(playerHistory);
-                transaction.commit();
-                isUpdated = true;
+            if (playerHistory == null) {
+                // Create a new PlayerHistory record if it does not exist
+                playerHistory = new PlayerHistory();
+                playerHistory.setPlayerId(playerId);
+                playerHistory.setTotalGames(0);
+                playerHistory.setTotalPoints(0);
+                playerHistory.setWins(0);
+                playerHistory.setLosses(0);
+                playerHistory.setDraws(0);
             }
+
+            // Cập nhật thông tin thắng, thua, hòa
+            if (isWin) {
+                playerHistory.setWins(playerHistory.getWins() + 1);
+            } else if (isDraw) {
+                playerHistory.setDraws(playerHistory.getDraws() + 1);
+            } else {
+                playerHistory.setLosses(playerHistory.getLosses() + 1);
+            }
+
+            // Cập nhật tổng số trận
+            playerHistory.setTotalGames(playerHistory.getTotalGames() + 1);
+            // Cập nhật tổng điểm (giả sử mỗi trận thắng được 3 điểm, hòa 1 điểm, thua 0 điểm)
+            playerHistory.setTotalPoints(playerHistory.getTotalPoints() + (isWin ? 3 : (isDraw ? 1 : 0)));
+
+            // Cập nhật vào cơ sở dữ liệu
+            session.saveOrUpdate(playerHistory);
+            transaction.commit();
+            isUpdated = true;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
