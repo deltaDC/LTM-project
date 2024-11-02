@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.n19.ltmproject.client.controller.GameHistoryController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <HBox layoutX="20" layoutY="10" spacing="20" alignment="CENTER_LEFT" prefWidth="760">
+            <Label text="🏆" style="-fx-font-size: 30px; -fx-text-fill: #ecec10"/> <!-- Dùng ký hiệu Unicode hình chiếc cúp -->
+            <Label text="Lịch sử đấu của bạn" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3a7ca5;" />
+            <!-- Spacer để đẩy nút về phía bên phải -->
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Nút "Quay về trang chủ" -->
+            <Button text="Quay về trang chủ" prefWidth="160" prefHeight="40"
+                    onAction="#handleBackToHome" style="-fx-background-color: #3a7ca5; -fx-text-fill: white; -fx-font-size: 16px;" />
+            <Region />
+        </HBox>
+
+        <!-- TableView -->
+        <TableView fx:id="gameHistoryTable" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" layoutY="60" prefWidth="780" prefHeight="400" stylesheets="@css/GameHistory.css">
+            <columns>
+                <TableColumn fx:id="numberColumn" text="STT" prefWidth="40" />
+                <TableColumn fx:id="player1NameColumn" text="Player 1 Name" prefWidth="100" />
+                <TableColumn fx:id="player1ScoreColumn" text="Player 1 Score" prefWidth="90" />
+                <TableColumn fx:id="player2NameColumn" text="Player 2 Name" prefWidth="100" />
+                <TableColumn fx:id="player2ScoreColumn" text="Player 2 Score" prefWidth="90" />
+                <TableColumn fx:id="startTimeColumn" text="Start Time" prefWidth="160" />
+                <TableColumn fx:id="endTimeColumn" text="End Time" prefWidth="160" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>

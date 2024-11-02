@@ -43,6 +43,7 @@ public class Client extends Application {
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/css/Invitation.css")).toExternalForm());
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/css/ExitBattle.css")).toExternalForm());
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/css/Result.css")).toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/n19/ltmproject/css/GameHistory.css")).toExternalForm());
             primaryStage.setScene(scene);
 
             primaryStage.setOnCloseRequest(this::handleClose);

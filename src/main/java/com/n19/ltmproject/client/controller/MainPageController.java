@@ -414,8 +414,18 @@ public class MainPageController {
         primaryStage.setScene(scene);
     }
 
-    public void ClickHistory(ActionEvent actionEvent) {
-        //TODO implement history
+    public void ClickHistory(ActionEvent actionEvent) throws IOException {
+        this.running = false;
+        serverHandler.sendMessage("STOP_LISTENING");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/GameHistory.fxml"));
+        Parent GameHistoryViewParent = loader.load();
+        Scene scene = new Scene(GameHistoryViewParent);
+
+        GameHistoryController boardController = loader.getController();
+        boardController.setPrimaryStage(primaryStage);
+
+        primaryStage.setScene(scene);
     }
 
     /**

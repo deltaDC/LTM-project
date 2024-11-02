@@ -2,6 +2,7 @@ package com.n19.ltmproject.server.service;
 
 import com.n19.ltmproject.server.dao.GameDao;
 import com.n19.ltmproject.server.model.Game;
+import com.n19.ltmproject.server.model.dto.GameHistoryDto;
 
 import java.util.List;
 
@@ -13,8 +14,8 @@ public class GameService {
         this.gameDao = new GameDao();
     }
 
-    public List<Game> getAllGameData() {
-        return gameDao.getAllGameData();
+    public List<GameHistoryDto> getAllGameData(String playerId) {
+        return gameDao.getAllGameData(playerId);
     }
 
     public Game createNewGame(long player1Id, long player2Id) {
