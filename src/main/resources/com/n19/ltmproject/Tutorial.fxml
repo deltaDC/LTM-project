@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.TutorialController" spacing="10" alignment="center" style="-fx-padding: 20; -fx-pref-width: 600; -fx-pref-height: 600; -fx-background-color: white;">
+    <VBox fx:id="tutorialContainer" alignment="center" spacing="10" prefWidth="600" prefHeight="600">
+        <ImageView fx:id="imageView" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" />
+    </VBox>
+
+    <HBox spacing="10" alignment="center">
+        <Button fx:id="homeButton" text="Về trang chủ" onAction="#goToMainPage" />
+        <Region />
+        <Button fx:id="nextButton" text="Next" onAction="#handleNextButtonAction" />
+        <Region />
+        <Button fx:id="backButton" text="Quay lại" onAction="#handleBackButtonAction" />
+    </HBox>
+</VBox>
