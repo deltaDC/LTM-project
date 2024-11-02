@@ -1,7 +1,8 @@
 package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.n19.ltmproject.client.handler.ServerHandler;
@@ -10,13 +11,14 @@ import com.n19.ltmproject.client.model.auth.SessionManager;
 import com.n19.ltmproject.client.model.dto.Response;
 import com.n19.ltmproject.client.service.MessageService;
 
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -36,11 +38,24 @@ public class LoginController {
     }
 
     @FXML
+    public void initialize() {
+        // Set key event handlers for Enter key
+        userText.setOnKeyPressed(this::handleKeyPress);
+        passText.setOnKeyPressed(this::handleKeyPress);
+    }
+
+    private void handleKeyPress(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            ClickLogin();
+        }
+    }
+
+    @FXML
     public void ClickLogin() {
         String username = userText.getText();
         String password = passText.getText();
 
-        if(username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()) {
             AlertController.showErrorAlert("Login", "Please enter your username and password.");
             return;
         }
@@ -54,7 +69,7 @@ public class LoginController {
         if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
             AlertController.showInformationAlert("Login", "Login successful!");
 
-            // Lưu thông tin người dùng vào SessionManager
+            // Save user information into SessionManager
             Gson gson = new Gson();
             String playerJson = gson.toJson(response.getData());
             Player loggedInPlayer = gson.fromJson(playerJson, Player.class);
@@ -86,7 +101,7 @@ public class LoginController {
         Parent root = loader.load();
 
         MainPageController mainpageController = loader.getController();
-        mainpageController.setPrimaryStage( stage);
+        mainpageController.setPrimaryStage(stage);
         stage.setScene(new Scene(root));
         mainpageController.setupMainPage();
     }

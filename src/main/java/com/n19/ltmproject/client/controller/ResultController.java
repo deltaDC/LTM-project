@@ -17,6 +17,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -83,7 +85,16 @@ public class ResultController {
     // Định dạng thời gian: giờ:phút
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    private final Gson gson = new Gson();
+    @FXML
+    public void initialize() {
+        chatInput.setOnKeyPressed(this::handleKeyPress);
+    }
+
+    private void handleKeyPress(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            handleSendChat();
+        }
+    }
 
     public void setResults(String results, String score, boolean isWinner, boolean isDraw,
             long currentPlayerId, long opponentPlayerId) {

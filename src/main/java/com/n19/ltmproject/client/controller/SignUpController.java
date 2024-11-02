@@ -15,6 +15,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -29,6 +31,19 @@ public class SignUpController {
 	private final MessageService messageService = new MessageService(serverHandler);
 
 	@FXML
+	public void initialize() {
+		userText.setOnKeyPressed(this::handleKeyPress);
+		passText.setOnKeyPressed(this::handleKeyPress);
+		confirmPassText.setOnKeyPressed(this::handleKeyPress);
+	}
+
+	private void handleKeyPress(KeyEvent event) {
+		if (event.getCode() == KeyCode.ENTER) {
+			ClickSignUp(null);
+		}
+	}
+
+	@FXML
 	public void ClickLogin(MouseEvent e) throws IOException {
 		loadScene("/com/n19/ltmproject/Login.fxml");
 	}
@@ -39,12 +54,12 @@ public class SignUpController {
 		String password = passText.getText();
 		String confirmPassword = confirmPassText.getText();
 
-		if(username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+		if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
 			AlertController.showErrorAlert("Signup", "Vui lòng nhập đầy đủ thông tin.");
 			return;
 		}
 
-		if(!password.equals(confirmPassword)) {
+		if (!password.equals(confirmPassword)) {
 			AlertController.showErrorAlert("Signup", "Mật khẩu không khớp.");
 			return;
 		}
@@ -75,4 +90,3 @@ public class SignUpController {
 		stage.setScene(new Scene(view));
 	}
 }
-

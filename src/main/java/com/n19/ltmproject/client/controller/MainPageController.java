@@ -2,6 +2,7 @@ package com.n19.ltmproject.client.controller;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,6 +36,9 @@ import com.n19.ltmproject.client.model.Player;
 import javafx.util.Duration;
 
 public class MainPageController {
+
+    @FXML
+    public Button inviteButton;
     @FXML
     private Label labelrefusematch;
     @FXML
@@ -87,7 +91,22 @@ public class MainPageController {
         messageService = new MessageService(serverHandler);
         System.out.println("Load bang trong setUp");
         loadPlayers();
-//        setThread();
+
+        // Add listener to table selection model
+        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            updateInviteButtonState(newSelection);
+        });
+    }
+
+    private void updateInviteButtonState(Player selectedPlayer) {
+        if (selectedPlayer != null) {
+            PlayerStatus status = selectedPlayer.getStatus();
+            // Disable the invite button if the player is in-game or offline
+            inviteButton.setDisable(status == PlayerStatus.IN_GAME || status == PlayerStatus.OFFLINE);
+        } else {
+            // If no player is selected, disable the button
+            inviteButton.setDisable(true);
+        }
     }
 
     public void setThread(){
@@ -103,7 +122,6 @@ public class MainPageController {
     private void loadPlayers() {
         try {
             Map<String, Object> params = Map.of();
-//            this.running = false;
             Response response = messageService.sendRequestAndReceiveResponse("getAllPlayer", params);
 
             Platform.runLater(() -> {
@@ -114,7 +132,16 @@ public class MainPageController {
 
                 if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                     List<Player> players = gson.fromJson(new Gson().toJson(response.getData()), new TypeToken<List<Player>>() {}.getType());
-                    playerList = FXCollections.observableArrayList(players);
+
+                    // Get the current user's username
+                    String currentUsername = SessionManager.getCurrentUser().getUsername(); // Assuming this method exists
+
+                    // Filter out the current player
+                    List<Player> otherPlayers = players.stream()
+                            .filter(player -> !player.getUsername().equals(currentUsername)) // Exclude the current player
+                            .collect(Collectors.toList());
+
+                    playerList = FXCollections.observableArrayList(otherPlayers);
                     numberColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(cellData.getValue()) + 1));
                     username.setCellValueFactory(new PropertyValueFactory<>("username"));
                     statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -123,46 +150,50 @@ public class MainPageController {
                     System.out.println("Tạo bảng thành công");
                     table.setFocusTraversable(false);
                     table.getSelectionModel().clearSelection();
-//                    this.running = true;
                 } else {
                     System.out.println("Failed to get players: " + (response != null ? response.getMessage() : "Unknown error"));
                 }
+
+                // Retrieve player history
                 HashMap<String, Object> param2 = new HashMap<>();
                 param2.put("inviterId", SessionManager.getCurrentUser().getId());
                 Response response2 = messageService.sendRequestAndReceiveResponse("getPlayerHistoryById", param2);
                 if (response2 != null && "OK".equalsIgnoreCase(response2.getStatus())) {
                     PlayerHistoryDto playerHistory = gson.fromJson(new Gson().toJson(response2.getData()), PlayerHistoryDto.class);
-                    scoreUser.setText("Score: "+playerHistory.getTotalPoints());
+                    scoreUser.setText("Score: " + playerHistory.getTotalPoints());
                     setThread();
                 } else {
                     System.out.println("Failed to get player history: " + (response2 != null ? response2.getMessage() : "Unknown error"));
                 }
             });
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
     // Phương thức lọc theo trạng thái
     private void filterPlayers(PlayerStatus status) {
         filteredList.setAll(playerList.filtered(player -> player.getStatus().equals(status)));
         table.setItems(filteredList); // Hiển thị danh sách lọc
         table.getSelectionModel().clearSelection();
     }
+
     @FXML
     public void ClickOnlineButton(ActionEvent event) {
         filterPlayers(PlayerStatus.ONLINE);
     }
+
     @FXML
     public void ClickInGameButton(ActionEvent event) {
         filterPlayers(PlayerStatus.IN_GAME);
     }
+
     @FXML
     public void ClickOfflineButton(ActionEvent event) {
         filterPlayers(PlayerStatus.OFFLINE);
     }
-
 
 
     /**
@@ -279,6 +310,7 @@ public class MainPageController {
      */
     public void ClickInvitePlayer(ActionEvent event) throws IOException {
         Player selectedPlayer = table.getSelectionModel().getSelectedItem();
+        inviteButton.setDisable(false);
 
         if (selectedPlayer != null) {
             long inviterId = SessionManager.getCurrentUser().getId();
@@ -345,11 +377,12 @@ public class MainPageController {
      *
      * @param e The action event
      */
-    public void ClickAchievement(ActionEvent e) throws IOException {
+    public void ClickGameRule(ActionEvent e) throws IOException {
         this.running = false;
         serverHandler.sendMessage("STOP_LISTENING");
 
         FXMLLoader loader = new FXMLLoader();
+        //TODO change path
         loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
 
         Parent AchievementViewParent = loader.load();
@@ -381,6 +414,10 @@ public class MainPageController {
         primaryStage.setScene(scene);
     }
 
+    public void ClickHistory(ActionEvent actionEvent) {
+        //TODO implement history
+    }
+
     /**
      * This method is used to handle the refresh action.
      * It will stop the current thread and refresh the main page.
@@ -392,6 +429,7 @@ public class MainPageController {
         serverHandler.sendMessage("STOP_LISTENING");
         setupMainPage();
     }
+
     public void showLabelRefuseMatch(){
         labelrefusematch.setVisible(true);
 
@@ -409,6 +447,7 @@ public class MainPageController {
         timeline.setCycleCount(1); // Chạy 1 lần duy nhất
         timeline.play(); // Bắt đầu Timeline
     }
+
     public void showLabelCancelMatch(){
         labelcancelmatch.setVisible(true);
 

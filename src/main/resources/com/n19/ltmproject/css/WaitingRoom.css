@@ -18,6 +18,7 @@
     -fx-background-color: brown ;
     -fx-border-radius: 15;
     -fx-background-radius: 30;
+    -fx-cursor: hand;
 }
 .button-waiting-exit{
     -fx-background-color:  #2ECC57;
