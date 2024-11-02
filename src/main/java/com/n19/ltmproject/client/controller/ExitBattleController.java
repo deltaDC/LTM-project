@@ -76,7 +76,7 @@ public class ExitBattleController {
             endGameParams.put("player1Score", score);
             endGameParams.put("player2Score", opponentScore);
 
-            messageService.sendRequestAndReceiveResponse("endGameById", endGameParams);
+            messageService.sendRequestAndReceiveResponse("exitGameById", endGameParams);
 
             // exiter is the loser
             Map<String, Object> matchResultParams = new HashMap<>();
