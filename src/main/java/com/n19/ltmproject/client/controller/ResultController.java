@@ -72,7 +72,7 @@ public class ResultController {
     private long currentPlayerId;
     private long opponentPlayerId;
     private String username;
-    private  String opponentName;
+    private String opponentName;
 
     @FXML
     private TextField chatInput;
@@ -86,8 +86,7 @@ public class ResultController {
     private final Gson gson = new Gson();
 
     public void setResults(String results, String score, boolean isWinner, boolean isDraw,
-            long currentPlayerId, long opponentPlayerId
-    ) {
+            long currentPlayerId, long opponentPlayerId) {
         this.isWinner = isWinner;
         this.isDraw = isDraw;
         scoreLabel.setText(score);
@@ -108,7 +107,7 @@ public class ResultController {
         opponentPlayerNameLabel.setText(opponentPlayerName);
     }
 
-    void setOpponentExit(){
+    void setOpponentExit() {
         isOpponentExit = true;
         playAgainButton.setVisible(false);
         opponentExitLabel.setVisible(true);
@@ -117,21 +116,21 @@ public class ResultController {
     @FXML
     private void handleExit() {
         stopListening();
-        if(!isOpponentExit){
+        if (!isOpponentExit) {
             HashMap<String, Object> params = new HashMap<>();
-            params.put("username",username);
+            params.put("username", username);
             params.put("opponent", opponentName);
-            params.put("userId",currentPlayerId);
+            params.put("userId", currentPlayerId);
             params.put("opponentId", opponentPlayerId);
 
-            Response response =messageService.sendRequestAndReceiveResponse("exitResult", params);
+            Response response = messageService.sendRequestAndReceiveResponse("exitResult", params);
             if (response != null && "OK".equalsIgnoreCase(response.getStatus())) {
                 loadMainPage();
             } else {
-                System.out.println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
+                System.out
+                        .println("Invitation failed: " + (response != null ? response.getMessage() : "Unknown error"));
             }
-        }
-        else{
+        } else {
             loadMainPage();
         }
     }
@@ -140,9 +139,9 @@ public class ResultController {
     private void handlePlayAgain() {
         stopListening();
         HashMap<String, Object> params = new HashMap<>();
-        params.put("username",username);
+        params.put("username", username);
         params.put("opponent", opponentName);
-        params.put("userId",currentPlayerId);
+        params.put("userId", currentPlayerId);
         params.put("opponentId", opponentPlayerId);
 
         Response response = messageService.sendRequestAndReceiveResponse("playagain", params);
@@ -156,7 +155,7 @@ public class ResultController {
     public void startListeningForServer() {
         System.out.println("Listening for player1 quit game ...");
 
-       new Thread(() -> {
+        new Thread(() -> {
             try {
                 while (running) {
                     if (!this.running) {
@@ -229,7 +228,8 @@ public class ResultController {
         serverHandler.sendMessage("STOP_LISTENING");
     }
 
-    private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer, long inviterId, long inviteeId) {
+    private void sendAcceptanceToServer(String inviterPlayer, String currentAccepterPlayer, long inviterId,
+            long inviteeId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("username", currentAccepterPlayer);
         params.put("inviterName", inviterPlayer);
@@ -279,8 +279,7 @@ public class ResultController {
                         currentPlayerId,
                         opponentPlayerId,
                         username,
-                        opponentName
-                );
+                        opponentName);
 
                 Scene scene = new Scene(waitViewParent);
                 primaryStage.setScene(scene);
@@ -304,12 +303,10 @@ public class ResultController {
                 opponentPlayerId,
                 currentPlayerId,
                 opponentName,
-                username
-        );
+                username);
 
         primaryStage.setScene(scene);
     }
-
 
     @FXML
     private void handleSendChat() {
@@ -350,20 +347,16 @@ public class ResultController {
 
             // Tạo một HBox chứa tin nhắn và căn chỉnh dựa trên người gửi
             HBox messageBox = new HBox(messageLabel);
-            messageBox.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            messageBox.setPrefWidth(510);
 
             if (currentPlayerId == SessionManager.getCurrentUser().getId()) {
                 messageBox.setAlignment(Pos.CENTER_RIGHT);
-                messageBox.setPadding(new Insets(0, 10, 0, 160)); // Đẩy tin nhắn của mình về sát viền phải
                 messageLabel.setStyle(
-                        "-fx-text-fill: white; -fx-background-color: #4CAF50; -fx-padding: 10; -fx-background-radius: 10;"
-                );
+                        "-fx-text-fill: white; -fx-background-color: #4CAF50; -fx-padding: 10; -fx-background-radius: 10;");
             } else {
                 messageBox.setAlignment(Pos.CENTER_LEFT);
-                messageBox.setPadding(new Insets(0, 160, 0, 10)); // Đẩy tin nhắn của đối phương về sát viền trái
                 messageLabel.setStyle(
-                        "-fx-text-fill: white; -fx-background-color: #4A4A4A; -fx-padding: 10; -fx-background-radius: 10;"
-                );
+                        "-fx-text-fill: white; -fx-background-color: #4A4A4A; -fx-padding: 10; -fx-background-radius: 10;");
             }
 
             // Thêm tin nhắn vào VBox chatBox
