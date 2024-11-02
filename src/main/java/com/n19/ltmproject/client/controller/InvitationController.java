@@ -34,6 +34,16 @@ public class InvitationController {
 
     @FXML
     private Label countdownInvitation;
+    @FXML
+    private Button LabelTotalGames;
+    @FXML
+    private Button LabelTotalPoint;
+    @FXML
+    private Button LabelWins;
+    @FXML
+    private Button LabelDraws;
+    @FXML
+    private Button LabelLosses;
 
     private String inviterName;
     private long inviterId;
@@ -59,6 +69,13 @@ public class InvitationController {
         this.invitationProfile.setText(invitationProfile);
         createReturnToMainPageTimeline(inviterName, inviterId, inviteeId);
         startListeningForServer();
+    }
+    public void SetUpWinLossDrawInviter(long totalgames, long totalpoints,long wins, long draw, long loss){
+        this.LabelTotalGames.setText("TotalGame: " + totalgames);
+        this.LabelTotalPoint.setText("TotalPoint: " + totalpoints);
+        this.LabelWins.setText("Win: " + wins);
+        this.LabelDraws.setText("Draw: " + draw);
+        this.LabelLosses.setText("Loss: " + loss);
     }
 
     public void startListeningForServer() {
@@ -134,6 +151,7 @@ public class InvitationController {
      * @param inviterId The inviter ID
      * @param inviteeId The invitee ID
      */
+
     private void sendRefusalAndMoveToMainPage(String userInvite, long inviterId, long inviteeId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("invitee", SessionManager.getCurrentUser().getUsername());

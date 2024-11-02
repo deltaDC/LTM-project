@@ -96,7 +96,7 @@ public class GamePlayController {
     @FXML
     private Label opponentPlayerName;
 
-    private int timeLeft = 50;
+    private int timeLeft = 10;
 
     private final String[] trashTypes = {"organic", "metal", "plastic", "glass", "paper"};
     private final String[] correctFeedback = {"Correct!", "Nice!", "Good job!"};
@@ -219,10 +219,60 @@ public class GamePlayController {
                 if (timeline != null) {
                     timeline.stop();
                 }
-                try {
+                //                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
+//                    Parent resultScreen = loader.load();
+//                    ResultController resultController = loader.getController();
+//                    resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
+//                    resultController.setOpponentExit();
+//
+//                    String resultMessage;
+//                    boolean isWin = true;
+//                    boolean isDraw = false;
+//                    String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
+//
+//
+//                    primaryStage.setScene(new Scene(resultScreen));
+//                    String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
+//                    String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
+//
+//                    // Set result message and call setResults based on game outcome
+//                    resultMessage = "Bạn đã thắng!";
+//
+//                    resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
+//                    resultController.setPrimaryStage(primaryStage);
+//
+//                    resultController.setResults(
+//                            resultMessage,
+//                            scoreMessage,
+//                            isWin,
+//                            isDraw,
+//                            this.currentPlayerId,
+//                            this.opponentPlayerId
+
+//                    );
+//
+//                    System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
+//                    System.out.println("Trimmed opponent player name: " + trimmedOpponentPlayerName);
+//
+//                    primaryStage.show();
+                showResultScreen();
+            });
+        }
+        if (serverMessage.contains("\"status\":\"EXIT_GAME\"")) {
+            // Hiển thị thông báo và chuyển người chơi đến trang kết quả với trạng thái thắng
+            Platform.runLater(() -> {
+                stopListening();
+                if (timeline != null) {
+                    timeline.stop();
+                }
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
-                    Parent resultScreen = loader.load();
-                    ResultController resultController = loader.getController();
+                Parent resultScreen = null;
+                try {
+                    resultScreen = loader.load();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                ResultController resultController = loader.getController();
                     resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
                     resultController.setOpponentExit();
 
@@ -249,6 +299,7 @@ public class GamePlayController {
                             isDraw,
                             this.currentPlayerId,
                             this.opponentPlayerId
+
                     );
 
                     System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
@@ -256,9 +307,6 @@ public class GamePlayController {
 
                     primaryStage.show();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             });
         }
     }
@@ -477,19 +525,21 @@ public class GamePlayController {
      */
     private void endGame() {
         timeline.stop();
-        stopListening();
+//        stopListening();
 
         //TODO duplicated code
         if (isInviter) {
+            stopListening();
             sendEndGame();
             boolean isWin = currentPlayerScore > opponentPlayerScore;
             boolean isDraw = currentPlayerScore == opponentPlayerScore;
             long winnerId = isWin ? currentPlayerId : opponentPlayerId;
             long loserId = isWin ? opponentPlayerId : currentPlayerId;
             sendMatchResult(winnerId, loserId, isWin, isDraw);
+            showResultScreen();
         }
 
-        showResultScreen();
+//        showResultScreen();
     }
 
     void stopListening() {

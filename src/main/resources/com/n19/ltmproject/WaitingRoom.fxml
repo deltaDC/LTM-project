@@ -11,7 +11,7 @@
    <ImageView fitHeight="600.0" fitWidth="600.0" pickOnBounds="true">
       <Image url="@images/backgroundwaitingroom.png" />
    </ImageView>
-   <Label layoutX="150.0" layoutY="1.0" prefHeight="75.0" prefWidth="299.0" styleClass="label-waiting-idphong" text="ID WAITING ROOM 13041" textFill="WHITE">
+   <Label layoutX="215.0" layoutY="6.0" prefHeight="75.0" prefWidth="299.0" styleClass="label-waiting-idphong" text=" WAITING ROOM " textFill="WHITE">
       <font>
          <Font name="System Bold" size="24.0" />
       </font>
@@ -48,7 +48,7 @@
          <Font name="System Bold" size="18.0" />
       </font>
    </Button>
-   <Button fx:id="inviteeButton" layoutX="317.0" layoutY="262.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="141.0" styleClass="button-waiting-ready2" text="WAITING" textFill="WHITE">
+   <Button fx:id="inviteeButton" layoutX="317.0" layoutY="262.0" mnemonicParsing="false" onAction="#ClickReady" prefHeight="41.0" prefWidth="141.0" styleClass="button-waiting-ready2" text="WAITING" textFill="WHITE">
       <font>
          <Font name="System Bold" size="18.0" />
       </font>
@@ -65,4 +65,6 @@
          <Font size="25.0" />
       </font>
    </Label>
+   <Label fx:id="LabelWaitReady" layoutX="190.0" layoutY="361.0" prefHeight="50.0" prefWidth="220.0" styleClass="labelWaitReady" text="Chờ đối thủ Ready" visible="false" />
+   <Label fx:id="LabelWaitgoRoom" layoutX="190.0" layoutY="371.0" styleClass="labelWaitgoRoom" text="Chờ đối thủ vào phòng" />
 </AnchorPane>
