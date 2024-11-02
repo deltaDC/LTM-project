@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.GamePlayController">
+<AnchorPane stylesheets="@css/Gameplay.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.n19.ltmproject.client.controller.GamePlayController">
    <children>
       <!-- Avatar and Score User 1 -->
       <ImageView fx:id="avatarUser1" fitHeight="60.0" fitWidth="60.0" layoutX="10.0" layoutY="20.0">
