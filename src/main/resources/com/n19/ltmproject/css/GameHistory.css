@@ -1,0 +1,22 @@
+.table-view {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #d3d3d3;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.table-column-header {
+    -fx-background-color: #3a7ca5;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #d3d3d3 transparent;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #b3e5fc; /* Màu khi chọn */
+}
