@@ -13,6 +13,5 @@
       <Button fx:id="homeButton" layoutX="250.0" layoutY="560.0" mnemonicParsing="false" onAction="#goToMainPage" styleClass="tutorial-button" stylesheets="@css/Tutorial.css" text="Trang Chủ" />
       <Button fx:id="nextButton" layoutX="360.0" layoutY="560.0" mnemonicParsing="false" onAction="#handleNextButtonAction" styleClass="tutorial-button" stylesheets="@css/Tutorial.css" text="Next" />
       <Button fx:id="backButton" layoutX="170.0" layoutY="560.0" mnemonicParsing="false" onAction="#handleBackButtonAction" styleClass="tutorial-button" stylesheets="@css/Tutorial.css" text="Back" />
-      <Label fx:id="endTutotial" layoutX="225.0" layoutY="500.0" prefHeight="52.0" prefWidth="122.0" styleClass="endLabelTutorial" stylesheets="@css/Tutorial.css" text="Đã hết" visible="false" />
    </children>
 </AnchorPane>
