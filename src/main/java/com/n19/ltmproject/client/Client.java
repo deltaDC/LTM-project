@@ -27,7 +27,7 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         try {
             ServerHandler serverHandler = ServerHandler.getInstance();
-            serverHandler.init("localhost", 1234);
+            serverHandler.init("26.235.197.236", 1234);
         } catch (Exception e) {
             System.out.println("Failed to connect to the server: " + e.getMessage());
         }

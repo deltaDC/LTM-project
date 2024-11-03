@@ -328,7 +328,6 @@ public class WaitingRoomController {
      * @param opponentPlayerId The opponent player ID
      */
     private void startGame(long gameId, long currentPlayerId, long opponentPlayerId) {
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/GamePlay.fxml"));
             Parent root = loader.load();
@@ -344,10 +343,12 @@ public class WaitingRoomController {
             }
 
             Scene scene = new Scene(root);
+            Platform.runLater(() -> {
+                primaryStage.setScene(scene);
+                primaryStage.setTitle("Game Interface");
+                primaryStage.show();
+            });
 
-            primaryStage.setScene(scene);
-            primaryStage.setTitle("Game Interface");
-            primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
