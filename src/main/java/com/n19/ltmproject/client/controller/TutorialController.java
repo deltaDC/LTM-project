@@ -68,7 +68,7 @@ public class TutorialController {
                     - Kim loại: Thùng màu xám (lon nhôm, hộp kim loại...)
                     - Giấy: Thùng màu xanh dương (báo cũ, bìa carton...)
                     - Thủy tinh: Thùng màu trắng (chai thủy tinh, ly thủy tinh...)
-                 3. Điểm số: Mỗi lần phân loại đúng sẽ nhận 1 điểm, phân loại sai sẽ bị trừ 1 điểm.
+                 3. Điểm số: Mỗi lần phân loại đúng sẽ nhận 1 điểm, phân loại sai sẽ không được điểm.
                  4. Kết thúc trò chơi: Khi hết thời gian, người chơi có điểm cao hơn sẽ thắng.
                  5. Tổng kết điểm tích lũy: Trận thắng sẽ được 3 điểm, hòa được 1 điểm, thua được 0 điểm. Người chơi thoát trận sớm sẽ thua ngay lập tức.
                """);
