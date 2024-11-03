@@ -77,20 +77,23 @@ public class ClientHandler extends Thread {
      * Second is Request object, which is used for other requests, handle by CommandFactory.
      *
      */
-    private void listenForRequests() throws IOException {
+    private synchronized void listenForRequests() throws IOException {
         String jsonRequest;
         while ((jsonRequest = input.readLine()) != null) {
-            System.out.println("Received raw message from client: " + jsonRequest);
+            synchronized (this) {
+                System.out.println("Received raw message from client: " + jsonRequest);
 
-            if (jsonRequest.contains("Invite:")) {
-                handleGameInvitation(jsonRequest);
-            } else if (jsonRequest.startsWith("STOP_LISTENING")) {
-                output.println(gson.toJson(null));
-            } else if (isValidJson(jsonRequest)) {
-                processRequest(jsonRequest);
-            } else {
-                handleInvalidJson();
+                if (jsonRequest.contains("Invite:")) {
+                    handleGameInvitation(jsonRequest);
+                } else if (jsonRequest.startsWith("STOP_LISTENING")) {
+                    output.println(gson.toJson(null));
+                } else if (isValidJson(jsonRequest)) {
+                    processRequest(jsonRequest);
+                } else {
+                    handleInvalidJson();
+                }
             }
+
         }
     }
 
