@@ -58,7 +58,7 @@ public class WaitingRoomController {
     @FXML
     private Label LabelWaitgoRoom;
     @FXML
-    private Label exitButtonWaiting;
+    private Button exitButtonWaiting;
 
 
     private int countdownTime = 5;
