@@ -383,13 +383,13 @@ public class MainPageController {
 
         FXMLLoader loader = new FXMLLoader();
         //TODO change path
-        loader.setLocation(getClass().getResource("/com/n19/ltmproject/Achievement.fxml"));
+        loader.setLocation(getClass().getResource("/com/n19/ltmproject/Tutorial.fxml"));
 
-        Parent AchievementViewParent = loader.load();
-        Scene scene = new Scene(AchievementViewParent);
+        Parent TutorialViewParent = loader.load();
+        Scene scene = new Scene(TutorialViewParent);
 
-        AchievementController achievementController = loader.getController();
-        achievementController.setPrimaryStage(primaryStage);
+        TutorialController tutorialController = loader.getController();
+        tutorialController.setPrimaryStage(primaryStage);
 
         primaryStage.setScene(scene);
     }
