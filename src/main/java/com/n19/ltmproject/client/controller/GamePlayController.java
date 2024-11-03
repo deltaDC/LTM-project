@@ -53,6 +53,8 @@ public class GamePlayController {
     @FXML
     private Label feedbackLabel;
 
+    private int cnt = 0;
+
     // TODO rename for better readability
     @FXML
     private ImageView humanGameplay1;
@@ -163,11 +165,13 @@ public class GamePlayController {
         new Thread(() -> {
             try {
                 while (running) {
-                    String serverMessage = serverHandler.receiveMessage();
-                    System.out.println("Thread in gameplay");
-                    if (serverMessage != null) {
-                        System.out.println("Received from server: " + serverMessage);
-                        parseServerMessage(serverMessage);
+                    synchronized (this) {
+                        String serverMessage = serverHandler.receiveMessage();
+                        System.out.println("Thread in gameplay");
+                        if (serverMessage != null) {
+                            System.out.println("Received from server: " + serverMessage);
+                            parseServerMessage(serverMessage);
+                        }
                     }
                 }
                 System.out.println("END THREAD IN GAMEPLAY");
@@ -184,7 +188,7 @@ public class GamePlayController {
      *
      * @param serverMessage The server message
      */
-    private void parseServerMessage(String serverMessage) {
+    private synchronized void parseServerMessage(String serverMessage) {
         if (serverMessage.startsWith("New game started! Game ID:")) {
             // Extract game ID using string manipulation
             String[] parts = serverMessage.split(": ");
@@ -219,42 +223,6 @@ public class GamePlayController {
                 if (timeline != null) {
                     timeline.stop();
                 }
-                //                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/n19/ltmproject/Result.fxml"));
-//                    Parent resultScreen = loader.load();
-//                    ResultController resultController = loader.getController();
-//                    resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
-//                    resultController.setOpponentExit();
-//
-//                    String resultMessage;
-//                    boolean isWin = true;
-//                    boolean isDraw = false;
-//                    String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
-//
-//
-//                    primaryStage.setScene(new Scene(resultScreen));
-//                    String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
-//                    String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
-//
-//                    // Set result message and call setResults based on game outcome
-//                    resultMessage = "Bạn đã thắng!";
-//
-//                    resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
-//                    resultController.setPrimaryStage(primaryStage);
-//
-//                    resultController.setResults(
-//                            resultMessage,
-//                            scoreMessage,
-//                            isWin,
-//                            isDraw,
-//                            this.currentPlayerId,
-//                            this.opponentPlayerId
-
-//                    );
-//
-//                    System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
-//                    System.out.println("Trimmed opponent player name: " + trimmedOpponentPlayerName);
-//
-//                    primaryStage.show();
                 showResultScreen();
             });
         }
@@ -273,39 +241,39 @@ public class GamePlayController {
                     throw new RuntimeException(e);
                 }
                 ResultController resultController = loader.getController();
-                    resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
-                    resultController.setOpponentExit();
+                resultController.setPlayerNames(currentPlayerName.getText(), opponentPlayerName.getText());
+                resultController.setOpponentExit();
 
-                    String resultMessage;
-                    boolean isWin = true;
-                    boolean isDraw = false;
-                    String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
+                String resultMessage;
+                boolean isWin = true;
+                boolean isDraw = false;
+                String scoreMessage = currentPlayerScore + " - " + opponentPlayerScore;
 
 
-                    primaryStage.setScene(new Scene(resultScreen));
-                    String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
-                    String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
+                primaryStage.setScene(new Scene(resultScreen));
+                String trimmedCurrentPlayerName = currentPlayerName.getText().replace(" (me)", "");
+                String trimmedOpponentPlayerName = opponentPlayerName.getText().replace(" (me)", "");
 
-                    // Set result message and call setResults based on game outcome
-                    resultMessage = "Bạn đã thắng!";
+                // Set result message and call setResults based on game outcome
+                resultMessage = "Bạn đã thắng!";
 
-                    resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
-                    resultController.setPrimaryStage(primaryStage);
+                resultController.setUpPlayerID(currentPlayerId, opponentPlayerId, trimmedCurrentPlayerName, trimmedOpponentPlayerName);
+                resultController.setPrimaryStage(primaryStage);
 
-                    resultController.setResults(
-                            resultMessage,
-                            scoreMessage,
-                            isWin,
-                            isDraw,
-                            this.currentPlayerId,
-                            this.opponentPlayerId
+                resultController.setResults(
+                        resultMessage,
+                        scoreMessage,
+                        isWin,
+                        isDraw,
+                        this.currentPlayerId,
+                        this.opponentPlayerId
 
-                    );
+                );
 
-                    System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
-                    System.out.println("Trimmed opponent player name: " + trimmedOpponentPlayerName);
+                System.out.println("Trimmed current player name: " + trimmedCurrentPlayerName);
+                System.out.println("Trimmed opponent player name: " + trimmedOpponentPlayerName);
 
-                    primaryStage.show();
+                primaryStage.show();
 
             });
         }
@@ -317,13 +285,24 @@ public class GamePlayController {
      *
      * @param updatedScore The updated score of the opponent player
      */
-    private void updateOpponentScore(int updatedScore) {
+    private synchronized void updateOpponentScore(int updatedScore) {
+        System.out.println("Received score update: " + updatedScore);
+
         Platform.runLater(() -> {
-            this.opponentPlayerScore = updatedScore;
-            opponentPlayerScoreLabel.setText("Score: " + opponentPlayerScore);
-            System.out.println("Opponent's score updated: " + opponentPlayerScore);
+            try {
+                this.cnt++;
+                System.out.println("Inside runLater - CNT: " + cnt);
+                this.opponentPlayerScore = updatedScore;
+                opponentPlayerScoreLabel.setText("Score: " + opponentPlayerScore);
+                System.out.println("Opponent's score updated: " + opponentPlayerScore);
+            } catch (Exception e) {
+                System.err.println("Error updating opponent's score: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
     }
+
+
 
     /**
      * Update the timer every second.
@@ -474,6 +453,25 @@ public class GamePlayController {
     }
 
     /**
+     * Send a request to the server to update the score of the current player.
+     * This will also notify the opponent player of the updated score.
+     *
+     * @param gameId             The current gameId
+     * @param currentPlayerId    The ID of the current player
+     * @param opponentPlayerId   The ID of the opponent player
+     * @param currentPlayerScore The updated score of the current player
+     */
+    private void sendScoreUpdateToServer(long gameId, long currentPlayerId, long opponentPlayerId, int currentPlayerScore) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("gameId", gameId);
+        params.put("currentPlayerId", currentPlayerId);
+        params.put("opponentPlayerId", opponentPlayerId);
+        params.put("currentPlayerScore", currentPlayerScore);
+
+        messageService.sendRequestNoResponse("updateScore", params);
+    }
+
+    /**
      * Show the feedback message after the trash item is dropped.
      * If the feedback is correct, show the correct feedback message.
      * Otherwise, show the incorrect feedback message.
@@ -498,24 +496,7 @@ public class GamePlayController {
         inactiveFeedbackLabel.setText("");
     }
 
-    /**
-     * Send a request to the server to update the score of the current player.
-     * This will also notify the opponent player of the updated score.
-     *
-     * @param gameId             The current gameId
-     * @param currentPlayerId    The ID of the current player
-     * @param opponentPlayerId   The ID of the opponent player
-     * @param currentPlayerScore The updated score of the current player
-     */
-    private void sendScoreUpdateToServer(long gameId, long currentPlayerId, long opponentPlayerId, int currentPlayerScore) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("gameId", gameId);
-        params.put("currentPlayerId", currentPlayerId);
-        params.put("opponentPlayerId", opponentPlayerId);
-        params.put("currentPlayerScore", currentPlayerScore);
 
-        messageService.sendRequestNoResponse("updateScore", params);
-    }
 
     //TODO after the game ends, send the result to the server to update the game with player score,
     // and update the player history with the game result
@@ -525,11 +506,10 @@ public class GamePlayController {
      */
     private void endGame() {
         timeline.stop();
-//        stopListening();
+        stopListening();
 
         //TODO duplicated code
         if (isInviter) {
-            stopListening();
             sendEndGame();
             boolean isWin = currentPlayerScore > opponentPlayerScore;
             boolean isDraw = currentPlayerScore == opponentPlayerScore;
@@ -538,8 +518,6 @@ public class GamePlayController {
             sendMatchResult(winnerId, loserId, isWin, isDraw);
             showResultScreen();
         }
-
-//        showResultScreen();
     }
 
     void stopListening() {
@@ -557,7 +535,7 @@ public class GamePlayController {
         params.put("player2Id", opponentPlayerId);
         params.put("player1Score", currentPlayerScore);
         params.put("player2Score", opponentPlayerScore);
-        messageService.sendRequestAndReceiveResponse("endGameById", params);
+        messageService.sendRequestNoResponse("endGameById", params);
     }
 
     /**
@@ -577,8 +555,7 @@ public class GamePlayController {
         params.put("isDraw", isDraw);
 
         // Send the message to the server
-        messageService.sendRequestAndReceiveResponse("sendMatchResult", params);
-
+        messageService.sendRequestNoResponse("sendMatchResult", params);
     }
 
     /**

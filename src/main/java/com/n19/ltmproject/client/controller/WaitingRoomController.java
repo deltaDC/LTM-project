@@ -57,6 +57,8 @@ public class WaitingRoomController {
     private Label LabelWaitReady;
     @FXML
     private Label LabelWaitgoRoom;
+    @FXML
+    private Button exitButtonWaiting;
 
 
     private int countdownTime = 5;
@@ -166,7 +168,7 @@ public class WaitingRoomController {
 
             running = false;
             serverHandler.sendMessage("STOP_LISTENING");
-            startGame(gameId, inviterId, inviteeId);
+            Platform.runLater(() -> startGame(gameId, inviterId, inviteeId));
         }
     }
     @FXML
@@ -289,6 +291,8 @@ public class WaitingRoomController {
      */
     private void startCountdown() {
         countdownLabel.setText(String.valueOf(countdownTime));
+        exitButtonWaiting.setVisible(false);
+        stopListening();
         new Thread(() -> {
             while (countdownTime > 0 && isCountdownRunning) {
                 try {
@@ -305,12 +309,9 @@ public class WaitingRoomController {
             }
 
             if (countdownTime==0 && !isOpponentExit) {
-                System.out.println(countdownTime+" dvcdz "+isOpponentExit);
                 if (isInviter) {
-                    stopListening();
                     sendStartGameCommand();
                 } else {
-                    stopListening();
                     Platform.runLater(() -> startGame(gameId, inviterId, inviteeId));
                 }
             }

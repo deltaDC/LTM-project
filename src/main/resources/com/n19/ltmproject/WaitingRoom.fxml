@@ -16,7 +16,7 @@
          <Font name="System Bold" size="24.0" />
       </font>
    </Label>
-   <Button layoutY="1.0" mnemonicParsing="false" onAction="#ClickExit" prefHeight="43.0" prefWidth="62.0" styleClass="button-waiting-exit" text="EXIT" textFill="WHITE">
+   <Button fx:id="exitButtonWaiting" layoutY="1.0" mnemonicParsing="false" onAction="#ClickExit" prefHeight="43.0" prefWidth="62.0" styleClass="button-waiting-exit" text="EXIT" textFill="WHITE">
       <font>
          <Font name="System Bold" size="18.0" />
       </font>
