@@ -57,6 +57,8 @@ public class WaitingRoomController {
     private Label LabelWaitReady;
     @FXML
     private Label LabelWaitgoRoom;
+    @FXML
+    private Label exitButtonWaiting;
 
 
     private int countdownTime = 5;
@@ -289,6 +291,7 @@ public class WaitingRoomController {
      */
     private void startCountdown() {
         countdownLabel.setText(String.valueOf(countdownTime));
+        exitButtonWaiting.setVisible(false);
         stopListening();
         new Thread(() -> {
             while (countdownTime > 0 && isCountdownRunning) {
