@@ -27,7 +27,7 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         try {
             ServerHandler serverHandler = ServerHandler.getInstance();
-            serverHandler.init("26.235.197.236", 1234);
+            serverHandler.init("localhost", 1234);
         } catch (Exception e) {
             System.out.println("Failed to connect to the server: " + e.getMessage());
         }
@@ -57,6 +57,9 @@ public class Client extends Application {
 
     private void handleClose(WindowEvent event) {
         Player currentUser = SessionManager.getCurrentUser();
+        if(currentUser == null) {
+            return;
+        }
         Map<String, Object> params = new HashMap<>();
         params.put("username", currentUser.getUsername());
         messageService.sendRequestNoResponse("logout", params);
