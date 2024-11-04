@@ -29,16 +29,16 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Label layoutX="175.0" layoutY="198.0" prefHeight="26.0" prefWidth="275.0" text="(Nếu thoát từ 3 lần trở lên sẽ bị trừ">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
-            </Label>
-            <Label layoutX="257.0" layoutY="224.0" prefHeight="26.0" prefWidth="121.0" text="điểm tích lũy)">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
-            </Label>
+<!--            <Label layoutX="175.0" layoutY="198.0" prefHeight="26.0" prefWidth="275.0" text="(Nếu thoát từ 3 lần trở lên sẽ bị trừ">-->
+<!--               <font>-->
+<!--                  <Font name="System Bold" size="16.0" />-->
+<!--               </font>-->
+<!--            </Label>-->
+<!--            <Label layoutX="257.0" layoutY="224.0" prefHeight="26.0" prefWidth="121.0" text="điểm tích lũy)">-->
+<!--               <font>-->
+<!--                  <Font name="System Bold" size="16.0" />-->
+<!--               </font>-->
+<!--            </Label>-->
             <Button layoutX="39.0" layoutY="349.0" mnemonicParsing="false" onAction="#onConfirmExit" prefHeight="46.0" prefWidth="187.0" styleClass="button-confirm-and-cancel" text="Xác nhận" textFill="WHITE" fx:id="confirmExitButton">
                <font>
                   <Font size="16.0" />
