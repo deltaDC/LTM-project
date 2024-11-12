@@ -1,133 +1,89 @@
-# Project Structure - Game Phân Loại Rác
+# Waste Sorting - Educational Environmental Protection Game
 
-This project is divided into two main packages: `client` and `server`.
+## Introduction
+Amid increasing environmental pollution, sorting and recycling waste has become more important than ever. The game **Waste Sorting** was developed to raise community awareness about proper waste sorting through an educational and entertaining approach. Players will participate by sorting different types of waste into the correct bins, fostering environmental consciousness through small actions.
 
-## Project Structure Overview
+## Objectives
+The **Waste Sorting** game aims to:
+1. Help players recognize different types of waste and how to sort them correctly.
+2. Raise environmental awareness through the act of sorting waste.
+3. Encourage habits of waste sorting from small daily actions.
 
-### Client
-- **Controller**: Handles all user activities, such as button clicks, text input, etc.
-- **CSS**: Manages all CSS for the project.
-- **Model**: Manages all data for the project. Most models will resemble server models, but there may be some differences to suit client-side needs.
+## System Structure
+**Waste Sorting** is a networked game built on a Client-Server architecture:
+- **Client**: Built using JavaFX, provides the user interface and sends requests to the server.
+- **Server**: Processes requests, manages player information, scores, and leaderboards.
 
-### Server
-- **Controller**: Handles all server-side operations and communication with clients.
-- **Model**: Manages server-side data structures, including the game's core logic.
-- **Service**: Handles business logic, such as managing games, players, leaderboard, etc.
+### Overall Architecture
+- **Client**:
+   - Uses JavaFX to create a user-friendly game interface.
+   - Connects to the server via TCP protocol, sending requests and receiving results in JSON or String format.
 
----
+- **Server**:
+   - Receives and processes requests from the client through a **Handler**.
+   - Uses **Command** to handle specific requests and **Service** to perform business logic.
+   - Interacts with the MySQL database through **DAO** and **Hibernate** to store data.
 
-## Creating a New Page in the Client
+- **Database**: MySQL is used to store player information, game results, waste types, and other necessary data. Hibernate manages data storage and retrieval from the database.
 
-When you want to create a new page for the client:
+## Key Features
 
-1. Go to `src/main/resources/com/n19/ltmproject` and create a new FXML file.
-    - You can use ChatGPT to generate a new FXML file if needed.
+### 1. Registration/Login
+- Players can register for a new account or log in if they already have an account.
+- After logging in, players can view a list of online players and their statuses.
 
-2. Navigate to the `controller` package and create a new controller for the newly created FXML file.
+### 2. Start a Match
+- Players select an opponent from the online list to send a match invitation.
+- If the opponent accepts, both players enter the waiting room, and the game starts after a 5-second countdown.
 
-3. Depending on your needs, you may also want to create or modify a model in the `model` package.
+### 3. Game Rules
+- The game lasts for 2 minutes, during which players must sort randomly generated waste into the correct bins:
+   - **Organic Bin**: Food, fruit peels.
+   - **Plastic Bin**: Plastic bottles, nylon bags.
+   - **Metal Bin**: Aluminum cans, metal boxes.
+   - **Paper Bin**: Old newspapers, cardboard.
+   - **Glass Bin**: Glass bottles, glass cups.
+- Each correct sort earns 1 point **(Realtime)** ; incorrect sorting does not score points.
+- The player with the higher score at the end of the time wins.
 
----
+### 4. End of Match
+- At the end of the match, the system updates each player's score and match history.
+- The winner earns 3 points; the loser earns none. In case of a draw, each player receives 1 point.
 
-## Git Workflow for Branching and Pull Requests
+### 5. Leaderboard
+- Displays players' ranks based on total points and match outcomes (wins, draws, losses).
+- Players can view their rank and compare it with others.
 
-In this project, pushing directly to the `main` branch is **restricted** to prevent issues with force pushes or unwanted changes. Always create a new branch and push your code to that branch, then create a pull request to merge changes into the `main` branch.
+### 6. Match History
+- Stores and displays details of previous matches, including player names, scores, and match times.
 
-### Steps to Create a New Branch and Push Code
+## Database
+Uses MySQL to store data tables including:
+- **Player**: Player information.
+- **Player_History**: Player match history.
+- **Game**: Game results.
 
-1. **Create a New Branch**:
-   ```bash
-   git checkout -b client-game-ui
-   ```
-   Replace `client-game-ui` with your branch name, e.g., `server-database-connection`.
+## Technology Stack
+- **JavaFX**: Builds the client user interface.
+- **TCP**: Transmission protocol between client and server.
+- **Hibernate**: ORM (Object-Relational Mapping) for MySQL interaction.
+- **MySQL**: Stores game data.
 
-2. **Make Changes**:
-   Work on your feature or task within this branch.
+## Installation Guide
+1. **Install MySQL**: Create a database for the system and configure the server connection.
+2. **Server**:
+   - Download the server source code and install the necessary libraries.
+   - Run the server and configure connection parameters.
+3. **Client**:
+   - Download the client source code.
+   - Use JavaFX to run the client application and connect to the server via TCP.
 
-3. **Stage and Commit Changes**:
-   ```bash
-   git add .
-   git commit -m "Description of changes"
-   ```
+## Contributions
+We welcome contributions to improve the **Waste Sorting** game! Please create a **Pull Request** or **Issue** to discuss any changes.
 
-4. **Push to the Remote Branch**:
-   ```bash
-   git push origin client-game-ui
-   ```
-   Again, replace `client-game-ui` with your branch name.
-
-5. **Create a Pull Request**:
-    - Go to GitHub, navigate to repository.
-    - You will see an option to create a pull request for your branch.
-    - Submit the pull request to merge into the `main` branch.
-    - Wait for repository owner.
-
-**Important**: Do not push or force-push directly to `main`!
-
----
-
-# Cấu Trúc Dự Án - Game Phân Loại Rác
-
-Dự án này được chia thành hai gói chính: `client` và `server`.
-
-## Tổng Quan Cấu Trúc Dự Án
-
-### Client
-- **Controller**: Xử lý tất cả các hoạt động của người dùng, như nhấp chuột, nhập văn bản, v.v.
-- **CSS**: Quản lý tất cả các tệp CSS cho dự án.
-- **Model**: Quản lý tất cả dữ liệu cho dự án. Hầu hết các model sẽ giống với model phía server, nhưng có thể sẽ có một số khác biệt để phù hợp với nhu cầu của phía client.
-
-### Server
-- **Controller**: Xử lý tất cả các hoạt động phía server và giao tiếp với client.
-- **Model**: Quản lý các cấu trúc dữ liệu phía server, bao gồm logic cốt lõi của game.
-- **Service**: Xử lý logic nghiệp vụ, như quản lý game, người chơi, bảng xếp hạng, v.v.
-
----
-
-## Tạo Trang Mới Cho Client
-
-Khi bạn muốn tạo một trang mới cho client:
-
-1. Đi tới `src/main/resources/com/n19/ltmproject` và tạo một file FXML mới.
-    - Bạn có thể sử dụng ChatGPT để tạo file FXML mới nếu cần.
-
-2. Điều hướng đến gói `controller` và tạo một controller mới cho file FXML vừa tạo.
-
-3. Tùy thuộc vào nhu cầu, bạn có thể muốn tạo hoặc chỉnh sửa một model trong gói `model`.
+## Contact
+For any questions, please contact us via email: **ducchinh.work@gmail.com**
 
 ---
 
-## Quy Trình Git Cho Nhánh và Pull Request
-
-Trong dự án này, việc đẩy trực tiếp lên nhánh `main` bị **hạn chế** để tránh các vấn đề với việc ép đẩy (force push) hoặc thay đổi không mong muốn. Luôn luôn tạo một nhánh mới và đẩy code của bạn lên nhánh đó, sau đó tạo pull request để gộp thay đổi vào nhánh `main`.
-
-### Các Bước Tạo Nhánh Mới và Đẩy Code
-
-1. **Tạo Nhánh Mới**:
-   ```bash
-   git checkout -b client-game-ui
-   ```
-   Thay `client-game-ui` bằng tên nhánh của bạn, ví dụ: `server-database-connection`.
-
-2. **Thực Hiện Thay Đổi**:
-   Làm việc trên tính năng hoặc nhiệm vụ trong nhánh này.
-
-3. **Stage và Commit Thay Đổi**:
-   ```bash
-   git add .
-   git commit -m "Mô tả thay đổi"
-   ```
-
-4. **Đẩy Code Lên Nhánh Từ Xa**:
-   ```bash
-   git push origin client-game-ui
-   ```
-   Thay `client-game-ui` bằng tên nhánh của bạn.
-
-5. **Tạo Pull Request**:
-    - Vào GitHub, điều hướng đến repository.
-    - Bạn sẽ thấy tùy chọn tạo pull request cho nhánh của bạn.
-    - Gửi pull request để gộp vào nhánh `main`.
-    - Đợi người quản lý repository duyệt.
-
-**Lưu Ý**: Không đẩy hoặc ép đẩy trực tiếp vào nhánh `main`!
+**Join the Waste Sorting game to learn how to protect the environment through small actions!**
